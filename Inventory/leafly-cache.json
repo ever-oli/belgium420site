@@ -674,5 +674,61 @@
       "relaxed",
       "sleepy"
     ]
+  },
+  "airheadz": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/airheadz",
+    "category": "hybrid",
+    "effects": [
+      "euphoric",
+      "chill",
+      "social"
+    ],
+    "effectsRaw": [
+      "happy",
+      "relaxed",
+      "giggly",
+      "relaxed",
+      "happy",
+      "euphoric",
+      "happy",
+      "relaxed",
+      "giggly"
+    ]
+  },
+  "zlushuie": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/zlushuie",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "donniesburger": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/donniesburger",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "gashouse": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/gashouse",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "purple-zots": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/purple-zots",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "warheadz": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/warheadz",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
   }
 }
