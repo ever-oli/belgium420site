@@ -1,0 +1,676 @@
+---
+// /checkout — Customer info form. Posts to /api/orders.php.
+// Reuses the same age-gate, nav, and footer styling as the home page.
+// CSS is inlined in <style> below so the page is fully self-contained.
+
+const year = new Date().getFullYear();
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — Belgium420</title>
+  <meta name="description" content="Place your Belgium420 order. Fill in your contact + shipping info and we'll confirm payment and tracking by email." />
+  <link rel="icon" href="/brand/belgium-flag-grunge.jpg" type="image/jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --belgian-black: #050505;
+      --belgian-yellow: #F5C400;
+      --belgian-red: #E31C23;
+      --asphalt: #141414;
+      --concrete: #9A968C;
+      --chalk: #F5F1E8;
+      --ink: #050505;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      background: var(--belgian-black);
+      color: var(--chalk);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      pointer-events: none;
+      opacity: 0.045;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+    }
+
+    /* ============ AGE GATE (same as home) ============ */
+    .age-gate {
+      position: fixed; inset: 0; z-index: 10000;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 2rem;
+      transition: opacity 0.55s ease, visibility 0.55s ease;
+    }
+    .age-gate.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .age-gate-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(5,5,5,0.72) 0%, rgba(5,5,5,0.88) 100%),
+                  url('/brand/belgium-flag-grunge.jpg') center / cover no-repeat;
+      transform: scale(1.04);
+    }
+    .age-gate-inner { position: relative; z-index: 1; text-align: center; max-width: 440px; }
+    .age-gate h2 {
+      font-family: 'Anton', sans-serif;
+      font-size: clamp(1.6rem, 4.5vw, 2.25rem);
+      text-transform: uppercase; letter-spacing: 0.04em;
+      margin-bottom: 0.75rem;
+    }
+    .age-gate p { color: rgba(245,241,232,0.78); margin-bottom: 2rem; font-size: 0.95rem; }
+    .age-gate-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .age-btn {
+      padding: 0.9rem 2.25rem; font-weight: 700; font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      cursor: pointer; border: none;
+    }
+    .age-btn-yes { background: var(--belgian-yellow); color: var(--ink); }
+    .age-btn-yes:hover { background: var(--chalk); }
+    .age-btn-no { background: transparent; color: var(--chalk); border: 1px solid rgba(245,241,232,0.25); }
+    .age-btn-no:hover { border-color: var(--belgian-red); color: var(--belgian-red); }
+
+    /* ============ NAV ============ */
+    .checkout-nav {
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid rgba(245,241,232,0.08);
+      background: rgba(5,5,5,0.6);
+      backdrop-filter: blur(8px);
+    }
+    .checkout-nav-back {
+      color: var(--chalk);
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+    .checkout-nav-back:hover { color: var(--belgian-yellow); }
+
+    /* ============ MAIN ============ */
+    .checkout-main { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem 4rem; }
+    .checkout-head { margin-bottom: 2.5rem; }
+    .checkout-head h1 {
+      font-family: 'Anton', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      text-transform: uppercase; letter-spacing: 0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .checkout-head p { color: var(--concrete); max-width: 560px; font-size: 0.95rem; }
+
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    @media (max-width: 880px) {
+      .checkout-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ============ FORM ============ */
+    .checkout-form { display: flex; flex-direction: column; gap: 1.5rem; }
+    .checkout-form fieldset {
+      border: 1px solid rgba(245,241,232,0.12);
+      background: var(--asphalt);
+      padding: 1.5rem;
+    }
+    .checkout-form legend {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.05rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0 0.5rem;
+      color: var(--belgian-yellow);
+    }
+    .checkout-form label {
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .checkout-form label:last-child { margin-bottom: 0; }
+    .checkout-form label > span {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--concrete);
+      margin-bottom: 0.4rem;
+    }
+    .checkout-form input[type="text"],
+    .checkout-form input[type="email"],
+    .checkout-form input[type="tel"],
+    .checkout-form textarea {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      background: var(--belgian-black);
+      color: var(--chalk);
+      border: 1px solid rgba(245,241,232,0.18);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.15s;
+    }
+    .checkout-form input:focus,
+    .checkout-form textarea:focus {
+      outline: none;
+      border-color: var(--belgian-yellow);
+    }
+    .checkout-form input:disabled { opacity: 0.5; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.2fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 540px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+    .form-help {
+      color: var(--concrete);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+    .checkbox-row {
+      display: flex !important;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+    }
+    .checkbox-row input { width: auto !important; margin: 0; }
+    .checkbox-row > span { margin: 0 !important; font-family: 'Space Grotesk' !important; font-size: 0.95rem !important; text-transform: none !important; letter-spacing: 0 !important; color: var(--chalk) !important; }
+
+    /* ============ SUBMIT / ERROR ============ */
+    .checkout-error {
+      padding: 0.85rem 1rem;
+      background: rgba(227, 28, 35, 0.15);
+      border: 1px solid var(--belgian-red);
+      color: var(--chalk);
+      font-size: 0.9rem;
+    }
+    .checkout-error[hidden] { display: none; }
+    .checkout-submit {
+      width: 100%;
+      padding: 1rem;
+      background: var(--belgian-yellow);
+      color: var(--ink);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .checkout-submit:hover:not(:disabled) { background: var(--chalk); }
+    .checkout-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+    .checkout-fineprint {
+      font-size: 0.75rem;
+      color: var(--concrete);
+      line-height: 1.4;
+      margin-top: 0.5rem;
+    }
+
+    /* ============ ORDER SUMMARY (right column) ============ */
+    .checkout-summary {
+      position: sticky;
+      top: 2rem;
+      background: var(--asphalt);
+      border: 1px solid rgba(245,241,232,0.12);
+      padding: 1.5rem;
+    }
+    .checkout-summary h2 {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.05rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--belgian-yellow);
+      margin-bottom: 1rem;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(245,241,232,0.06);
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-name {
+      font-family: 'Anton', sans-serif;
+      font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .summary-meta {
+      font-size: 0.7rem;
+      color: var(--concrete);
+      margin-top: 0.15rem;
+    }
+    .summary-price {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--belgian-yellow);
+      white-space: nowrap;
+    }
+    .checkout-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+      border-top: 1px solid rgba(245,241,232,0.15);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .checkout-total-row strong { color: var(--belgian-yellow); font-size: 1.2rem; }
+    .checkout-summary-note {
+      font-size: 0.75rem;
+      color: var(--concrete);
+      margin: 0.75rem 0;
+      line-height: 1.4;
+    }
+    .checkout-edit {
+      display: block;
+      text-align: center;
+      padding: 0.6rem;
+      color: var(--concrete);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      border: 1px solid rgba(245,241,232,0.18);
+      margin-top: 0.5rem;
+    }
+    .checkout-edit:hover { color: var(--belgian-yellow); border-color: var(--belgian-yellow); }
+    .summary-empty { color: var(--concrete); padding: 1rem 0; }
+    .summary-empty a { color: var(--belgian-yellow); }
+
+    /* ============ SUCCESS ============ */
+    .checkout-ok {
+      max-width: 540px;
+      margin: 4rem auto;
+      padding: 2.5rem 2rem;
+      background: var(--asphalt);
+      border: 1px solid var(--belgian-yellow);
+      text-align: center;
+    }
+    .checkout-ok h1 {
+      font-family: 'Anton', sans-serif;
+      font-size: 2.2rem;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--belgian-yellow);
+      margin-bottom: 1rem;
+    }
+    .checkout-ok p { margin-bottom: 0.75rem; line-height: 1.5; }
+    .checkout-ok strong { color: var(--belgian-yellow); }
+    .checkout-back {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.5rem;
+      background: var(--belgian-yellow);
+      color: var(--ink);
+      font-weight: 700; font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      text-decoration: none;
+    }
+
+    /* ============ FOOTER ============ */
+    .checkout-footer {
+      padding: 2rem;
+      text-align: center;
+      color: var(--concrete);
+      font-size: 0.8rem;
+      border-top: 1px solid rgba(245,241,232,0.08);
+    }
+  </style>
+</head>
+<body class="checkout-page">
+  <!-- Age Gate (same as home, just standalone) -->
+  <div class="age-gate" id="ageGate">
+    <div class="age-gate-bg"></div>
+    <div class="age-gate-inner">
+      <h2>Are you 21 or older?</h2>
+      <p>You must be 21 years or older to enter this site.</p>
+      <div class="age-gate-buttons">
+        <button type="button" class="age-btn age-btn-yes">I am 21+</button>
+        <button type="button" class="age-btn age-btn-no">I am under 21</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="checkout-nav">
+    <a href="/" class="checkout-nav-back">&larr; Back to shop</a>
+  </nav>
+
+  <main class="checkout-main">
+    <header class="checkout-head">
+      <h1>Checkout</h1>
+      <p>Tell us where to send it. We'll email you to confirm payment, then drop tracking once it ships.</p>
+    </header>
+
+    <div class="checkout-grid">
+      <form id="checkoutForm" class="checkout-form" novalidate>
+        <fieldset>
+          <legend>Contact</legend>
+          <label>
+            <span>Full name *</span>
+            <input type="text" name="name" required autocomplete="name" />
+          </label>
+          <label>
+            <span>Email *</span>
+            <input type="email" name="email" required autocomplete="email" />
+          </label>
+          <label>
+            <span>Phone (for shipping questions)</span>
+            <input type="tel" name="phone" autocomplete="tel" />
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Shipping address</legend>
+          <label>
+            <span>Street address *</span>
+            <input type="text" name="address1" required autocomplete="address-line1" />
+          </label>
+          <label>
+            <span>Apt / Suite / Unit</span>
+            <input type="text" name="address2" autocomplete="address-line2" />
+          </label>
+          <div class="form-row">
+            <label>
+              <span>City *</span>
+              <input type="text" name="city" required autocomplete="address-level2" />
+            </label>
+            <label>
+              <span>State *</span>
+              <input type="text" name="state" required autocomplete="address-level1" maxlength="2" />
+            </label>
+            <label>
+              <span>ZIP *</span>
+              <input type="text" name="zip" required autocomplete="postal-code" />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Discount code</legend>
+          <label>
+            <span>Have a code?</span>
+            <input type="text" name="discount_code" id="discountCode" placeholder="e.g. BELGIUM10" autocomplete="off" style="text-transform:uppercase" />
+          </label>
+          <p class="form-help" id="discountMsg" style="margin-top:0.5rem">Enter your code and the total will update automatically.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>How would you like to pay?</legend>
+          <p class="form-help">After you submit, we'll email you the payment options (Zelle, CashApp, crypto, etc.) and confirm your order total.</p>
+          <label class="checkbox-row">
+            <input type="checkbox" name="payment_zelle" value="1" />
+            <span>I'll pay via Zelle</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" name="payment_cashapp" value="1" />
+            <span>I'll pay via CashApp</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" name="payment_crypto" value="1" />
+            <span>I'll pay via crypto (BTC/USDC)</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" name="payment_other" value="1" />
+            <span>I'll discuss other options in email</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Notes (optional)</legend>
+          <label>
+            <span>Anything we should know? (delivery instructions, alternate contact, etc.)</span>
+            <textarea name="note" rows="3" maxlength="500"></textarea>
+          </label>
+        </fieldset>
+
+        <p class="checkout-error" id="checkoutError" hidden></p>
+        <button type="submit" class="checkout-submit" id="checkoutSubmit">Place order</button>
+        <p class="checkout-fineprint">By placing this order you confirm you're 21+ and that shipping to the address above is legal in your state. We'll email you within 24 hours with payment instructions.</p>
+      </form>
+
+      <aside class="checkout-summary">
+        <h2>Your order</h2>
+        <div id="checkoutSummary"></div>
+        <div class="checkout-total-row">
+          <span>Subtotal</span>
+          <strong id="checkoutTotal">$0.00</strong>
+        </div>
+        <div class="checkout-total-row" id="checkoutDiscountRow" hidden>
+          <span id="checkoutDiscountLabel">Discount</span>
+          <strong id="checkoutDiscountAmount" style="color:var(--belgian-red)">-$0.00</strong>
+        </div>
+        <div class="checkout-total-row">
+          <span>Total</span>
+          <strong id="checkoutFinalTotal">$0.00</strong>
+        </div>
+        <p class="checkout-summary-note">Tax + shipping calculated after order. We'll confirm the final total in the email.</p>
+        <a href="/" class="checkout-edit">Edit cart</a>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="checkout-footer">
+    <div>&copy; {year} Belgium420. All rights reserved.</div>
+  </footer>
+
+  <script>
+    import {
+      getCart,
+      formatPrice,
+      cartTotal,
+      clearCart,
+      isValidDiscount,
+      getDiscountPercent,
+      discountedTotal,
+      discountAmount,
+    } from "../scripts/cart.ts";
+
+    const discountInput = document.getElementById("discountCode") as HTMLInputElement | null;
+    const discountMsg = document.getElementById("discountMsg");
+    const discountRow = document.getElementById("checkoutDiscountRow");
+    const discountLabel = document.getElementById("checkoutDiscountLabel");
+    const discountAmountEl = document.getElementById("checkoutDiscountAmount");
+    const finalTotalEl = document.getElementById("checkoutFinalTotal");
+
+    function currentDiscountCode(): string {
+      return (discountInput?.value ?? "").trim();
+    }
+
+    function refreshTotals() {
+      const totalEl = document.getElementById("checkoutTotal");
+      if (!totalEl || !finalTotalEl || !discountRow || !discountLabel || !discountAmountEl) return;
+      const sub = cartTotal();
+      totalEl.textContent = formatPrice(sub);
+      const code = currentDiscountCode();
+      if (code && isValidDiscount(code)) {
+        const pct = getDiscountPercent(code);
+        const off = discountAmount(code);
+        discountRow.hidden = false;
+        discountLabel.textContent = `Discount (${Math.round(pct * 100)}% — ${code.toUpperCase()})`;
+        discountAmountEl.textContent = `-${formatPrice(off)}`;
+        finalTotalEl.textContent = formatPrice(discountedTotal(code));
+        if (discountMsg) {
+          discountMsg.textContent = `✓ ${code.toUpperCase()} applied — ${Math.round(pct * 100)}% off.`;
+          discountMsg.style.color = "var(--belgian-yellow)";
+        }
+      } else {
+        discountRow.hidden = true;
+        finalTotalEl.textContent = formatPrice(sub);
+        if (discountMsg) {
+          if (code) {
+            discountMsg.textContent = "That code isn't valid.";
+            discountMsg.style.color = "var(--belgian-red)";
+          } else {
+            discountMsg.textContent = "Enter your code and the total will update automatically.";
+            discountMsg.style.color = "";
+          }
+        }
+      }
+    }
+
+    discountInput?.addEventListener("input", refreshTotals);
+
+    // Render order summary from cart.
+    function renderSummary() {
+      const items = getCart();
+      const wrap = document.getElementById("checkoutSummary");
+      const totalEl = document.getElementById("checkoutTotal");
+      if (!wrap || !totalEl) return;
+      if (items.length === 0) {
+        wrap.innerHTML = `<p class="summary-empty">Your cart is empty. <a href="/">Browse the shop</a>.</p>`;
+        totalEl.textContent = formatPrice(0);
+        const submit = document.getElementById("checkoutSubmit") as HTMLButtonElement | null;
+        if (submit) submit.disabled = true;
+        refreshTotals();
+        return;
+      }
+      wrap.innerHTML = items
+        .map(
+          (it) => `
+            <div class="summary-row">
+              <div>
+                <div class="summary-name">${escapeHtml(it.name)}</div>
+                <div class="summary-meta">${escapeHtml(it.type)} · Batch ${escapeHtml(it.batch)}</div>
+              </div>
+              <div class="summary-price">${formatPrice(it.price)}</div>
+            </div>
+          `,
+        )
+        .join("");
+      refreshTotals();
+    }
+
+    function escapeHtml(s: string) {
+      return s.replace(/[&<>"']/g, (c) =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!),
+      );
+    }
+
+    // Submit handler
+    const form = document.getElementById("checkoutForm") as HTMLFormElement | null;
+    const errorEl = document.getElementById("checkoutError");
+    const submitBtn = document.getElementById("checkoutSubmit") as HTMLButtonElement | null;
+
+    function showError(msg: string) {
+      if (!errorEl) return;
+      errorEl.textContent = msg;
+      errorEl.hidden = false;
+    }
+    function clearError() {
+      if (!errorEl) return;
+      errorEl.textContent = "";
+      errorEl.hidden = true;
+    }
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearError();
+      if (getCart().length === 0) {
+        showError("Your cart is empty.");
+        return;
+      }
+      const fd = new FormData(form);
+      const items = getCart();
+      const payments: string[] = [];
+      ["payment_zelle", "payment_cashapp", "payment_crypto", "payment_other"].forEach((k) => {
+        if (fd.get(k)) payments.push(k.replace("payment_", ""));
+      });
+      const payload = {
+        name: String(fd.get("name") || "").trim(),
+        email: String(fd.get("email") || "").trim(),
+        phone: String(fd.get("phone") || "").trim(),
+        address1: String(fd.get("address1") || "").trim(),
+        address2: String(fd.get("address2") || "").trim(),
+        city: String(fd.get("city") || "").trim(),
+        state: String(fd.get("state") || "").trim().toUpperCase(),
+        zip: String(fd.get("zip") || "").trim(),
+        payments,
+        note: String(fd.get("note") || "").trim(),
+        items,
+        total: cartTotal(),
+        discount_code: currentDiscountCode().toUpperCase(),
+        discount_percent: isValidDiscount(currentDiscountCode()) ? getDiscountPercent(currentDiscountCode()) : 0,
+        final_total: discountedTotal(currentDiscountCode()),
+      };
+      if (!payload.name || !payload.email || !payload.address1 || !payload.city || !payload.state || !payload.zip) {
+        showError("Please fill in name, email, and full shipping address.");
+        return;
+      }
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending…";
+      }
+      try {
+        const r = await fetch("/api/orders.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok || !data.ok) {
+          showError(data.error || "Could not submit your order. Please try again or email us directly.");
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Place order";
+          }
+          return;
+        }
+        // Success — clear cart, show confirmation.
+        clearCart();
+        document.body.classList.add("checkout-success");
+        if (form) form.hidden = true;
+        const main = document.querySelector(".checkout-main");
+        if (main) {
+          const ok = document.createElement("div");
+          ok.className = "checkout-ok";
+          ok.innerHTML = `
+            <h1>Order received ✦</h1>
+            <p>Thanks, ${escapeHtml(payload.name.split(" ")[0])}. Your order <strong>${escapeHtml(data.order_id || "")}</strong> is in.</p>
+            <p>We'll email <strong>${escapeHtml(payload.email)}</strong> within 24 hours with payment instructions. Once we receive payment, your order ships and you'll get a tracking number by email.</p>
+            <a href="/" class="checkout-back">Back to shop</a>
+          `;
+          main.appendChild(ok);
+        }
+      } catch (err) {
+        showError("Network error. Please try again.");
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Place order";
+        }
+      }
+    });
+
+    // Age gate wiring (same as home).
+    const ageGate = document.getElementById("ageGate");
+    const ageYes = document.querySelector(".age-btn-yes");
+    const ageNo = document.querySelector(".age-btn-no");
+    if (ageYes && ageGate) {
+      ageYes.addEventListener("click", () => {
+        ageGate.classList.add("hidden");
+        try { sessionStorage.setItem("ageVerified", "true"); } catch {}
+      });
+    }
+    ageNo?.addEventListener("click", () => { window.location.href = "https://www.google.com"; });
+    if (ageGate && sessionStorage.getItem("ageVerified") === "true") {
+      ageGate.classList.add("hidden");
+    }
+
+    renderSummary();
+    window.addEventListener("cart:changed", renderSummary);
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{
+  "project": "belgium420-site",
+  "description": "Belgian-flag streetwear x lab-backed hemp shop (Farm Bill compliant)",
+  "path": "/Users/ever/belgium420-site",
+  "domain": "belgium420.com",
+  "hostinger_account": "u996138094",
+  "stack": "Astro 4 Static Site (output: static)",
+  "build_command": "AUTH_ENABLED=false npm run build",
+  "auth_enabled": false,
+  "auth_system": "SuperTokens (server/index.mjs) + Express",
+  "orders_api": "public/api/orders.php -> data/orders.json",
+  "admin_key": "420Belgium",
+  "owner_email": "mstwntdpacks@gmail.com",
+  "deploy_tool": "hosting_deployStaticWebsite",
+  "deploy_domain": "belgium420.com",
+  "deploy_path": "public_html/",
+  "mcp_servers": {
+    "hostinger": {
+      "command": "npx",
+      "args": ["-y", "hostinger-api-mcp", "--connect-timeout", "90"],
+      "env_var": "HOSTINGER_API_TOKEN",
+      "tools_prefix": "mcp_hostinger_"
+    }
+  },
+  "deploy_sequence": [
+    "cd /Users/ever/belgium420-site",
+    "AUTH_ENABLED=false npm run build",
+    "cd dist && rm -f ../deploy.zip && zip -rq ../deploy.zip . && cd ..",
+    "hosting_deployStaticWebsite(domain=belgium420.com, archivePath=/Users/ever/belgium420-site/deploy.zip, removeArchive=true)",
+    "sleep 15",
+    "curl -sI https://belgium420.com/index.html | grep last-modified",
+    "curl -s https://belgium420.com/index.html | grep <change-marker>"
+  ],
+  "inventory_sequence": [
+    "Edit products array in src/pages/index.astro",
+    "Add photo to public/inventory/<category>/<lowercase-slug>.ext",
+    "Update src/lib/strain-types.js if cannabis strain",
+    "Run node scripts/build-inventory-log.mjs",
+    "Check inventory/build-report.json for unmatchedNames",
+    "Resolve via Leafly or web search",
+    "Update inventory/web-matches.json",
+    "Rebuild + deploy"
+  ]
+}

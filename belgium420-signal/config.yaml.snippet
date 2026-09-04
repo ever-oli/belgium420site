@@ -1,0 +1,39 @@
+# Signal CLI REST API — Hermes integration
+#
+# This bridges Hermes Agent to Signal Messenger via signal-cli-rest-api (bbernhard).
+# Your phone number: +1 956 222 4814
+#
+# ─── MCP server config ─────────────────────────────────────────────
+# Add to ~/.hermes/config.yaml under mcp_servers:
+#
+# mcp_servers:
+#   signal:
+#     url: "http://localhost:9090"
+#     connect_timeout: 10
+#     timeout: 30
+#
+# Then restart Hermes: hermes restart
+# Tools appear as mcp_signal_v2_send, mcp_signal_v1_receive, etc.
+#
+# ─── Hermes Signal platform config ──────────────────────────────────
+# For Hermes's native Signal bridge (not MCP):
+#
+# In ~/.hermes/config.yaml, under platforms:
+#
+# platforms:
+#   signal:
+#     enabled: true
+#     signal_http_url: "http://localhost:9090"    # signal-cli REST base URL
+#     signal_account: "+19562224814"              # your registered number
+#     allowed_users: "+19562224814",              # who can DM the bot
+#
+# ─── Registration ───────────────────────────────────────────────────
+# Link as secondary device:
+#   1. Visit: http://localhost:9090/v1/qrcodelink?device_name=hermes-belgium420
+#   2. Open Signal on your phone → Settings → Linked Devices → + → Scan QR
+#   3. Poll: curl http://localhost:9090/v1/lookup/+19562224814
+#
+# ─── CLI send ──────────────────────────────────────────────────────
+# curl -X POST http://localhost:9090/v2/send \
+#   -H "Content-Type: application/json" \
+#   -d '{"message":"Hello from Hermes","number":"+19562224814","recipients":["+19562224814"]}'

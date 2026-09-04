@@ -1,0 +1,25 @@
+# belgium420-signal docker-compose
+# https://github.com/bbernhard/signal-cli-rest-api
+#
+# Signal CLI REST API — wrapper around signal-cli for sending/receiving
+# Signal messages programmatically. Hermes Agent talks to it via HTTP.
+#
+# After starting, register or link a phone number (see register.sh).
+
+services:
+  signal-cli-rest-api:
+    container_name: signal-cli-rest-api
+    image: bbernhard/signal-cli-rest-api:latest
+    restart: unless-stopped
+    ports:
+      - "9090:8080"
+    environment:
+      # native mode = precompiled GraalVM binary, fast startup + low memory
+      - MODE=native
+      # Uncomment for json-rpc mode (fastest, but keeps JVM resident):
+      # - MODE=json-rpc-native
+      # Poll for incoming messages every minute (only needed in normal/native mode)
+      # AUTO_RECEIVE_SCHEDULE=0 * * * *
+    volumes:
+      # Persist registration (phone number + crypto keys) across container updates
+      - ./signal-cli-config:/home/.local/share/signal-cli

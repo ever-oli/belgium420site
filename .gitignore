@@ -1,0 +1,29 @@
+# Node / build
+node_modules/
+dist/
+.astro/
+dist-*.zip
+belgium420-cloud-hermes-bundle-*.tar.gz
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Signal CLI (runtime config)
+belgium420-signal/signal-cli-config/
+belgium420-signal/data/
+
+# Temp
+*.tmp
+*.temp

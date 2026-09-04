@@ -1,0 +1,666 @@
+---
+// /admin — Kanban dashboard for managing orders.
+// Auth: simple password gate (420Belgium) stored in sessionStorage. The same
+// password is the admin key for the API. This is shared-hosting-tier security —
+// adequate for a small shop, NOT adequate if orders become high-value.
+const year = new Date().getFullYear();
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Belgium420</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --belgian-black: #050505;
+      --belgian-yellow: #F5C400;
+      --belgian-red: #E31C23;
+      --asphalt: #141414;
+      --concrete: #9A968C;
+      --chalk: #F5F1E8;
+      --ink: #050505;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100vh; }
+    body {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      background: var(--belgian-black);
+      color: var(--chalk);
+      line-height: 1.6;
+    }
+
+    /* ============ LOGIN ============ */
+    .login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .login-box {
+      width: 100%;
+      max-width: 360px;
+      padding: 2rem;
+      background: var(--asphalt);
+      border: 1px solid rgba(245,241,232,0.12);
+    }
+    .login-box h1 {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.5rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--belgian-yellow);
+      margin-bottom: 0.5rem;
+    }
+    .login-box p { font-size: 0.85rem; color: var(--concrete); margin-bottom: 1.25rem; }
+    .login-box input {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--belgian-black);
+      color: var(--chalk);
+      border: 1px solid rgba(245,241,232,0.18);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+    }
+    .login-box input:focus { outline: none; border-color: var(--belgian-yellow); }
+    .login-box button {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--belgian-yellow);
+      color: var(--ink);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      border: none;
+      cursor: pointer;
+    }
+    .login-box button:hover { background: var(--chalk); }
+    .login-error {
+      color: var(--belgian-red);
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      min-height: 1.2em;
+    }
+    .login[hidden] { display: none; }
+
+    /* ============ KANBAN ============ */
+    .kanban-wrap { padding: 1.5rem 2rem 3rem; max-width: 1400px; margin: 0 auto; }
+    .kanban-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .kanban-head h1 {
+      font-family: 'Anton', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .kanban-head h1 span { color: var(--belgian-yellow); }
+    .kanban-actions { display: flex; gap: 0.5rem; align-items: center; }
+    .kanban-stats {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--concrete);
+    }
+    .kanban-refresh, .kanban-logout {
+      padding: 0.55rem 0.9rem;
+      background: transparent;
+      color: var(--chalk);
+      border: 1px solid rgba(245,241,232,0.25);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      cursor: pointer;
+    }
+    .kanban-refresh:hover, .kanban-logout:hover { border-color: var(--belgian-yellow); color: var(--belgian-yellow); }
+    .kanban-logout { color: var(--concrete); }
+    .kanban-logout:hover { color: var(--belgian-red); border-color: var(--belgian-red); }
+
+    .kanban {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 880px) {
+      .kanban { grid-template-columns: 1fr; }
+    }
+    .col {
+      background: var(--asphalt);
+      border: 1px solid rgba(245,241,232,0.08);
+      padding: 1rem;
+      min-height: 60vh;
+    }
+    .col-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid rgba(245,241,232,0.1);
+    }
+    .col-title {
+      font-family: 'Anton', sans-serif;
+      font-size: 1rem;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .col-received .col-title { color: var(--chalk); }
+    .col-paid .col-title { color: var(--belgian-yellow); }
+    .col-shipped .col-title { color: var(--belgian-red); }
+    .col-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--concrete);
+      background: var(--belgian-black);
+      padding: 0.15rem 0.5rem;
+    }
+    .col-empty { color: var(--concrete); font-size: 0.85rem; padding: 1rem 0; text-align: center; }
+
+    .card {
+      background: var(--belgian-black);
+      border: 1px solid rgba(245,241,232,0.1);
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .card:hover { border-color: var(--belgian-yellow); transform: translateY(-1px); }
+    .card-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--belgian-yellow);
+      margin-bottom: 0.4rem;
+    }
+    .card-name {
+      font-family: 'Anton', sans-serif;
+      font-size: 0.95rem;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+    .card-meta {
+      font-size: 0.75rem;
+      color: var(--concrete);
+      line-height: 1.4;
+    }
+    .card-total {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--belgian-yellow);
+      margin-top: 0.5rem;
+    }
+    .card-items {
+      font-size: 0.7rem;
+      color: var(--concrete);
+      margin-top: 0.4rem;
+      line-height: 1.4;
+    }
+
+    /* ============ MODAL ============ */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 9000;
+      background: rgba(5,5,5,0.75);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-bg[hidden] { display: none; }
+    .modal {
+      background: var(--asphalt);
+      border: 1px solid var(--belgian-yellow);
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.75rem;
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(245,241,232,0.12);
+    }
+    .modal-head h2 {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.2rem;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--chalk);
+      font-size: 1.6rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .modal-section { margin-bottom: 1.25rem; }
+    .modal-section h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--belgian-yellow);
+      margin-bottom: 0.5rem;
+    }
+    .modal-row {
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+    }
+    .modal-row strong { color: var(--concrete); font-weight: 500; margin-right: 0.5rem; }
+    .modal-items li {
+      list-style: none;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(245,241,232,0.06);
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .modal-items { padding: 0; }
+    .modal-items li:last-child { border-bottom: none; }
+    .modal-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .modal-btn {
+      flex: 1;
+      min-width: 110px;
+      padding: 0.7rem;
+      background: var(--belgian-yellow);
+      color: var(--ink);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border: none;
+      cursor: pointer;
+    }
+    .modal-btn:hover { background: var(--chalk); }
+    .modal-btn.secondary { background: transparent; color: var(--chalk); border: 1px solid rgba(245,241,232,0.25); }
+    .modal-btn.secondary:hover { border-color: var(--belgian-yellow); color: var(--belgian-yellow); }
+    .modal-btn.danger { background: var(--belgian-red); color: var(--chalk); }
+    .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .modal-track {
+      width: 100%;
+      padding: 0.7rem;
+      background: var(--belgian-black);
+      color: var(--chalk);
+      border: 1px solid rgba(245,241,232,0.18);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .modal-track:focus { outline: none; border-color: var(--belgian-yellow); }
+    .modal-label {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--concrete);
+      margin-bottom: 0.4rem;
+    }
+    .status-pill {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border: 1px solid currentColor;
+    }
+    .status-pill.received { color: var(--chalk); }
+    .status-pill.paid { color: var(--belgian-yellow); }
+    .status-pill.shipped { color: var(--belgian-red); }
+  </style>
+</head>
+<body>
+
+  <!-- ============ LOGIN ============ -->
+  <div class="login" id="loginView">
+    <form class="login-box" id="loginForm">
+      <h1>Admin</h1>
+      <p>Enter your admin key to view orders.</p>
+      <div class="login-error" id="loginError"></div>
+      <input type="password" id="loginKey" placeholder="Admin key" autocomplete="current-password" />
+      <button type="submit">Sign in</button>
+    </form>
+  </div>
+
+  <!-- ============ KANBAN ============ -->
+  <div class="kanban-wrap" id="kanbanView" hidden>
+    <header class="kanban-head">
+      <h1>Orders <span id="kanbanCount">(0)</span></h1>
+      <div class="kanban-actions">
+        <span class="kanban-stats" id="kanbanStats"></span>
+        <button type="button" class="kanban-refresh" id="refreshBtn">Refresh</button>
+        <button type="button" class="kanban-logout" id="logoutBtn">Sign out</button>
+      </div>
+    </header>
+
+    <div class="kanban">
+      <div class="col col-received" data-col="received">
+        <div class="col-head"><div class="col-title">Received</div><div class="col-count" id="countReceived">0</div></div>
+        <div class="col-list" id="listReceived"></div>
+      </div>
+      <div class="col col-paid" data-col="paid">
+        <div class="col-head"><div class="col-title">Paid</div><div class="col-count" id="countPaid">0</div></div>
+        <div class="col-list" id="listPaid"></div>
+      </div>
+      <div class="col col-shipped" data-col="shipped">
+        <div class="col-head"><div class="col-title">Shipped</div><div class="col-count" id="countShipped">0</div></div>
+        <div class="col-list" id="listShipped"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL ============ -->
+  <div class="modal-bg" id="modal" hidden>
+    <div class="modal" id="modalBody"></div>
+  </div>
+
+  <script>
+    const SESSION_KEY = "b420_admin_key";
+
+    const loginView = document.getElementById("loginView") as HTMLDivElement;
+    const kanbanView = document.getElementById("kanbanView") as HTMLDivElement;
+    const loginForm = document.getElementById("loginForm") as HTMLFormElement;
+    const loginKey = document.getElementById("loginKey") as HTMLInputElement;
+    const loginError = document.getElementById("loginError") as HTMLDivElement;
+    const refreshBtn = document.getElementById("refreshBtn") as HTMLButtonElement;
+    const logoutBtn = document.getElementById("logoutBtn") as HTMLButtonElement;
+    const kanbanCount = document.getElementById("kanbanCount")!;
+    const kanbanStats = document.getElementById("kanbanStats")!;
+    const modal = document.getElementById("modal") as HTMLDivElement;
+    const modalBody = document.getElementById("modalBody") as HTMLDivElement;
+
+    let allOrders: any[] = [];
+
+    function getKey(): string | null {
+      return sessionStorage.getItem(SESSION_KEY);
+    }
+    function setKey(k: string) { sessionStorage.setItem(SESSION_KEY, k); }
+    function clearKey() { sessionStorage.removeItem(SESSION_KEY); }
+
+    function showLogin() {
+      loginView.hidden = false;
+      kanbanView.hidden = true;
+    }
+    function showKanban() {
+      loginView.hidden = true;
+      kanbanView.hidden = false;
+      void loadOrders();
+    }
+
+    function escapeHtml(s: string) {
+      return s.replace(/[&<>"']/g, (c) =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!),
+      );
+    }
+    function money(n: number) { return "$" + (n || 0).toFixed(2); }
+
+    function showLoginError(msg: string) {
+      loginError.textContent = msg;
+      loginError.style.minHeight = "1.2em";
+    }
+    function clearLoginError() {
+      loginError.textContent = "";
+    }
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearLoginError();
+      const k = loginKey.value.trim();
+      if (!k) {
+        showLoginError("Enter your admin key.");
+        return;
+      }
+      // Verify by hitting the API.
+      try {
+        const r = await fetch(`/api/orders.php?key=${encodeURIComponent(k)}`);
+        if (!r.ok) {
+          showLoginError("Wrong key. Try again.");
+          return;
+        }
+        setKey(k);
+        showKanban();
+      } catch (err) {
+        showLoginError("Network error. Try again.");
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      clearKey();
+      showLogin();
+    });
+    refreshBtn.addEventListener("click", () => void loadOrders());
+
+    async function loadOrders() {
+      const k = getKey();
+      if (!k) { showLogin(); return; }
+      try {
+        const r = await fetch(`/api/orders.php?key=${encodeURIComponent(k)}&_t=${Date.now()}`);
+        if (r.status === 401) {
+          clearKey();
+          showLogin();
+          return;
+        }
+        const data = await r.json();
+        if (!data.ok) {
+          kanbanStats.textContent = "Failed to load orders.";
+          return;
+        }
+        allOrders = data.orders || [];
+        render();
+      } catch (err) {
+        kanbanStats.textContent = "Network error.";
+      }
+    }
+
+    function render() {
+      const cols: Record<string, any[]> = { received: [], paid: [], shipped: [] };
+      for (const o of allOrders) {
+        const s = o.status || "received";
+        if (!cols[s]) cols[s] = [];
+        cols[s].push(o);
+      }
+      (["received", "paid", "shipped"] as const).forEach((s) => {
+        const list = document.getElementById("list" + s[0].toUpperCase() + s.slice(1))!;
+        const counter = document.getElementById("count" + s[0].toUpperCase() + s.slice(1))!;
+        counter.textContent = String(cols[s].length);
+        if (cols[s].length === 0) {
+          list.innerHTML = `<div class="col-empty">No orders</div>`;
+          return;
+        }
+        list.innerHTML = "";
+        for (const o of cols[s]) {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.dataset.id = o.id;
+          const items = (o.items || []).map((i: any) => `${escapeHtml(i.name)} (${money(i.price)})`).join(" · ");
+          card.innerHTML = `
+            <div class="card-id">${escapeHtml(o.id || "")}</div>
+            <div class="card-name">${escapeHtml(o.name || "")}</div>
+            <div class="card-meta">
+              ${escapeHtml(o.city || "")}, ${escapeHtml(o.state || "")}<br/>
+              ${escapeHtml(o.email || "")}
+              ${o.tracking ? `<br/>Tracking: <strong>${escapeHtml(o.tracking)}</strong>` : ""}
+            </div>
+            <div class="card-items">${items}</div>
+            <div class="card-total">${money(o.total)}${o.discount_percent > 0 ? ` <span style="color:var(--belgian-red);font-size:0.75rem">−${Math.round(o.discount_percent * 100)}%</span>` : ""}</div>
+          `;
+          card.addEventListener("click", () => openModal(o));
+          list.appendChild(card);
+        }
+      });
+      kanbanCount.textContent = `(${allOrders.length})`;
+      const totalValue = allOrders.reduce((sum: number, o: any) => sum + (o.final_total ?? o.total ?? 0), 0);
+      kanbanStats.textContent = `Total value: ${money(totalValue)}`;
+    }
+
+    function openModal(o: any) {
+      const itemsHtml = (o.items || []).map((i: any) => `
+        <li>
+          <span>${escapeHtml(i.name)} <small style="color:var(--concrete)">· Batch ${escapeHtml(i.batch || "")}</small></span>
+          <span style="font-family:'JetBrains Mono',monospace;color:var(--belgian-yellow)">${money(i.price)}</span>
+        </li>
+      `).join("");
+      const pays = (o.payments || []).join(", ") || "(none selected)";
+      const tracking = o.tracking || "";
+      const status = o.status || "received";
+      const paidAt = o.paid_at ? new Date(o.paid_at).toLocaleString() : "—";
+      const shippedAt = o.shipped_at ? new Date(o.shipped_at).toLocaleString() : "—";
+
+      modalBody.innerHTML = `
+        <div class="modal-head">
+          <h2>${escapeHtml(o.id || "")} <span class="status-pill ${status}">${status}</span></h2>
+          <button type="button" class="modal-close" data-modal-close>&times;</button>
+        </div>
+
+        <div class="modal-section">
+          <h3>Customer</h3>
+          <div class="modal-row"><strong>Name:</strong>${escapeHtml(o.name || "")}</div>
+          <div class="modal-row"><strong>Email:</strong><a href="mailto:${escapeHtml(o.email || "")}" style="color:var(--belgian-yellow)">${escapeHtml(o.email || "")}</a></div>
+          <div class="modal-row"><strong>Phone:</strong>${escapeHtml(o.phone || "—")}</div>
+          <div class="modal-row"><strong>Ship to:</strong>${escapeHtml(o.address1 || "")} ${escapeHtml(o.address2 || "")}, ${escapeHtml(o.city || "")}, ${escapeHtml(o.state || "")} ${escapeHtml(o.zip || "")}</div>
+          <div class="modal-row"><strong>Payment:</strong>${escapeHtml(pays)}</div>
+          ${o.note ? `<div class="modal-row"><strong>Note:</strong>${escapeHtml(o.note)}</div>` : ""}
+        </div>
+
+        <div class="modal-section">
+          <h3>Items</h3>
+          <ul class="modal-items">${itemsHtml}</ul>
+          <div class="modal-row" style="margin-top:0.5rem;text-align:right;font-family:'JetBrains Mono',monospace"><strong>Subtotal:</strong><span style="color:var(--chalk);font-weight:700;margin-left:0.5rem">${money(o.total)}</span></div>
+          ${o.discount_percent > 0 ? `
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Discount (${escapeHtml(o.discount_code)}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.discount_amount)}</span></div>
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Total:</strong><span style="color:var(--belgian-yellow);font-weight:700;margin-left:0.5rem">${money(o.final_total)}</span></div>
+          ` : ""}
+        </div>
+
+        <div class="modal-section">
+          <h3>Tracking</h3>
+          <label class="modal-label">Tracking number / link</label>
+          <input type="text" class="modal-track" id="trackInput" value="${escapeHtml(tracking)}" placeholder="1Z999AA10123456784 or https://..." />
+          <button type="button" class="modal-btn secondary" id="saveTrackBtn" style="width:100%">Save tracking</button>
+        </div>
+
+        <div class="modal-section">
+          <h3>Status</h3>
+          <div class="modal-row"><strong>Received:</strong>${new Date(o.created_at).toLocaleString()}</div>
+          <div class="modal-row"><strong>Paid:</strong>${paidAt}</div>
+          <div class="modal-row"><strong>Shipped:</strong>${shippedAt}</div>
+        </div>
+
+        <div class="modal-actions">
+          ${status !== "received" ? `<button type="button" class="modal-btn secondary" data-set-status="received">← Back to Received</button>` : ""}
+          ${status !== "paid" ? `<button type="button" class="modal-btn" data-set-status="paid">Mark as Paid</button>` : ""}
+          ${status !== "shipped" ? `<button type="button" class="modal-btn" data-set-status="shipped">Mark as Shipped</button>` : ""}
+          <button type="button" class="modal-btn danger" data-delete-order>Delete</button>
+        </div>
+      `;
+
+      modal.hidden = false;
+      modalBody.querySelector("[data-modal-close]")?.addEventListener("click", closeModal);
+      modalBody.querySelectorAll<HTMLButtonElement>("[data-set-status]").forEach((b) => {
+        b.addEventListener("click", () => setStatus(o.id, b.getAttribute("data-set-status") || ""));
+      });
+      modalBody.querySelector("#saveTrackBtn")?.addEventListener("click", () => saveTracking(o.id));
+      modalBody.querySelector("[data-delete-order]")?.addEventListener("click", () => deleteOrder(o.id));
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+    }
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.hidden) closeModal();
+    });
+
+    async function setStatus(id: string, status: string) {
+      const k = getKey();
+      if (!k) return;
+      try {
+        const r = await fetch(`/api/orders.php?key=${encodeURIComponent(k)}&id=${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        });
+        const data = await r.json();
+        if (!data.ok) {
+          alert("Could not update: " + (data.error || "unknown"));
+          return;
+        }
+        // Refresh and reopen the same card.
+        await loadOrders();
+        const updated = allOrders.find((x) => x.id === id);
+        if (updated) openModal(updated);
+      } catch (err) {
+        alert("Network error.");
+      }
+    }
+
+    async function saveTracking(id: string) {
+      const k = getKey();
+      if (!k) return;
+      const input = document.getElementById("trackInput") as HTMLInputElement;
+      const tracking = input.value.trim();
+      try {
+        const r = await fetch(`/api/orders.php?key=${encodeURIComponent(k)}&id=${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tracking }),
+        });
+        const data = await r.json();
+        if (!data.ok) {
+          alert("Could not save: " + (data.error || "unknown"));
+          return;
+        }
+        await loadOrders();
+        const updated = allOrders.find((x) => x.id === id);
+        if (updated) openModal(updated);
+      } catch (err) {
+        alert("Network error.");
+      }
+    }
+
+    async function deleteOrder(id: string) {
+      if (!confirm(`Delete order ${id} permanently? This cannot be undone.`)) return;
+      const k = getKey();
+      if (!k) return;
+      try {
+        const r = await fetch(`/api/orders.php?key=${encodeURIComponent(k)}&id=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+        const data = await r.json();
+        if (!data.ok) {
+          alert("Could not delete: " + (data.error || "unknown"));
+          return;
+        }
+        closeModal();
+        await loadOrders();
+      } catch (err) {
+        alert("Network error.");
+      }
+    }
+
+    // Auto-refresh every 30s while kanban is open.
+    setInterval(() => {
+      if (!kanbanView.hidden) void loadOrders();
+    }, 30000);
+
+    // Bootstrap
+    if (getKey()) showKanban();
+    else showLogin();
+  </script>
+</body>
+</html>

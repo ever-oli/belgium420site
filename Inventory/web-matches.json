@@ -1,0 +1,637 @@
+{
+  "Candy Fumes": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "euphoric",
+      "chill"
+    ],
+    "url": "https://www.leafly.com/strains/candy-fumez",
+    "confidence": "high",
+    "notes": "Leafly Candy Fumez (Zkittlez × Sherbanger). Catalog spelling Candy Fumes; slug alias candy-fumez."
+  },
+  "Candy Fumes · Pound": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "euphoric",
+      "chill"
+    ],
+    "url": "https://www.leafly.com/strains/candy-fumez",
+    "confidence": "high",
+    "notes": "Same cultivar as Candy Fumez on Leafly (hybrid)."
+  },
+  "Black Dahlia": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "sleep"
+    ],
+    "url": "https://www.leafly.com/strains/black-dhalia",
+    "confidence": "high",
+    "notes": "Leafly slug is black-dhalia (typo). Indica-leaning hybrid (Black Cherry Soda × Querkle)."
+  },
+  "Black Dahlia · Pound": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "sleep"
+    ],
+    "url": "https://www.leafly.com/strains/black-dhalia",
+    "confidence": "high",
+    "notes": "Leafly black-dhalia — indica-leaning hybrid."
+  },
+  "Crème Brûlée": {
+    "match": "web-search",
+    "type": "indica",
+    "effects": [
+      "chill",
+      "sleep",
+      "euphoric"
+    ],
+    "url": "https://www.leafly.com/strains/creme-brulee",
+    "confidence": "high",
+    "notes": "Leafly Creme Brulee listed as indica (Platinum Kush × OG Kush × GSC)."
+  },
+  "Crème Brûlée · Pound": {
+    "match": "web-search",
+    "type": "indica",
+    "effects": [
+      "chill",
+      "sleep",
+      "euphoric"
+    ],
+    "url": "https://www.leafly.com/strains/creme-brulee",
+    "confidence": "high",
+    "notes": "Leafly Creme Brulee — indica."
+  },
+  "Peach Pie": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "euphoric"
+    ],
+    "url": "https://www.leafly.com/strains/peach-pie",
+    "confidence": "medium",
+    "notes": "Peach Pie is used by multiple breeders; Leafly and Cannapedia both list hybrid. No single genetics page."
+  },
+  "Peach Pie Live Rosin 90u": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "euphoric"
+    ],
+    "url": "https://www.leafly.com/strains/peach-pie",
+    "confidence": "medium",
+    "notes": "Rosin of Peach Pie; sources agree hybrid, genetics vary by breeder."
+  },
+  "41 Cherries": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "sleep"
+    ],
+    "url": "https://www.allbud.com/marijuana-strains/indica-dominant-hybrid/41-cherries",
+    "confidence": "medium",
+    "notes": "No Leafly page. AllBud and seed listings: indica-leaning hybrid (Gelato 41 × Black Cherry Gelato). Type recorded as hybrid."
+  },
+  "41 Cherries · Zip": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "sleep"
+    ],
+    "url": "https://www.allbud.com/marijuana-strains/indica-dominant-hybrid/41-cherries",
+    "confidence": "medium",
+    "notes": "Indica-leaning hybrid per AllBud; no Leafly strain page."
+  },
+  "Sharpiez": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "euphoric",
+      "chill",
+      "creative"
+    ],
+    "url": "https://litfarms.com/products/sharpiez-thca-flower",
+    "confidence": "medium",
+    "notes": "Lit Farms lists Sharpiez (Permanent Marker × Zoap) as Hybrid. No Leafly strain page."
+  },
+  "Percz": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "sleep"
+    ],
+    "url": "https://cannapedia.ai/strain/percz/",
+    "confidence": "medium",
+    "notes": "Sci-Fi Genetics and Killa Treez both publish Percz as mostly-indica hybrid. Two lineages share the name; type agrees."
+  },
+  "Blue Tomyz": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "euphoric",
+      "chill"
+    ],
+    "url": "https://www.leafly.com/strains/blue-tommyz",
+    "confidence": "high",
+    "notes": "Leafly slug blue-tommyz (Backpack Boyz). AllBud: 50/50 hybrid. Alias added."
+  },
+  "Icebox": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "euphoric"
+    ],
+    "url": "https://www.leafly.com/strains/ice-box",
+    "confidence": "medium",
+    "notes": "Leafly Ice Box (Ice Cream Cake × Runtz) is a 50/50 hybrid. Catalog spelling Icebox; slug alias ice-box."
+  },
+  "Icebox · Quarter Pound": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "euphoric"
+    ],
+    "url": "https://www.leafly.com/strains/ice-box",
+    "confidence": "medium",
+    "notes": "Treated as Ice Box cultivar if this QP is that cut; Leafly hybrid."
+  },
+  "Noboof OSRS11": {
+    "match": "web-search",
+    "type": "hybrid",
+    "effects": [
+      "chill",
+      "euphoric"
+    ],
+    "url": "https://www.leafly.com/strains/rs11",
+    "confidence": "medium",
+    "notes": "Noboof (No Boof) house label of RS-11 / Rainbow Sherbert #11. Leafly rs11 is hybrid. Alias osrs11 → rs11."
+  },
+  "Snow Bunnies": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Snow Bunnies · Pound": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Nectar Berry": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Kleenek": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Candy Crusher": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Candy Crusher · Pound": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Candy Mediums": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Candy Mediums · Pound": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Raz Daz": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Raz Daz · Pound": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Strawberry Zinger": {
+    "match": "site-map",
+    "type": "sativa",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: sativa (Strawberry Zinger and Strawberry Candy)."
+  },
+  "Strawberry Zinger · Pound": {
+    "match": "site-map",
+    "type": "sativa",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: sativa (Strawberry Zinger and Strawberry Candy)."
+  },
+  "Purple Pez": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "https://www.leafly.com/strains/pez",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Purple Pez · Pound": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "https://www.leafly.com/strains/pez",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Strawberry Candy": {
+    "match": "site-map",
+    "type": "sativa",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: sativa (Strawberry Zinger and Strawberry Candy)."
+  },
+  "Strawberry Candy · Pound": {
+    "match": "site-map",
+    "type": "sativa",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: sativa (Strawberry Zinger and Strawberry Candy)."
+  },
+  "Lance": {
+    "match": "unmatched",
+    "type": "",
+    "effects": [],
+    "url": "https://www.leafly.com/strains/lantz",
+    "confidence": "low",
+    "notes": "May be Ridgeline Lantz (Leafly hybrid) but catalog spelling is Lance. Builder tries slug alias lantz; if Leafly misses, leave unmatched — do not assume."
+  },
+  "Lance · Zip": {
+    "match": "unmatched",
+    "type": "",
+    "effects": [],
+    "url": "https://www.leafly.com/strains/lantz",
+    "confidence": "low",
+    "notes": "Lance vs Lantz is unverified for this SKU."
+  },
+  "Belgium420 Flower": {
+    "match": "site-map",
+    "type": "hybrid",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Owner: indica-hybrid."
+  },
+  "Blue Meanie": {
+    "match": "n/a",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Psilocybin mushrooms — indica/hybrid/sativa does not apply."
+  },
+  "Iceberg Albino": {
+    "match": "n/a",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Psilocybin mushrooms — indica/hybrid/sativa does not apply."
+  },
+  "Magic Kingdom Gummies": {
+    "match": "n/a",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Psilocybin edibles — indica/hybrid/sativa does not apply."
+  },
+  "Magic Kingdom Chocolate": {
+    "match": "n/a",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Psilocybin edibles — indica/hybrid/sativa does not apply."
+  },
+  "Raw Garden Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Raw Garden sells indica, hybrid, and sativa carts by flavor. One Type would be inaccurate."
+  },
+  "Muha Meds Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Muha Meds flavor line spans indica, hybrid, and sativa. Do not assign one Type."
+  },
+  "Muha Meds Live Resin Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Muha Meds flavor line spans indica, hybrid, and sativa. Do not assign one Type."
+  },
+  "Sherbinskis Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Sherbinskis carts are flavor SKUs across indica, hybrid, and sativa. Not the Sherbinski flower zip."
+  },
+  "Whole Melts Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Bodega Boyz Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Boutiq Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Packman Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Ace Ultra Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Cizi Fuze Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "High 90s 2g Vape": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand vape line; type varies by flavor."
+  },
+  "Backpackboyz Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Besos Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Buzzbar Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Dabwoods Liquid Diamond Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Blinkers Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Smoothie Bar Cart": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Brand cart line; type varies by flavor."
+  },
+  "Sherb x Doja Dual Flav 2g": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Dual-flavor cart; cannot assign one indica/hybrid/sativa."
+  },
+  "MIdKidz Gummies": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Edible brand line, not a cultivar."
+  },
+  "Devour Sour Mango Gummies": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Devour edible flavor line; type does not apply to one SKU."
+  },
+  "Devour 1500mg": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Devour edible line; not a cultivar."
+  },
+  "Devour 1500mg (Twin Pack)": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Devour edible line; not a cultivar."
+  },
+  "Devour 500mg Nano-Infused Live Rosin": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Devour edible line; not a cultivar."
+  },
+  "Misc Gummies 600mg": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Unnamed gummies SKU; not a cultivar."
+  },
+  "Fusion Extract Blunt": {
+    "match": "brand-line",
+    "type": "branded",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Infused blunt brand line; strain not specified on SKU."
+  },
+  "Favorites Cart": {
+    "match": "brand-line",
+    "type": "branded",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Favorites 2g liquid diamond line lists indica, hybrid, and sativa flavors on the display. Type branded."
+  },
+  "Blaze Eros · 1g Pre-roll": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Blaze preroll lines sell indica, hybrid, and sativa flavors. One Type would be inaccurate."
+  },
+  "Heady Head · 1g Pre-roll": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Heady Heads is a preroll brand with indica and hybrid SKUs by strain. Catalog name has no cultivar."
+  },
+  "Persy Snowcaps · Pound": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Persy hash product form, not a named cultivar."
+  },
+  "WM Extracts Live Resin Sugar · Pound": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "WM Extracts live resin sugar; flavor/cultivar not on SKU."
+  },
+  "WM Extracts Live Resin Sugar · Quarter Pound": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "WM Extracts live resin sugar; flavor/cultivar not on SKU."
+  },
+  "WM Extracts Live Resin Sugar · Half": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "WM Extracts live resin sugar; flavor/cultivar not on SKU."
+  },
+  "Kaws Moonrocks · Pound": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "KAWS moonrocks brand; underlying flower type not specified."
+  },
+  "JUUG Hash Hole": {
+    "match": "brand-line",
+    "type": "",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "JUUG hash hole brand product; cultivar not on SKU."
+  }
+}

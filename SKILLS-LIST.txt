@@ -1,0 +1,77 @@
+# SKILLS-LIST.txt
+
+## Built-in skills (already in ~/.hermes/skills/ on your local — copy the same dir to cloud)
+
+All of these ship with Hermes. Just rsync the directories:
+
+rsync -a ~/.hermes/skills/ <CLOUD_HOST>:~/.hermes/skills/
+
+Skills available (from bundled manifest):
+academic-paper-formalization-review
+apple / apple-notes / apple-reminders / findmy / imessage / macos-computer-use
+architecture-diagram
+arxiv
+ascii-art / ascii-video / baoyu-comic / baoyu-infographic
+blocked-page-recovery
+blogwatcher
+box
+claude-code / claude-design / claude-to-hermes-migration
+codebase-inspection
+codex
+comfyui
+competitor-news-monitor
+computer-use
+design-md
+document-to-action-items / docx / docx
+dogfood / debugging-hermes-tui-commands
+email-inbox-triage / himalaya
+evaluating-llms-harness
+excalidraw
+feature-toggle-by-env-var
+find-nearby
+fine-tuning-with-trl / gguf-quantization / guidance / huggingface-hub / huggingface-tokenizers
+github-auth / github-code-review / github-issue-to-pr / github-issues / github-pr-workflow / github-repo-management
+grpo-rl-training
+grounded-citations
+hermes-agent
+hermes-agent-skill-authoring
+humanizer
+ideation / image-to-video (bfl)
+inspecting-hermes-desktop-dom
+inference-sh-cli
+llama-cpp / llama-cpp
+llm-wiki / llm-experiments
+maps
+manim-video
+materials / meeting-action-items
+nano-pdf / note-taking / obsidian / ocr-and-documents
+openhue
+orca-cli
+parameter-golf-iteration-workflow
+p5js
+pdf / popular-web-designs / powerpoint / pretext
+product-price-monitor / productivity
+session-librarian
+serve-llms-vllm / sketch / simplifying-code
+skyvern / smart-triage / software-development bundle
+songsee / songwriting-and-ai-music
+spike / stable-diffusion-image-generation
+sql-dev-tools / systematic-debugging
+surface-level / task-lists
+test-driven-development
+teams-meeting-pipeline
+text-to-speech / threejs-web-integration
+touchdesigner-mcp / tour
+unreal-engine / unified-ecosystem-from-forks
+verifying-llms / vllm-quantization
+whisper / weights-and-biases
+x_search / xlsx
+xurl / yuanbao
+yaml-lint
+
+## Project-specific skills
+belgium420-inventory → at /Users/ever/belgium420-site/.cursor/skills/belgium420-inventory/SKILL.md
+
+## Required MCP servers
+hostinger-api-mcp (npx) — for Hostinger deploys, DNS, etc.
+alphaxiv HTTP MCP — for paper research
