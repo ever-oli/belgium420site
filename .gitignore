@@ -27,3 +27,5 @@ belgium420-signal/data/
 # Temp
 *.tmp
 *.temp
+deploy.zip
+dist_*.zip
