@@ -8,6 +8,8 @@ import {
   formatPrice,
   cartCount,
   cartTotal,
+  shippingCost,
+  orderTotal,
   type CartItem,
 } from "./cart";
 
@@ -128,12 +130,22 @@ function render(refs: ReturnType<typeof buildDrawer>) {
     });
   });
 
+  const sub = cartTotal();
+  const ship = shippingCost(sub);
   refs.footer.innerHTML = `
     <div class="cart-foot-row">
       <span>Subtotal</span>
-      <strong>${money(cartTotal())}</strong>
+      <strong>${money(sub)}</strong>
     </div>
-    <p class="cart-foot-note">Tax + shipping calculated after order. We'll email you to confirm payment and send tracking.</p>
+    <div class="cart-foot-row">
+      <span>Shipping${ship === 0 ? " (free over $50)" : " (orders under $50)"}</span>
+      <strong>${ship === 0 ? "FREE" : money(ship)}</strong>
+    </div>
+    <div class="cart-foot-row">
+      <span>Total</span>
+      <strong>${money(orderTotal())}</strong>
+    </div>
+    <p class="cart-foot-note">No order minimum. $25 shipping under $50 — free shipping at $50+. Tax confirmed by email.</p>
     <a href="/checkout/" class="cart-checkout-btn">Checkout</a>
     <button type="button" class="cart-clear-btn" data-cart-clear>Clear cart</button>
   `;

@@ -13,7 +13,7 @@ export type CartItem = {
 
 const STORAGE_KEY = "b420_cart_v1";
 
-// Drop corrupt lines left by the old multi-price flower card ($30/$60/$220 → millions).
+// Drop corrupt lines left by the old multi-price flower card ($30/$60/$200 → millions).
 function isSaneItem(i: unknown): i is CartItem {
   if (!i || typeof i !== "object") return false;
   const it = i as CartItem;
@@ -107,6 +107,22 @@ export function discountedTotal(code: string): number {
 
 export function discountAmount(code: string): number {
   return cartTotal() - discountedTotal(code);
+}
+
+
+// ---------- shipping ----------
+// No order minimum. $25 shipping when merchandise total (after discount) is under $50.
+export const SHIPPING_THRESHOLD = 50;
+export const SHIPPING_FEE = 25;
+
+export function shippingCost(merchandiseTotal: number): number {
+  if (!Number.isFinite(merchandiseTotal) || merchandiseTotal <= 0) return 0;
+  return merchandiseTotal < SHIPPING_THRESHOLD ? SHIPPING_FEE : 0;
+}
+
+export function orderTotal(code: string = ""): number {
+  const merch = code ? discountedTotal(code) : cartTotal();
+  return merch + shippingCost(merch);
 }
 
 export function formatPrice(n: number): string {

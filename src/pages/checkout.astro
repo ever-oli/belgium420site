@@ -454,10 +454,14 @@ const year = new Date().getFullYear();
           <strong id="checkoutDiscountAmount" style="color:var(--belgian-red)">-$0.00</strong>
         </div>
         <div class="checkout-total-row">
+          <span id="checkoutShippingLabel">Shipping</span>
+          <strong id="checkoutShipping">$0.00</strong>
+        </div>
+        <div class="checkout-total-row">
           <span>Total</span>
           <strong id="checkoutFinalTotal">$0.00</strong>
         </div>
-        <p class="checkout-summary-note">Tax + shipping calculated after order. We'll confirm the final total in the email.</p>
+        <p class="checkout-summary-note">No order minimum. $25 shipping on orders under $50; free shipping at $50+. Tax confirmed by email.</p>
         <a href="/" class="checkout-edit">Edit cart</a>
       </aside>
     </div>
@@ -477,6 +481,8 @@ const year = new Date().getFullYear();
       getDiscountPercent,
       discountedTotal,
       discountAmount,
+      shippingCost,
+      orderTotal,
     } from "../scripts/cart.ts";
 
     const discountInput = document.getElementById("discountCode") as HTMLInputElement | null;
@@ -492,24 +498,26 @@ const year = new Date().getFullYear();
 
     function refreshTotals() {
       const totalEl = document.getElementById("checkoutTotal");
-      if (!totalEl || !finalTotalEl || !discountRow || !discountLabel || !discountAmountEl) return;
+      const shipEl = document.getElementById("checkoutShipping");
+      const shipLabel = document.getElementById("checkoutShippingLabel");
+      if (!totalEl || !finalTotalEl || !discountRow || !discountLabel || !discountAmountEl || !shipEl || !shipLabel) return;
       const sub = cartTotal();
       totalEl.textContent = formatPrice(sub);
       const code = currentDiscountCode();
+      let merch = sub;
       if (code && isValidDiscount(code)) {
         const pct = getDiscountPercent(code);
         const off = discountAmount(code);
+        merch = discountedTotal(code);
         discountRow.hidden = false;
         discountLabel.textContent = `Discount (${Math.round(pct * 100)}% — ${code.toUpperCase()})`;
         discountAmountEl.textContent = `-${formatPrice(off)}`;
-        finalTotalEl.textContent = formatPrice(discountedTotal(code));
         if (discountMsg) {
           discountMsg.textContent = `✓ ${code.toUpperCase()} applied — ${Math.round(pct * 100)}% off.`;
           discountMsg.style.color = "var(--belgian-yellow)";
         }
       } else {
         discountRow.hidden = true;
-        finalTotalEl.textContent = formatPrice(sub);
         if (discountMsg) {
           if (code) {
             discountMsg.textContent = "That code isn't valid.";
@@ -520,6 +528,10 @@ const year = new Date().getFullYear();
           }
         }
       }
+      const ship = shippingCost(merch);
+      shipLabel.textContent = ship === 0 ? "Shipping (free over $50)" : "Shipping (orders under $50)";
+      shipEl.textContent = ship === 0 ? "FREE" : formatPrice(ship);
+      finalTotalEl.textContent = formatPrice(orderTotal(code && isValidDiscount(code) ? code : ""));
     }
 
     discountInput?.addEventListener("input", refreshTotals);
@@ -604,7 +616,12 @@ const year = new Date().getFullYear();
         total: cartTotal(),
         discount_code: currentDiscountCode().toUpperCase(),
         discount_percent: isValidDiscount(currentDiscountCode()) ? getDiscountPercent(currentDiscountCode()) : 0,
-        final_total: discountedTotal(currentDiscountCode()),
+        shipping: shippingCost(
+          isValidDiscount(currentDiscountCode())
+            ? discountedTotal(currentDiscountCode())
+            : cartTotal()
+        ),
+        final_total: orderTotal(currentDiscountCode()),
       };
       if (!payload.name || !payload.email || !payload.address1 || !payload.city || !payload.state || !payload.zip) {
         showError("Please fill in name, email, and full shipping address.");
