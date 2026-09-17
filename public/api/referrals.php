@@ -78,15 +78,43 @@ if ($method === 'POST' || $method === 'PATCH') {
         $code = b420_normalize_code((string)($data['code'] ?? ''));
         if ($code === '') b420_respond(400, ['ok' => false, 'error' => 'Invalid code.']);
         b420_ensure_code($ledger, $code, [
+            'owner_name' => (string)($data['owner_name'] ?? ''),
             'owner_email' => (string)($data['owner_email'] ?? ''),
             'note' => (string)($data['note'] ?? ''),
         ]);
         if (isset($data['owner_email'])) {
             $ledger['codes'][$code]['owner_email'] = b420_normalize_email((string)$data['owner_email']);
         }
+        if (isset($data['owner_name'])) {
+            $ledger['codes'][$code]['owner_name'] = substr(trim((string)$data['owner_name']), 0, 80);
+        }
         if (isset($data['note'])) {
             $ledger['codes'][$code]['note'] = substr((string)$data['note'], 0, 500);
         }
+        if (array_key_exists('active', $data)) {
+            $ledger['codes'][$code]['active'] = (bool)$data['active'];
+        }
+        $ledger['codes'][$code]['updated_at'] = gmdate('c');
+        if (!b420_write_ledger($ledger)) b420_respond(500, ['ok' => false, 'error' => 'Could not save.']);
+        b420_respond(200, b420_admin_snapshot());
+    }
+
+    if ($action === 'set_active' || $action === 'deactivate' || $action === 'activate') {
+        $code = b420_normalize_code((string)($data['code'] ?? ''));
+        if ($code === '') b420_respond(400, ['ok' => false, 'error' => 'Invalid code.']);
+        b420_ensure_code($ledger, $code);
+        $active = $action === 'activate' ? true : ($action === 'deactivate' ? false : (bool)($data['active'] ?? true));
+        $ledger['codes'][$code]['active'] = $active;
+        $ledger['codes'][$code]['updated_at'] = gmdate('c');
+        $ledger['events'][] = [
+            'id' => b420_event_id(),
+            'at' => gmdate('c'),
+            'type' => $active ? 'activated' : 'deactivated',
+            'code' => $code,
+            'order_id' => '',
+            'amount' => 0,
+            'note' => (string)($data['note'] ?? ($active ? 'code reactivated' : 'code deactivated — stop sharing this link')),
+        ];
         if (!b420_write_ledger($ledger)) b420_respond(500, ['ok' => false, 'error' => 'Could not save.']);
         b420_respond(200, b420_admin_snapshot());
     }
@@ -189,7 +217,7 @@ if ($method === 'POST' || $method === 'PATCH') {
                 $code = b420_normalize_code((string)($row['code'] ?? $c));
                 if ($code === '') continue;
                 b420_ensure_code($ledger, $code, $row);
-                foreach (['pending', 'available', 'redeemed', 'referred_orders', 'owner_email', 'note'] as $k) {
+                foreach (['pending', 'available', 'redeemed', 'referred_orders', 'owner_email', 'owner_name', 'note', 'active'] as $k) {
                     if (isset($row[$k])) $ledger['codes'][$code][$k] = $row[$k];
                 }
             }
