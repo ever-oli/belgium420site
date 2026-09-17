@@ -409,6 +409,16 @@ const year = new Date().getFullYear();
         </fieldset>
 
         <fieldset>
+          <legend>Referral credit</legend>
+          <p class="form-help" id="refAttrMsg">If a friend sent you here, their code is saved on this device for 30 days (last link clicked wins).</p>
+          <label>
+            <span>Store credit / referral code</span>
+            <input type="text" name="referral_credit_code" id="referralCreditCode" placeholder="Your code (e.g. JANE)" autocomplete="off" style="text-transform:uppercase" />
+          </label>
+          <p class="form-help" id="creditMsg" style="margin-top:0.5rem">Enter the code you share with friends to apply available $25 referral credit after their order clears.</p>
+        </fieldset>
+
+        <fieldset>
           <legend>How would you like to pay?</legend>
           <p class="form-help">After you submit, we'll email you the payment options (Zelle, CashApp, crypto, etc.) and confirm your order total.</p>
           <label class="checkbox-row">
@@ -453,6 +463,14 @@ const year = new Date().getFullYear();
           <span id="checkoutDiscountLabel">Discount</span>
           <strong id="checkoutDiscountAmount" style="color:var(--belgian-red)">-$0.00</strong>
         </div>
+        <div class="checkout-total-row" id="checkoutLoyaltyRow" hidden>
+          <span id="checkoutLoyaltyLabel">Loyalty</span>
+          <strong id="checkoutLoyaltyAmount" style="color:var(--belgian-red)">-$0.00</strong>
+        </div>
+        <div class="checkout-total-row" id="checkoutCreditRow" hidden>
+          <span id="checkoutCreditLabel">Referral credit</span>
+          <strong id="checkoutCreditAmount" style="color:var(--belgian-red)">-$0.00</strong>
+        </div>
         <div class="checkout-total-row">
           <span id="checkoutShippingLabel">Shipping</span>
           <strong id="checkoutShipping">$0.00</strong>
@@ -461,7 +479,7 @@ const year = new Date().getFullYear();
           <span>Total</span>
           <strong id="checkoutFinalTotal">$0.00</strong>
         </div>
-        <p class="checkout-summary-note">No order minimum. $25 shipping on orders under $50; free shipping at $50+. Tax confirmed by email.</p>
+        <p class="checkout-summary-note">No order minimum. $25 shipping on orders under $50; free shipping at $50+. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
         <a href="/" class="checkout-edit">Edit cart</a>
       </aside>
     </div>
@@ -469,6 +487,7 @@ const year = new Date().getFullYear();
 
   <footer class="checkout-footer">
     <div>&copy; {year} Belgium420. All rights reserved.</div>
+    <div class="checkout-fineprint" style="margin-top:0.5rem">Refer a friend — they shop, you get $25 credit when their order clears. Share belgium420.com/?ref=YOURCODE. Loyalty: 1% off per $100 spent (cap 25%). Ops reject self-referrals.</div>
   </footer>
 
   <script>
@@ -479,11 +498,26 @@ const year = new Date().getFullYear();
       clearCart,
       isValidDiscount,
       getDiscountPercent,
-      discountedTotal,
-      discountAmount,
-      shippingCost,
-      orderTotal,
+      cartBreakdown,
     } from "../scripts/cart.ts";
+    import {
+      addLifetimeSpend,
+      bumpLoyaltyPlacedCount,
+      captureReferralFromUrl,
+      ensureLoyaltyId,
+      fetchLoyaltySnapshot,
+      fetchReferralCreditAvailable,
+      getLifetimeSpend,
+      getOwnReferralCode,
+      getReferralAttribution,
+      isSelfReferral,
+      normalizeReferralCode,
+      setLifetimeSpend,
+      setLoyaltyPlacedCount,
+    } from "../lib/rewards.js";
+
+    captureReferralFromUrl();
+    const loyaltyId = ensureLoyaltyId();
 
     const discountInput = document.getElementById("discountCode") as HTMLInputElement | null;
     const discountMsg = document.getElementById("discountMsg");
@@ -491,9 +525,47 @@ const year = new Date().getFullYear();
     const discountLabel = document.getElementById("checkoutDiscountLabel");
     const discountAmountEl = document.getElementById("checkoutDiscountAmount");
     const finalTotalEl = document.getElementById("checkoutFinalTotal");
+    const creditInput = document.getElementById("referralCreditCode") as HTMLInputElement | null;
+    const creditMsg = document.getElementById("creditMsg");
+    const refAttrMsg = document.getElementById("refAttrMsg");
+    const loyaltyRow = document.getElementById("checkoutLoyaltyRow");
+    const loyaltyLabel = document.getElementById("checkoutLoyaltyLabel");
+    const loyaltyAmountEl = document.getElementById("checkoutLoyaltyAmount");
+    const creditRow = document.getElementById("checkoutCreditRow");
+    const creditLabel = document.getElementById("checkoutCreditLabel");
+    const creditAmountEl = document.getElementById("checkoutCreditAmount");
+
+    let availableCredit = 0;
+    let lifetimeSpend = getLifetimeSpend();
+
+    const attr = getReferralAttribution();
+    if (refAttrMsg) {
+      if (attr?.code) {
+        refAttrMsg.textContent = `Referred by ${attr.code}. They earn $25 off their next order once this order is marked paid (credit is pending until payment clears). Ops reject self-referrals.`;
+        refAttrMsg.style.color = "var(--belgian-yellow)";
+      }
+    }
+
+    const own = getOwnReferralCode();
+    if (own && creditInput && !creditInput.value) creditInput.placeholder = own;
 
     function currentDiscountCode(): string {
       return (discountInput?.value ?? "").trim();
+    }
+
+    function currentCreditCode(): string {
+      return normalizeReferralCode(creditInput?.value ?? "");
+    }
+
+    function currentQuote() {
+      const code = currentDiscountCode();
+      const creditCode = currentCreditCode();
+      return cartBreakdown({
+        promoCode: code && isValidDiscount(code) ? code : "",
+        referralCredit: creditCode ? availableCredit : 0,
+        referralCreditCode: creditCode,
+        lifetimeSpend,
+      });
     }
 
     function refreshTotals() {
@@ -501,19 +573,16 @@ const year = new Date().getFullYear();
       const shipEl = document.getElementById("checkoutShipping");
       const shipLabel = document.getElementById("checkoutShippingLabel");
       if (!totalEl || !finalTotalEl || !discountRow || !discountLabel || !discountAmountEl || !shipEl || !shipLabel) return;
-      const sub = cartTotal();
-      totalEl.textContent = formatPrice(sub);
+      const quote = currentQuote();
+      totalEl.textContent = formatPrice(quote.subtotal);
+
       const code = currentDiscountCode();
-      let merch = sub;
-      if (code && isValidDiscount(code)) {
-        const pct = getDiscountPercent(code);
-        const off = discountAmount(code);
-        merch = discountedTotal(code);
+      if (code && isValidDiscount(code) && quote.promoAmount > 0) {
         discountRow.hidden = false;
-        discountLabel.textContent = `Discount (${Math.round(pct * 100)}% — ${code.toUpperCase()})`;
-        discountAmountEl.textContent = `-${formatPrice(off)}`;
+        discountLabel.textContent = `Discount (${Math.round(quote.promoPercent * 100)}% — ${code.toUpperCase()})`;
+        discountAmountEl.textContent = `-${formatPrice(quote.promoAmount)}`;
         if (discountMsg) {
-          discountMsg.textContent = `✓ ${code.toUpperCase()} applied — ${Math.round(pct * 100)}% off.`;
+          discountMsg.textContent = `✓ ${code.toUpperCase()} applied — ${Math.round(quote.promoPercent * 100)}% off.`;
           discountMsg.style.color = "var(--belgian-yellow)";
         }
       } else {
@@ -528,13 +597,65 @@ const year = new Date().getFullYear();
           }
         }
       }
-      const ship = shippingCost(merch);
-      shipLabel.textContent = ship === 0 ? "Shipping (free over $50)" : "Shipping (orders under $50)";
-      shipEl.textContent = ship === 0 ? "FREE" : formatPrice(ship);
-      finalTotalEl.textContent = formatPrice(orderTotal(code && isValidDiscount(code) ? code : ""));
+
+      if (loyaltyRow && loyaltyLabel && loyaltyAmountEl) {
+        if (quote.loyaltyAmount > 0) {
+          loyaltyRow.hidden = false;
+          loyaltyLabel.textContent = quote.loyaltyLabel;
+          loyaltyAmountEl.textContent = `-${formatPrice(quote.loyaltyAmount)}`;
+        } else {
+          loyaltyRow.hidden = true;
+        }
+      }
+
+      if (creditRow && creditLabel && creditAmountEl) {
+        if (quote.referralCreditAmount > 0) {
+          creditRow.hidden = false;
+          creditLabel.textContent = `Referral credit (${quote.referralCreditCode})`;
+          creditAmountEl.textContent = `-${formatPrice(quote.referralCreditAmount)}`;
+          if (creditMsg) {
+            creditMsg.textContent = `✓ ${formatPrice(quote.referralCreditAmount)} referral credit applied.`;
+            creditMsg.style.color = "var(--belgian-yellow)";
+          }
+        } else {
+          creditRow.hidden = true;
+          if (creditMsg) {
+            const c = currentCreditCode();
+            if (c && availableCredit <= 0) {
+              creditMsg.textContent = "No available credit on that code yet. Credit is pending until the referred order is marked paid.";
+              creditMsg.style.color = "var(--belgian-red)";
+            } else if (!c) {
+              creditMsg.textContent = "Enter the code you share with friends to apply available $25 referral credit after their order clears.";
+              creditMsg.style.color = "";
+            }
+          }
+        }
+      }
+
+      shipLabel.textContent = quote.shipping === 0 ? "Shipping (free over $50)" : "Shipping (orders under $50)";
+      shipEl.textContent = quote.shipping === 0 ? "FREE" : formatPrice(quote.shipping);
+      finalTotalEl.textContent = formatPrice(quote.total);
     }
 
     discountInput?.addEventListener("input", refreshTotals);
+
+    let creditTimer: ReturnType<typeof setTimeout> | undefined;
+    creditInput?.addEventListener("input", () => {
+      window.clearTimeout(creditTimer);
+      creditTimer = setTimeout(async () => {
+        const c = currentCreditCode();
+        availableCredit = c ? await fetchReferralCreditAvailable(c) : 0;
+        refreshTotals();
+      }, 300);
+    });
+
+    void fetchLoyaltySnapshot(loyaltyId).then((snap) => {
+      if (!snap) return;
+      setLifetimeSpend(snap.lifetime_spend);
+      lifetimeSpend = snap.lifetime_spend;
+      if (snap.order_count > 0) setLoyaltyPlacedCount(Math.max(snap.order_count, 0));
+      refreshTotals();
+    });
 
     // Render order summary from cart.
     function renderSummary() {
@@ -601,6 +722,11 @@ const year = new Date().getFullYear();
       ["payment_zelle", "payment_cashapp", "payment_crypto", "payment_other"].forEach((k) => {
         if (fd.get(k)) payments.push(k.replace("payment_", ""));
       });
+      const quote = currentQuote();
+      const referralCode = getReferralAttribution()?.code || "";
+      const ownCode = getOwnReferralCode();
+      const creditCode = currentCreditCode();
+      const selfRef = isSelfReferral(referralCode, ownCode, String(fd.get("email") || ""), "");
       const payload = {
         name: String(fd.get("name") || "").trim(),
         email: String(fd.get("email") || "").trim(),
@@ -616,12 +742,36 @@ const year = new Date().getFullYear();
         total: cartTotal(),
         discount_code: currentDiscountCode().toUpperCase(),
         discount_percent: isValidDiscount(currentDiscountCode()) ? getDiscountPercent(currentDiscountCode()) : 0,
-        shipping: shippingCost(
-          isValidDiscount(currentDiscountCode())
-            ? discountedTotal(currentDiscountCode())
-            : cartTotal()
-        ),
-        final_total: orderTotal(currentDiscountCode()),
+        discount_amount: quote.promoAmount,
+        shipping: quote.shipping,
+        final_total: quote.total,
+        loyalty_id: loyaltyId,
+        loyalty_lifetime_spend: quote.lifetimeSpend,
+        loyalty_percent: quote.loyaltyPercent,
+        loyalty_amount: quote.loyaltyAmount,
+        referral_code: referralCode,
+        referralCode,
+        own_referral_code: ownCode,
+        self_referral_blocked: selfRef,
+        referrer_credit_pending: referralCode && !selfRef ? 25 : 0,
+        referrer_credit_status: referralCode && !selfRef ? "pending" : "",
+        referral_credit_code: creditCode,
+        referral_credit_applied: quote.referralCreditAmount,
+        referralCreditApplied: quote.referralCreditAmount,
+        admin_note: [
+          referralCode && !selfRef
+            ? `Referral ${referralCode}: referrer earns $25 store credit PENDING until this order is marked paid. Honor after payment clears.`
+            : "",
+          selfRef ? `SELF-REFERRAL blocked for ${referralCode}. Ops should reject self-referrals.` : "",
+          quote.loyaltyPercent > 0
+            ? `Loyalty ${Math.round(quote.loyaltyPercent * 100)}% off (lifetime merch spend before this order: $${quote.lifetimeSpend.toFixed(2)}, cap 25%).`
+            : "",
+          quote.referralCreditAmount > 0
+            ? `Referral credit ${creditCode} applied: −$${quote.referralCreditAmount.toFixed(2)}.`
+            : "",
+        ]
+          .filter(Boolean)
+          .join(" "),
       };
       if (!payload.name || !payload.email || !payload.address1 || !payload.city || !payload.state || !payload.zip) {
         showError("Please fill in name, email, and full shipping address.");
@@ -646,7 +796,9 @@ const year = new Date().getFullYear();
           }
           return;
         }
-        // Success — clear cart, show confirmation.
+        // Success — add this order's merch into lifetime spend for next time.
+        addLifetimeSpend(cartTotal());
+        bumpLoyaltyPlacedCount();
         clearCart();
         document.body.classList.add("checkout-success");
         if (form) form.hidden = true;
@@ -658,6 +810,12 @@ const year = new Date().getFullYear();
             <h1>Order received ✦</h1>
             <p>Thanks, ${escapeHtml(payload.name.split(" ")[0])}. Your order <strong>${escapeHtml(data.order_id || "")}</strong> is in.</p>
             <p>We'll email <strong>${escapeHtml(payload.email)}</strong> within 24 hours with payment instructions. Once we receive payment, your order ships and you'll get a tracking number by email.</p>
+            ${payload.referral_code && !payload.self_referral_blocked
+              ? `<p>Referral <strong>${escapeHtml(payload.referral_code)}</strong> is on this order. Their $25 credit stays pending until payment clears.</p>`
+              : ""}
+            ${payload.loyalty_percent > 0
+              ? `<p>${escapeHtml(`Loyalty: ${Math.round(payload.loyalty_percent * 100)}% off.`)}</p>`
+              : ""}
             <a href="/" class="checkout-back">Back to shop</a>
           `;
           main.appendChild(ok);
