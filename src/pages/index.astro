@@ -1006,14 +1006,18 @@ const products = [
     img: '/inventory/pounds/Airheadz-100-zip.jpeg',
   },
   {
-    name: 'Zlushie · Zip',
-    type: 'Premium Flower · 28g (Zip)',
-    price: '$250.00',
+    name: 'Zlushie',
+    type: 'Premium Flower · Zip · or 3 for $450',
+    price: '$250.00–$450.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'yellow',
     batch: 'B420-2026-2402',
     categories: ['flower', 'small-sizes'],
     img: '/inventory/pounds/Zlushuie-250-zip.jpeg',
+    variants: [
+      { id: 'zip', label: '1 Zip', type: 'Premium Flower · 28g (Zip)', price: 250 },
+      { id: '3zips', label: '3 Zips', type: 'Premium Flower · 3×28g', price: 450 },
+    ],
   },
   {
     name: 'Donniesburger · Pound',
