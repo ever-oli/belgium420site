@@ -2466,6 +2466,7 @@ const typeCounts = [
       margin-bottom: 0.5rem;
     }
     :global(.cart-foot-row strong) { color: var(--belgian-yellow); font-size: 1.1rem; }
+    :global(.cart-foot-row.is-off strong) { color: var(--belgian-red); font-size: 0.95rem; }
     :global(.cart-foot-note) {
       font-size: 0.7rem;
       color: var(--concrete);
@@ -2768,6 +2769,85 @@ const typeCounts = [
       line-height: 1.65;
     }
     .shipping-card strong { color: var(--chalk); }
+
+    /* ============ REWARDS ============ */
+    .rewards {
+      background: var(--asphalt);
+      max-width: none;
+      padding: 3.5rem max(2rem, calc((100% - 1200px) / 2 + 2rem));
+    }
+    .rewards-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    @media (max-width: 800px) {
+      .rewards-grid { grid-template-columns: 1fr; }
+    }
+    .rewards-card {
+      background: var(--belgian-black);
+      border: 1px solid rgba(245,241,232,0.12);
+      padding: 1.75rem;
+    }
+    .rewards-card h3 {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--belgian-yellow);
+      margin-bottom: 0.75rem;
+    }
+    .rewards-card p, .rewards-card li {
+      font-size: 0.9rem;
+      color: rgba(245,241,232,0.78);
+      line-height: 1.65;
+    }
+    .rewards-card ul { padding-left: 1.1rem; margin: 0.5rem 0 1rem; }
+    .rewards-share {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--belgian-yellow);
+      word-break: break-all;
+      margin: 0.75rem 0;
+    }
+    .rewards-claim {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+    .rewards-claim input {
+      flex: 1;
+      min-width: 140px;
+      padding: 0.7rem 0.85rem;
+      background: var(--asphalt);
+      color: var(--chalk);
+      border: 1px solid rgba(245,241,232,0.18);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+    }
+    .rewards-claim button {
+      padding: 0.7rem 1rem;
+      background: var(--belgian-yellow);
+      color: var(--ink);
+      border: none;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+    }
+    .rewards-claim button:hover { background: var(--chalk); }
+    .rewards-msg { font-size: 0.8rem; margin-top: 0.5rem; color: var(--concrete); }
+    .rewards-banner {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--belgian-yellow);
+      color: var(--chalk);
+      font-size: 0.85rem;
+    }
+    .rewards-banner.is-on { display: block; }
 
     /* ============ ABOUT ============ */
     .about {
@@ -3458,6 +3538,7 @@ const typeCounts = [
       <li><a href="#shop">Shop</a></li>
       <li><a href="#lab">Lab Results</a></li>
       <li><a href="#shipping">Shipping</a></li>
+      <li><a href="#rewards">Rewards</a></li>
       <li><a href="#about">About</a></li>
       {AUTH_ENABLED && (
         <li><button type="button" class="nav-logout" id="logoutBtn" hidden>Log out</button></li>
@@ -3498,9 +3579,13 @@ const typeCounts = [
     <div class="marquee-inner">
       <span>Free Shipping Over $50</span>
       <span>·</span>
+      <span>Refer a friend — you get $25 off</span>
+      <span>·</span>
       <span>Lab Tested</span>
       <span>·</span>
       <span>Ships to 48 States</span>
+      <span>·</span>
+      <span>Loyalty 5% / 10% every 5th / 10th order</span>
       <span>·</span>
       <span>No Δ9 &gt; 0.3%</span>
       <span>·</span>
@@ -3508,9 +3593,13 @@ const typeCounts = [
       <span>·</span>
       <span>Free Shipping Over $50</span>
       <span>·</span>
+      <span>Refer a friend — you get $25 off</span>
+      <span>·</span>
       <span>Lab Tested</span>
       <span>·</span>
       <span>Ships to 48 States</span>
+      <span>·</span>
+      <span>Loyalty 5% / 10% every 5th / 10th order</span>
       <span>·</span>
       <span>No Δ9 &gt; 0.3%</span>
       <span>·</span>
@@ -3837,7 +3926,43 @@ const typeCounts = [
       </div>
       <div class="shipping-card">
         <h3>Shipping Details</h3>
-        <p>No order minimum. Orders under $50 ship for $25. Free shipping on orders $50 and up. Ships within 24-48 hours via USPS Ground Advantage. All packages include a QR code linking to the batch COA. Discrete packaging — no product names or logos on the exterior.</p>
+        <p>No order minimum. Orders under $50 ship for $25. Free shipping on orders $50 and up. Loyalty: 5% off every 5th order, 10% off every 10th. Refer a friend for $25 off your next order after theirs clears. Ships within 24-48 hours via USPS Ground Advantage. All packages include a QR code linking to the batch COA. Discrete packaging — no product names or logos on the exterior.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rewards -->
+  <section class="rewards" id="rewards">
+    <div class="section-header">
+      <div class="section-tag">Rewards</div>
+      <h2 class="section-title">Refer a friend. Come back often.</h2>
+      <p class="section-desc">Share your link — they shop, you get $25 off your next order when theirs is marked paid. Loyalty knocks 5% off every 5th order and 10% off every 10th (merchandise, before shipping). No account required.</p>
+    </div>
+    <div class="rewards-grid">
+      <div class="rewards-card">
+        <h3>Referral — $25 credit</h3>
+        <ul>
+          <li>Send <span class="rewards-share" style="display:inline">belgium420.com/?ref=YOURCODE</span></li>
+          <li>When they place an order, you earn <strong>$25 off your next order</strong>.</li>
+          <li>Credit stays <strong>pending</strong> until their payment clears, then you enter your code at checkout.</li>
+        </ul>
+        <p>Your share link:</p>
+        <p class="rewards-share" id="rewardsShareUrl">https://belgium420.com/?ref=YOURCODE</p>
+        <form class="rewards-claim" id="claimRefForm">
+          <input type="text" id="claimRefInput" maxlength="24" placeholder="YOURCODE" aria-label="Your referral code" />
+          <button type="submit">Save my code</button>
+        </form>
+        <p class="rewards-msg" id="claimRefMsg">Enter a code (or we’ll make one from your name) — no login needed.</p>
+        <div class="rewards-banner" id="refCapturedBanner"></div>
+      </div>
+      <div class="rewards-card">
+        <h3>Loyalty — 5% / 10%</h3>
+        <ul>
+          <li>Every <strong>5th</strong> order: <strong>5% off</strong> merchandise.</li>
+          <li>Every <strong>10th</strong> (20th, …): <strong>10% off</strong> instead of 5%.</li>
+          <li>Tracked by a shopper ID on this device plus your checkout email.</li>
+        </ul>
+        <p>Cart and checkout show <em>Loyalty: 5% off (5th order)</em> or <em>Loyalty: 10% off (10th order)</em> when it applies.</p>
       </div>
     </div>
   </section>
@@ -3863,6 +3988,7 @@ const typeCounts = [
         <p><strong>Age Restriction:</strong> You must be 21 years or older to purchase products from this site. By using this site, you confirm you are of legal age in your jurisdiction.</p>
         <p><strong>Farm Bill Compliance:</strong> All products contain less than 0.3% Δ9-THC by dry weight and are derived from hemp as defined by the Agricultural Improvement Act of 2018. Keep out of reach of children and pets.</p>
         <p><strong>Shipping Restrictions:</strong> We do not ship to Idaho or Oregon. State laws vary and change frequently. It is your responsibility to know your local laws before ordering.</p>
+        <p><strong>Rewards:</strong> Refer a friend — they shop, you get $25 off your next order after theirs is marked paid. Share belgium420.com/?ref=YOURCODE. Loyalty: 5% off every 5th order, 10% off every 10th. Ops reject self-referrals.</p>
       </div>
       <div class="footer-bottom">
         <div class="footer-copy">&copy; {year} Belgium420. All rights reserved.</div>
@@ -3883,6 +4009,7 @@ const typeCounts = [
       <a href="#shop">Shop</a>
       <a href="#lab">Lab</a>
       <a href="#shipping">Shipping</a>
+      <a href="#rewards">Rewards</a>
       <a href="#about">About</a>
     </div>
     <button type="button" class="scroll-pill-btn" id="scrollPillBtn" aria-expanded="false" aria-controls="scrollPillList">
@@ -3983,7 +4110,47 @@ const typeCounts = [
   </script>
   <script>
     import { initCart } from "../scripts/cart-ui.ts";
+    import {
+      captureReferralFromUrl,
+      codeFromName,
+      ensureLoyaltyId,
+      getOwnReferralCode,
+      getReferralAttribution,
+      setOwnReferralCode,
+      shareUrlForCode,
+    } from "../lib/rewards.js";
     initCart();
+    captureReferralFromUrl();
+    ensureLoyaltyId();
+
+    const shareEl = document.getElementById("rewardsShareUrl");
+    const input = document.getElementById("claimRefInput") as HTMLInputElement | null;
+    const msg = document.getElementById("claimRefMsg");
+    const banner = document.getElementById("refCapturedBanner");
+    const form = document.getElementById("claimRefForm") as HTMLFormElement | null;
+
+    function paintCode(code: string) {
+      if (shareEl) shareEl.textContent = shareUrlForCode(code || "YOURCODE");
+      if (input && code && !input.value) input.value = code;
+    }
+
+    const existing = getOwnReferralCode();
+    paintCode(existing);
+    if (existing && msg) msg.textContent = `Your code is ${existing}. Copy the link above.`;
+
+    const captured = getReferralAttribution();
+    if (banner && captured?.code) {
+      banner.classList.add("is-on");
+      banner.textContent = `Referral saved: ${captured.code} (30 days, last link wins). When you order, they earn $25 off their next order after yours clears.`;
+    }
+
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const typed = (input?.value || "").trim();
+      const code = typed ? setOwnReferralCode(typed) : setOwnReferralCode(codeFromName("B420"));
+      paintCode(code);
+      if (msg) msg.textContent = code ? `Saved. Share ${shareUrlForCode(code)}` : "Use 2+ letters or numbers.";
+    });
   </script>
   <script is:inline>
     (function () {
@@ -4236,6 +4403,7 @@ const typeCounts = [
         { id: 'shop', label: 'Shop' },
         { id: 'lab', label: 'Lab' },
         { id: 'shipping', label: 'Shipping' },
+        { id: 'rewards', label: 'Rewards' },
         { id: 'about', label: 'About' }
       ];
       var bar = document.getElementById('scrollRailBar');

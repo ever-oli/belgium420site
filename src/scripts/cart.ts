@@ -2,6 +2,13 @@
 // Used by every page that needs to read/write the cart (index, checkout).
 // Keyed by product `batch` so the same product can't be double-counted.
 
+import {
+  computeBreakdown,
+  getReferralAttribution,
+  loyaltyPercentForOrderNumber,
+  thisLoyaltyOrderNumber,
+} from "../lib/rewards.js";
+
 export type CartItem = {
   batch: string;
   name: string;
@@ -120,9 +127,34 @@ export function shippingCost(merchandiseTotal: number): number {
   return merchandiseTotal < SHIPPING_THRESHOLD ? SHIPPING_FEE : 0;
 }
 
-export function orderTotal(code: string = ""): number {
-  const merch = code ? discountedTotal(code) : cartTotal();
-  return merch + shippingCost(merch);
+export type RewardsQuote = {
+  promoCode?: string;
+  referralCredit?: number;
+  referralCreditCode?: string;
+  loyaltyOrderNumber?: number;
+};
+
+export function cartBreakdown(opts: RewardsQuote = {}) {
+  const subtotal = cartTotal();
+  const promoCode = (opts.promoCode || "").trim();
+  const promoPercent = promoCode && isValidDiscount(promoCode) ? getDiscountPercent(promoCode) : 0;
+  const loyaltyOrderNumber = opts.loyaltyOrderNumber ?? thisLoyaltyOrderNumber();
+  const loyaltyPercent = loyaltyPercentForOrderNumber(loyaltyOrderNumber);
+  const attr = getReferralAttribution();
+  return computeBreakdown({
+    subtotal,
+    promoPercent,
+    promoCode,
+    loyaltyPercent,
+    loyaltyOrderNumber,
+    referralCredit: opts.referralCredit || 0,
+    referralCreditCode: opts.referralCreditCode || "",
+    referralCode: attr?.code || "",
+  });
+}
+
+export function orderTotal(code: string = "", extras: RewardsQuote = {}): number {
+  return cartBreakdown({ promoCode: code, ...extras }).total;
 }
 
 export function formatPrice(n: number): string {

@@ -320,6 +320,110 @@ const year = new Date().getFullYear();
     .status-pill.received { color: var(--chalk); }
     .status-pill.paid { color: var(--belgian-yellow); }
     .status-pill.shipped { color: var(--belgian-red); }
+
+    .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+    .admin-tab {
+      padding: 0.55rem 1rem;
+      background: transparent;
+      color: var(--chalk);
+      border: 1px solid rgba(245,241,232,0.25);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+    }
+    .admin-tab.is-on { background: var(--belgian-yellow); color: var(--ink); border-color: var(--belgian-yellow); }
+    .rewards-ops {
+      font-size: 0.85rem;
+      color: var(--concrete);
+      margin-bottom: 1rem;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+    .rewards-ops code { color: var(--belgian-yellow); font-family: 'JetBrains Mono', monospace; }
+    .rewards-toolbar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .rewards-toolbar button, .rewards-import {
+      padding: 0.5rem 0.85rem;
+      background: transparent;
+      color: var(--chalk);
+      border: 1px solid rgba(245,241,232,0.25);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .rewards-toolbar button:hover { border-color: var(--belgian-yellow); color: var(--belgian-yellow); }
+    .rewards-import { display: inline-flex; align-items: center; gap: 0.4rem; }
+    .rewards-import input { display: none; }
+    .rewards-panel h2 {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.15rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--belgian-yellow);
+      margin: 1.5rem 0 0.75rem;
+    }
+    .add-code {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .add-code input {
+      padding: 0.55rem 0.7rem;
+      background: var(--belgian-black);
+      color: var(--chalk);
+      border: 1px solid rgba(245,241,232,0.18);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .add-code button {
+      padding: 0.55rem 0.85rem;
+      background: var(--belgian-yellow);
+      color: var(--ink);
+      border: none;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .table-wrap { overflow-x: auto; border: 1px solid rgba(245,241,232,0.1); }
+    .rewards-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    .rewards-table th {
+      text-align: left;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--concrete);
+      padding: 0.6rem 0.7rem;
+      border-bottom: 1px solid rgba(245,241,232,0.12);
+      white-space: nowrap;
+    }
+    .rewards-table td {
+      padding: 0.65rem 0.7rem;
+      border-bottom: 1px solid rgba(245,241,232,0.06);
+      vertical-align: top;
+    }
+    .rewards-table code { color: var(--belgian-yellow); }
+    .row-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .row-actions button {
+      padding: 0.3rem 0.45rem;
+      background: transparent;
+      color: var(--chalk);
+      border: 1px solid rgba(245,241,232,0.2);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .row-actions button:hover { border-color: var(--belgian-yellow); color: var(--belgian-yellow); }
+    .evt-list { font-size: 0.75rem; color: var(--concrete); max-height: 240px; overflow: auto; }
+    .evt-list div { padding: 0.35rem 0; border-bottom: 1px solid rgba(245,241,232,0.06); }
+    .card-flag { font-size: 0.68rem; color: var(--belgian-red); margin-top: 0.35rem; }
   </style>
 </head>
 <body>
@@ -346,7 +450,12 @@ const year = new Date().getFullYear();
       </div>
     </header>
 
-    <div class="kanban">
+    <div class="admin-tabs" role="tablist">
+      <button type="button" class="admin-tab is-on" data-tab="orders" id="tabOrders">Orders</button>
+      <button type="button" class="admin-tab" data-tab="rewards" id="tabRewards">Rewards</button>
+    </div>
+
+    <div class="kanban" id="ordersPanel">
       <div class="col col-received" data-col="received">
         <div class="col-head"><div class="col-title">Received</div><div class="col-count" id="countReceived">0</div></div>
         <div class="col-list" id="listReceived"></div>
@@ -360,6 +469,67 @@ const year = new Date().getFullYear();
         <div class="col-list" id="listShipped"></div>
       </div>
     </div>
+
+    <div class="rewards-panel" id="rewardsPanel" hidden>
+      <p class="rewards-ops">
+        Referral: when a referred order is placed, the code gets <strong>$25 pending</strong>.
+        <strong>Mark as Paid</strong> on the order (or Clear pending here) moves it to <strong>available</strong>.
+        Checkout “store credit / referral code” spends available balance (also use Mark redeemed).
+        Loyalty: 5% off every 5th order, 10% off every 10th. Reject self-referrals.
+        Share URL example: <code>https://belgium420.com/?ref=CODE</code>.
+        Ledger also mirrors to this browser’s localStorage — export JSON as backup.
+      </p>
+      <div class="rewards-toolbar">
+        <button type="button" id="rewardsRefresh">Refresh ledger</button>
+        <button type="button" id="rewardsExport">Export JSON</button>
+        <button type="button" id="rewardsExportCsv">Export CSV</button>
+        <label class="rewards-import">Import JSON<input type="file" id="rewardsImport" accept="application/json,.json" /></label>
+      </div>
+
+      <h2>Referral codes</h2>
+      <form class="add-code" id="addCodeForm">
+        <input type="text" id="newCode" placeholder="CODE" maxlength="24" required />
+        <input type="email" id="newCodeEmail" placeholder="Owner email (optional)" />
+        <input type="text" id="newCodeNote" placeholder="Notes" maxlength="200" />
+        <button type="submit">Add / update code</button>
+      </form>
+      <div class="table-wrap">
+        <table class="rewards-table" id="refTable">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Pending ($)</th>
+              <th>Available ($)</th>
+              <th>Redeemed ($)</th>
+              <th># Referred</th>
+              <th>Last activity</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="refTableBody"></tbody>
+        </table>
+      </div>
+
+      <h2>Loyalty customers</h2>
+      <div class="table-wrap">
+        <table class="rewards-table" id="loyTable">
+          <thead>
+            <tr>
+              <th>Email / ID</th>
+              <th>Paid orders</th>
+              <th>Placed</th>
+              <th>Last order</th>
+              <th>Next reward</th>
+              <th>Code</th>
+            </tr>
+          </thead>
+          <tbody id="loyTableBody"></tbody>
+        </table>
+      </div>
+
+      <h2>Recent events</h2>
+      <div class="evt-list" id="evtList"></div>
+    </div>
   </div>
 
   <!-- ============ MODAL ============ -->
@@ -368,6 +538,20 @@ const year = new Date().getFullYear();
   </div>
 
   <script>
+    import {
+      emptyLedger,
+      loadLocalLedger,
+      saveLocalLedger,
+      mergeLedgers,
+      ledgerToCsv,
+      markCleared,
+      redeemCredit,
+      adjustAvailable,
+      ensureCode,
+      upsertLoyalty,
+    } from "../lib/rewards-ledger.js";
+    import { shareUrlForCode } from "../lib/rewards.js";
+
     const SESSION_KEY = "b420_admin_key";
 
     const loginView = document.getElementById("loginView") as HTMLDivElement;
@@ -398,6 +582,7 @@ const year = new Date().getFullYear();
       loginView.hidden = true;
       kanbanView.hidden = false;
       void loadOrders();
+      void loadRewards();
     }
 
     function escapeHtml(s: string) {
@@ -495,7 +680,9 @@ const year = new Date().getFullYear();
               ${o.tracking ? `<br/>Tracking: <strong>${escapeHtml(o.tracking)}</strong>` : ""}
             </div>
             <div class="card-items">${items}</div>
-            <div class="card-total">${money(o.total)}${o.discount_percent > 0 ? ` <span style="color:var(--belgian-red);font-size:0.75rem">−${Math.round(o.discount_percent * 100)}%</span>` : ""}</div>
+            <div class="card-total">${money(o.final_total ?? o.total)}${o.discount_percent > 0 ? ` <span style="color:var(--belgian-red);font-size:0.75rem">−${Math.round(o.discount_percent * 100)}%</span>` : ""}</div>
+            ${o.referral_code ? `<div class="card-flag">Ref ${escapeHtml(o.referral_code)} · ${escapeHtml(o.referrer_credit_status || "pending")}${o.self_referral_blocked ? " · SELF-REF" : ""}</div>` : ""}
+            ${o.loyalty_percent > 0 ? `<div class="card-flag">Loyalty ${Math.round(o.loyalty_percent * 100)}% (order #${escapeHtml(String(o.loyalty_order_number || ""))})</div>` : ""}
           `;
           card.addEventListener("click", () => openModal(o));
           list.appendChild(card);
@@ -541,9 +728,28 @@ const year = new Date().getFullYear();
           <div class="modal-row" style="margin-top:0.5rem;text-align:right;font-family:'JetBrains Mono',monospace"><strong>Subtotal:</strong><span style="color:var(--chalk);font-weight:700;margin-left:0.5rem">${money(o.total)}</span></div>
           ${o.discount_percent > 0 ? `
           <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Discount (${escapeHtml(o.discount_code)}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.discount_amount)}</span></div>
-          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Total:</strong><span style="color:var(--belgian-yellow);font-weight:700;margin-left:0.5rem">${money(o.final_total)}</span></div>
           ` : ""}
+          ${(o.loyalty_percent > 0) ? `
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>${escapeHtml(`Loyalty ${Math.round(o.loyalty_percent * 100)}% (order #${o.loyalty_order_number || "?"})`)}:</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.loyalty_amount)}</span></div>
+          ` : ""}
+          ${(o.referral_credit_applied > 0) ? `
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Referral credit (${escapeHtml(o.referral_credit_code || "")}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.referral_credit_applied)}</span></div>
+          ` : ""}
+          ${typeof o.shipping === "number" ? `
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Shipping:</strong><span style="margin-left:0.5rem">${money(o.shipping)}</span></div>
+          ` : ""}
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Total:</strong><span style="color:var(--belgian-yellow);font-weight:700;margin-left:0.5rem">${money(o.final_total ?? o.total)}</span></div>
         </div>
+
+        ${(o.referral_code || o.loyalty_order_number) ? `
+        <div class="modal-section">
+          <h3>Rewards</h3>
+          ${o.referral_code ? `<div class="modal-row"><strong>Referral code:</strong>${escapeHtml(o.referral_code)} ${o.self_referral_blocked ? "<em>(self-referral — reject)</em>" : ""}</div>` : ""}
+          ${o.referrer_credit_pending ? `<div class="modal-row"><strong>Referrer credit:</strong>$${Number(o.referrer_credit_pending).toFixed(2)} ${escapeHtml(o.referrer_credit_status || "pending")} — honor after payment clears</div>` : ""}
+          ${o.loyalty_id ? `<div class="modal-row"><strong>Loyalty ID:</strong>${escapeHtml(o.loyalty_id)}</div>` : ""}
+          ${o.admin_note ? `<div class="modal-row"><strong>Ops note:</strong>${escapeHtml(o.admin_note)}</div>` : ""}
+        </div>
+        ` : ""}
 
         <div class="modal-section">
           <h3>Tracking</h3>
@@ -602,6 +808,7 @@ const year = new Date().getFullYear();
         }
         // Refresh and reopen the same card.
         await loadOrders();
+        void loadRewards();
         const updated = allOrders.find((x) => x.id === id);
         if (updated) openModal(updated);
       } catch (err) {
@@ -655,8 +862,298 @@ const year = new Date().getFullYear();
 
     // Auto-refresh every 30s while kanban is open.
     setInterval(() => {
-      if (!kanbanView.hidden) void loadOrders();
+      if (!kanbanView.hidden) {
+        void loadOrders();
+        if (!rewardsPanel.hidden) void loadRewards();
+      }
     }, 30000);
+
+    const ordersPanel = document.getElementById("ordersPanel") as HTMLElement;
+    const rewardsPanel = document.getElementById("rewardsPanel") as HTMLElement;
+    const tabOrders = document.getElementById("tabOrders") as HTMLButtonElement;
+    const tabRewards = document.getElementById("tabRewards") as HTMLButtonElement;
+
+    function showTab(which: "orders" | "rewards") {
+      const onOrders = which === "orders";
+      ordersPanel.hidden = !onOrders;
+      rewardsPanel.hidden = onOrders;
+      tabOrders.classList.toggle("is-on", onOrders);
+      tabRewards.classList.toggle("is-on", !onOrders);
+      if (!onOrders) void loadRewards();
+    }
+    tabOrders.addEventListener("click", () => showTab("orders"));
+    tabRewards.addEventListener("click", () => showTab("rewards"));
+
+    let rewardsSnap: any = null;
+    let usingLocal = false;
+
+    async function apiRewards(body?: Record<string, unknown>) {
+      const k = getKey();
+      if (!k) return null;
+      const r = await fetch(`/api/referrals.php?key=${encodeURIComponent(k)}&_t=${Date.now()}`, body
+        ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+        : undefined);
+      if (!r.ok) return null;
+      const data = await r.json();
+      return data?.ok ? data : null;
+    }
+
+    function hydrateFromOrders(ledger: ReturnType<typeof emptyLedger>) {
+      for (const o of allOrders) {
+        const email = o.email || "";
+        const loyaltyId = o.loyalty_id || "";
+        if (email || loyaltyId) {
+          upsertLoyalty(ledger, {
+            email,
+            loyalty_id: loyaltyId,
+            own_code: o.own_referral_code,
+            last_order_id: o.id,
+            last_order_at: o.created_at,
+            placed_count: undefined,
+          });
+        }
+        const code = o.referral_code || o.referralCode;
+        if (code) ensureCode(ledger, code);
+      }
+      // Recount placed/paid from orders (source of truth backup)
+      const byKey = new Map<string, { placed: number; paid: number; last: string; lastId: string; email: string; loyalty_id: string; own: string }>();
+      for (const o of allOrders) {
+        const key = (o.email || o.loyalty_id || "").toLowerCase();
+        if (!key) continue;
+        const cur = byKey.get(key) || { placed: 0, paid: 0, last: "", lastId: "", email: o.email || "", loyalty_id: o.loyalty_id || "", own: o.own_referral_code || "" };
+        cur.placed += 1;
+        if (o.status === "paid" || o.status === "shipped") cur.paid += 1;
+        if ((o.created_at || "") > cur.last) {
+          cur.last = o.created_at || "";
+          cur.lastId = o.id || "";
+        }
+        byKey.set(key, cur);
+      }
+      for (const row of byKey.values()) {
+        upsertLoyalty(ledger, {
+          email: row.email,
+          loyalty_id: row.loyalty_id,
+          own_code: row.own,
+          placed_count: row.placed,
+          paid_count: row.paid,
+          last_order_id: row.lastId,
+          last_order_at: row.last,
+        });
+      }
+      return ledger;
+    }
+
+    async function loadRewards() {
+      usingLocal = false;
+      let snap = await apiRewards().catch(() => null);
+      if (!snap) {
+        usingLocal = true;
+        const local = hydrateFromOrders(loadLocalLedger());
+        saveLocalLedger(local);
+        snap = {
+          ok: true,
+          codes: Object.values(local.codes),
+          loyalty: local.loyalty,
+          events: [...local.events].reverse().slice(0, 200),
+          updated_at: local.updated_at,
+        };
+      } else {
+        saveLocalLedger({
+          version: 1,
+          codes: Object.fromEntries((snap.codes || []).map((c: any) => [c.code, c])),
+          events: snap.events || [],
+          loyalty: snap.loyalty || [],
+          updated_at: snap.updated_at,
+        });
+      }
+      rewardsSnap = snap;
+      renderRewards();
+    }
+
+    function renderRewards() {
+      const codes = rewardsSnap?.codes || [];
+      const loyalty = rewardsSnap?.loyalty || [];
+      const events = rewardsSnap?.events || [];
+      const body = document.getElementById("refTableBody")!;
+      if (codes.length === 0) {
+        body.innerHTML = `<tr><td colspan="7" style="color:var(--concrete)">No referral codes yet. They appear when a ?ref= order is placed, or add one above.</td></tr>`;
+      } else {
+        body.innerHTML = codes.map((c: any) => `
+          <tr data-code="${escapeHtml(c.code)}">
+            <td><code>${escapeHtml(c.code)}</code><div style="font-size:0.68rem;color:var(--concrete)">${escapeHtml(c.owner_email || "")}${c.note ? " · " + escapeHtml(c.note) : ""}</div></td>
+            <td>${money(c.pending)}</td>
+            <td>${money(c.available)}</td>
+            <td>${money(c.redeemed)}</td>
+            <td>${c.referred_orders || 0}</td>
+            <td>${escapeHtml(c.updated_at ? new Date(c.updated_at).toLocaleString() : "—")}</td>
+            <td>
+              <div class="row-actions">
+                <button type="button" data-act="clear">Clear pending</button>
+                <button type="button" data-act="redeem">Mark redeemed</button>
+                <button type="button" data-act="adjust">Adjust</button>
+                <button type="button" data-act="copy">Copy link</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+        body.querySelectorAll("tr[data-code]").forEach((tr) => {
+          const code = tr.getAttribute("data-code") || "";
+          tr.querySelectorAll("button[data-act]").forEach((btn) => {
+            btn.addEventListener("click", () => void rewardsAction(code, btn.getAttribute("data-act") || ""));
+          });
+        });
+      }
+
+      const loyBody = document.getElementById("loyTableBody")!;
+      if (loyalty.length === 0) {
+        loyBody.innerHTML = `<tr><td colspan="6" style="color:var(--concrete)">No loyalty customers yet. They appear after checkout.</td></tr>`;
+      } else {
+        loyBody.innerHTML = loyalty.map((r: any) => `
+          <tr>
+            <td>${escapeHtml(r.email || r.loyalty_id || "—")}<div style="font-size:0.68rem;color:var(--concrete)">${escapeHtml(r.loyalty_id || "")}</div></td>
+            <td>${r.paid_count || 0}</td>
+            <td>${r.placed_count || 0}</td>
+            <td>${escapeHtml(r.last_order_id || "—")}<div style="font-size:0.68rem;color:var(--concrete)">${r.last_order_at ? escapeHtml(new Date(r.last_order_at).toLocaleString()) : ""}</div></td>
+            <td>${escapeHtml(r.next_reward || "")}</td>
+            <td><code>${escapeHtml(r.own_code || "—")}</code></td>
+          </tr>
+        `).join("");
+      }
+
+      const evt = document.getElementById("evtList")!;
+      const localNote = usingLocal ? `<div style="color:var(--belgian-yellow)">Using this browser’s localStorage ledger (PHP API unreachable). Export JSON. Order emails still hold referral/loyalty fields.</div>` : "";
+      evt.innerHTML = localNote + (events.length
+        ? events.slice(0, 40).map((e: any) => `<div>${escapeHtml(e.at || "")} · <strong>${escapeHtml(e.type)}</strong> · ${escapeHtml(e.code)} · $${Number(e.amount || 0).toFixed(2)} · ${escapeHtml(e.order_id || "")} ${escapeHtml(e.note || "")}</div>`).join("")
+        : `<div>No events yet.</div>`);
+    }
+
+    async function rewardsAction(code: string, act: string) {
+      if (act === "copy") {
+        const url = shareUrlForCode(code);
+        try { await navigator.clipboard.writeText(url); } catch { prompt("Copy link", url); }
+        return;
+      }
+      if (act === "adjust") {
+        const raw = prompt(`Adjust available credit for ${code} (e.g. 25 or -25)`, "25");
+        if (raw == null) return;
+        const delta = parseFloat(raw);
+        if (!Number.isFinite(delta)) return;
+        await mutateRewards({ action: "adjust", code, delta }, (L) => adjustAvailable(L, { code, delta }));
+        return;
+      }
+      if (act === "clear") {
+        await mutateRewards({ action: "clear_pending", code }, (L) => markCleared(L, { code }));
+        return;
+      }
+      if (act === "redeem") {
+        const raw = prompt(`Mark how much of ${code} available credit as redeemed?`, "");
+        const amount = raw === "" || raw == null ? undefined : parseFloat(raw);
+        await mutateRewards({ action: "mark_redeemed", code, amount }, (L) => {
+          const row = L.codes[code];
+          redeemCredit(L, { code, amount: amount ?? row?.available ?? 0 });
+          return L;
+        });
+      }
+    }
+
+    async function mutateRewards(body: Record<string, unknown>, localFn: (L: ReturnType<typeof emptyLedger>) => unknown) {
+      const snap = await apiRewards(body).catch(() => null);
+      if (snap) {
+        saveLocalLedger({
+          version: 1,
+          codes: Object.fromEntries((snap.codes || []).map((c: any) => [c.code, c])),
+          events: snap.events || [],
+          loyalty: snap.loyalty || [],
+          updated_at: snap.updated_at,
+        });
+        rewardsSnap = snap;
+        usingLocal = false;
+        renderRewards();
+        return;
+      }
+      const L = loadLocalLedger();
+      localFn(L);
+      saveLocalLedger(L);
+      usingLocal = true;
+      rewardsSnap = {
+        ok: true,
+        codes: Object.values(L.codes),
+        loyalty: L.loyalty,
+        events: [...L.events].reverse().slice(0, 200),
+        updated_at: L.updated_at,
+      };
+      renderRewards();
+    }
+
+    document.getElementById("rewardsRefresh")?.addEventListener("click", () => void loadRewards());
+    document.getElementById("rewardsExport")?.addEventListener("click", () => {
+      const payload = {
+        exported_at: new Date().toISOString(),
+        codes: rewardsSnap?.codes || [],
+        loyalty: rewardsSnap?.loyalty || [],
+        events: rewardsSnap?.events || [],
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "belgium420-rewards.json";
+      a.click();
+    });
+    document.getElementById("rewardsExportCsv")?.addEventListener("click", () => {
+      const L = loadLocalLedger();
+      const blob = new Blob([ledgerToCsv(L)], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "belgium420-rewards.csv";
+      a.click();
+    });
+    document.getElementById("rewardsImport")?.addEventListener("change", async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      try {
+        const incoming = JSON.parse(await file.text());
+        const ledger = incoming.codes && !incoming.ledger
+          ? {
+              version: 1,
+              codes: Array.isArray(incoming.codes)
+                ? Object.fromEntries(incoming.codes.map((c: any) => [c.code, c]))
+                : incoming.codes,
+              events: incoming.events || [],
+              loyalty: incoming.loyalty || [],
+            }
+          : incoming.ledger || incoming;
+        const merged = mergeLedgers(loadLocalLedger(), ledger);
+        saveLocalLedger(merged);
+        const snap = await apiRewards({ action: "import", ledger: merged }).catch(() => null);
+        if (snap) {
+          rewardsSnap = snap;
+          usingLocal = false;
+        } else {
+          usingLocal = true;
+          rewardsSnap = {
+            ok: true,
+            codes: Object.values(merged.codes),
+            loyalty: merged.loyalty,
+            events: merged.events,
+            updated_at: merged.updated_at,
+          };
+        }
+        renderRewards();
+      } catch {
+        alert("Could not import that file.");
+      }
+    });
+
+    document.getElementById("addCodeForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const code = (document.getElementById("newCode") as HTMLInputElement).value;
+      const owner_email = (document.getElementById("newCodeEmail") as HTMLInputElement).value;
+      const note = (document.getElementById("newCodeNote") as HTMLInputElement).value;
+      await mutateRewards({ action: "upsert_code", code, owner_email, note }, (L) => {
+        ensureCode(L, code, { owner_email, note });
+      });
+      (e.target as HTMLFormElement).reset();
+    });
 
     // Bootstrap
     if (getKey()) showKanban();

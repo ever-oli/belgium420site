@@ -17,6 +17,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/b420-store.php';
+
 // ---------- config ----------
 
 const OWNER_EMAIL  = 'mstwntdpacks@gmail.com';
@@ -146,13 +148,41 @@ function owner_notify_email(array $order): bool {
             (float)$order['final_total']
         );
     }
+    $rewards_line = '';
+    if (!empty($order['loyalty_percent']) && (float)$order['loyalty_percent'] > 0) {
+        $rewards_line .= sprintf(
+            "Loyalty: order #%d, %.0f%% off (-$%.2f)\n",
+            (int)($order['loyalty_order_number'] ?? 0),
+            (float)$order['loyalty_percent'] * 100,
+            (float)($order['loyalty_amount'] ?? 0)
+        );
+    }
+    if (!empty($order['referral_code'])) {
+        $rewards_line .= sprintf(
+            "Referral code: %s\nReferrer credit: $%.2f %s%s\n",
+            $order['referral_code'],
+            (float)($order['referrer_credit_pending'] ?? 0),
+            $order['referrer_credit_status'] ?? 'pending',
+            !empty($order['self_referral_blocked']) ? " (SELF-REFERRAL — reject)\n" : " (honor after payment clears)\n"
+        );
+    }
+    if (!empty($order['referral_credit_applied']) && (float)$order['referral_credit_applied'] > 0) {
+        $rewards_line .= sprintf(
+            "Referral credit applied: %s −$%.2f\n",
+            $order['referral_credit_code'] ?? '',
+            (float)$order['referral_credit_applied']
+        );
+    }
+    if (!empty($order['admin_note'])) {
+        $rewards_line .= 'Ops note: ' . $order['admin_note'] . "\n";
+    }
     $body = sprintf(
         "New order received: %s\n\n" .
         "Name:     %s\nEmail:    %s\nPhone:    %s\n\n" .
         "Ship to:\n  %s\n  %s\n  %s, %s %s\n\n" .
         "Payment preferences: %s\n\n" .
         "Items:\n%s\n" .
-        "Subtotal: $%.2f\n%s\n" .
+        "Subtotal: $%.2f\n%s%s\n" .
         "Note: %s\n\n" .
         "Manage: https://belgium420.com/admin/?key=%s\n",
         $order['id'],
@@ -163,6 +193,7 @@ function owner_notify_email(array $order): bool {
         $items_lines,
         (float)$order['total'],
         $discount_line,
+        $rewards_line,
         $order['note'] ?: '(none)',
         ADMIN_KEY
     );
@@ -299,8 +330,26 @@ if ($method === 'POST') {
         'discount_percent' => $discount_percent,
         'discount_amount' => $discount_amount,
         'final_total' => $final_total,
+        'loyalty_id' => sanitize_string((string)($data['loyalty_id'] ?? ''), 80),
+        'loyalty_order_number' => (int)($data['loyalty_order_number'] ?? 0),
+        'loyalty_percent' => (float)($data['loyalty_percent'] ?? 0),
+        'loyalty_amount' => (float)($data['loyalty_amount'] ?? 0),
+        'referral_code' => b420_normalize_code((string)($data['referral_code'] ?? $data['referralCode'] ?? '')),
+        'referralCode' => b420_normalize_code((string)($data['referral_code'] ?? $data['referralCode'] ?? '')),
+        'own_referral_code' => b420_normalize_code((string)($data['own_referral_code'] ?? '')),
+        'referral_credit_code' => b420_normalize_code((string)($data['referral_credit_code'] ?? '')),
+        'referral_credit_applied' => (float)($data['referral_credit_applied'] ?? $data['referralCreditApplied'] ?? 0),
+        'referralCreditApplied' => (float)($data['referral_credit_applied'] ?? $data['referralCreditApplied'] ?? 0),
+        'referrer_credit_pending' => (float)($data['referrer_credit_pending'] ?? 0),
+        'referrer_credit_status' => sanitize_string((string)($data['referrer_credit_status'] ?? ''), 32),
+        'self_referral_blocked' => !empty($data['self_referral_blocked']),
+        'admin_note' => sanitize_string((string)($data['admin_note'] ?? ''), 1000),
         'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
     ];
+
+    // Recompute loyalty/referral/shipping against the server ledger (source of truth).
+    b420_on_order_created($order);
+    $order['discount_amount'] = $discount_amount;
 
     $orders = read_orders();
     $orders[] = $order;
@@ -316,8 +365,12 @@ if ($method === 'POST') {
     if ($order['discount_percent'] > 0) {
         $resp['discount_applied'] = $order['discount_code'];
         $resp['discount_percent'] = $order['discount_percent'];
-        $resp['final_total'] = $order['final_total'];
     }
+    $resp['final_total'] = $order['final_total'];
+    $resp['loyalty_order_number'] = $order['loyalty_order_number'] ?? 0;
+    $resp['loyalty_percent'] = $order['loyalty_percent'] ?? 0;
+    $resp['referral_code'] = $order['referral_code'] ?? '';
+    $resp['referral_credit_applied'] = $order['referral_credit_applied'] ?? 0;
     respond(200, $resp);
 }
 
@@ -366,6 +419,14 @@ if ($method === 'PATCH') {
             if ($newStatus === 'received') {
                 $o['paid_at'] = null;
                 $o['shipped_at'] = null;
+            }
+            if (in_array($newStatus, ['paid', 'shipped'], true) && empty($o['rewards_cleared'])) {
+                b420_on_order_paid($o);
+                $o['rewards_cleared'] = true;
+            }
+            if ($newStatus === 'received' && !empty($o['rewards_cleared'])) {
+                b420_on_order_unpaid($o);
+                $o['rewards_cleared'] = false;
             }
         }
         if (isset($data['tracking'])) {

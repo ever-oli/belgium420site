@@ -6,12 +6,18 @@ import {
   addToCart,
   removeFromCart,
   formatPrice,
-  cartCount,
-  cartTotal,
-  shippingCost,
-  orderTotal,
+  cartBreakdown,
   type CartItem,
 } from "./cart";
+import {
+  captureReferralFromUrl,
+  ensureLoyaltyId,
+  fetchLoyaltySnapshot,
+  getReferralAttribution,
+  setCachedPaidCount,
+  setLoyaltyPlacedCount,
+  shareUrlForCode,
+} from "../lib/rewards.js";
 
 // ---------- helpers ----------
 
@@ -130,22 +136,30 @@ function render(refs: ReturnType<typeof buildDrawer>) {
     });
   });
 
-  const sub = cartTotal();
-  const ship = shippingCost(sub);
+  const quote = cartBreakdown();
+  const attr = getReferralAttribution();
+  const loyaltyRow = quote.loyaltyAmount > 0
+    ? `<div class="cart-foot-row is-off"><span>${escapeHtml(quote.loyaltyLabel)}</span><strong>−${money(quote.loyaltyAmount)}</strong></div>`
+    : "";
+  const refNote = attr?.code
+    ? `<p class="cart-foot-note">Referred by <strong>${escapeHtml(attr.code)}</strong> — they get $25 off their next order after yours clears. ${escapeHtml(shareUrlForCode(attr.code))}</p>`
+    : "";
   refs.footer.innerHTML = `
     <div class="cart-foot-row">
       <span>Subtotal</span>
-      <strong>${money(sub)}</strong>
+      <strong>${money(quote.subtotal)}</strong>
     </div>
+    ${loyaltyRow}
     <div class="cart-foot-row">
-      <span>Shipping${ship === 0 ? " (free over $50)" : " (orders under $50)"}</span>
-      <strong>${ship === 0 ? "FREE" : money(ship)}</strong>
+      <span>Shipping${quote.shipping === 0 ? " (free over $50)" : " (orders under $50)"}</span>
+      <strong>${quote.shipping === 0 ? "FREE" : money(quote.shipping)}</strong>
     </div>
     <div class="cart-foot-row">
       <span>Total</span>
-      <strong>${money(orderTotal())}</strong>
+      <strong>${money(quote.total)}</strong>
     </div>
-    <p class="cart-foot-note">No order minimum. $25 shipping under $50 — free shipping at $50+. Tax confirmed by email.</p>
+    <p class="cart-foot-note">No order minimum. $25 shipping under $50 — free shipping at $50+. Tax confirmed by email. Loyalty: 5% off every 5th order, 10% off every 10th.</p>
+    ${refNote}
     <a href="/checkout/" class="cart-checkout-btn">Checkout</a>
     <button type="button" class="cart-clear-btn" data-cart-clear>Clear cart</button>
   `;
@@ -167,12 +181,22 @@ function escapeAttr(s: string) {
 // ---------- init ----------
 
 export function initCart() {
+  captureReferralFromUrl();
+  const loyaltyId = ensureLoyaltyId();
+
   const refs = buildDrawer();
   if (!refs.countEl) {
     console.error("[cart] #cartCount missing — cart UI not wired");
     return;
   }
   render(refs);
+
+  void fetchLoyaltySnapshot(loyaltyId).then((snap) => {
+    if (!snap) return;
+    setCachedPaidCount(snap.paid_count);
+    if (snap.placed_count > 0) setLoyaltyPlacedCount(Math.max(snap.placed_count, 0));
+    render(refs);
+  });
 
   // Re-render on any cart change.
   window.addEventListener("cart:changed", () => render(refs));
