@@ -14,7 +14,7 @@ import {
   ensureLoyaltyId,
   fetchLoyaltySnapshot,
   getReferralAttribution,
-  setCachedPaidCount,
+  setLifetimeSpend,
   setLoyaltyPlacedCount,
   shareUrlForCode,
 } from "../lib/rewards.js";
@@ -158,7 +158,7 @@ function render(refs: ReturnType<typeof buildDrawer>) {
       <span>Total</span>
       <strong>${money(quote.total)}</strong>
     </div>
-    <p class="cart-foot-note">No order minimum. $25 shipping under $50 — free shipping at $50+. Tax confirmed by email. Loyalty: 5% off every 5th order, 10% off every 10th.</p>
+    <p class="cart-foot-note">No order minimum. $25 shipping under $50 — free shipping at $50+. Tax confirmed by email. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%).</p>
     ${refNote}
     <a href="/checkout/" class="cart-checkout-btn">Checkout</a>
     <button type="button" class="cart-clear-btn" data-cart-clear>Clear cart</button>
@@ -193,8 +193,8 @@ export function initCart() {
 
   void fetchLoyaltySnapshot(loyaltyId).then((snap) => {
     if (!snap) return;
-    setCachedPaidCount(snap.paid_count);
-    if (snap.placed_count > 0) setLoyaltyPlacedCount(Math.max(snap.placed_count, 0));
+    setLifetimeSpend(snap.lifetime_spend);
+    if (snap.order_count > 0) setLoyaltyPlacedCount(Math.max(snap.order_count, 0));
     render(refs);
   });
 

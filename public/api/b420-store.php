@@ -41,22 +41,32 @@ function b420_normalize_email(string $email): string {
     return strtolower(trim($email));
 }
 
-function b420_loyalty_percent(int $orderNumber): float {
-    if ($orderNumber <= 0) return 0.0;
-    if ($orderNumber % 10 === 0) return 0.10;
-    if ($orderNumber % 5 === 0) return 0.05;
-    return 0.0;
+function b420_loyalty_percent_from_spend(float $spend): int {
+    $pct = (int) floor(max(0.0, $spend) / 100.0);
+    if ($pct > 25) return 25;
+    return max(0, $pct);
 }
 
-function b420_next_milestone(int $completed): array {
-    $n = max(0, $completed) + 1;
-    while ($n % 5 !== 0) $n++;
-    $percent = ($n % 10 === 0) ? 10 : 5;
+function b420_next_spend_milestone(float $spend): array {
+    $current = b420_loyalty_percent_from_spend($spend);
+    if ($current >= 25) {
+        return [
+            'nextPercent' => 25,
+            'spendNeeded' => 0.0,
+            'atSpend' => $spend,
+            'capped' => true,
+            'label' => 'Capped at 25% off',
+        ];
+    }
+    $next = $current + 1;
+    $at = (float) ($next * 100);
+    $needed = b420_round_money($at - $spend);
     return [
-        'orderNumber' => $n,
-        'percent' => $percent,
-        'ordersAway' => $n - $completed,
-        'label' => $percent . '% off on order ' . $n,
+        'nextPercent' => $next,
+        'spendNeeded' => $needed,
+        'atSpend' => $at,
+        'capped' => false,
+        'label' => sprintf('$%.0f lifetime → %d%% off ($%.2f to go)', $at, $next, $needed),
     ];
 }
 
@@ -152,12 +162,16 @@ function b420_find_loyalty(array &$ledger, string $loyaltyId, string $email): ?i
 }
 
 function b420_loyalty_enrich(array $row): array {
-    $placed = (int)($row['placed_count'] ?? 0);
-    $paid = (int)($row['paid_count'] ?? 0);
-    $next = b420_next_milestone($paid > 0 ? $paid : $placed);
+    $spend = b420_round_money((float)($row['lifetime_spend'] ?? 0));
+    $pct = b420_loyalty_percent_from_spend($spend);
+    $next = b420_next_spend_milestone($spend);
+    $row['lifetime_spend'] = $spend;
+    $row['current_percent'] = $pct;
     $row['next_reward'] = $next['label'];
-    $row['next_order_number'] = $next['orderNumber'];
-    $row['next_percent'] = $next['percent'];
+    if (!isset($row['order_history']) || !is_array($row['order_history'])) {
+        $row['order_history'] = [];
+    }
+    $row['order_history'] = array_slice($row['order_history'], -20);
     return $row;
 }
 
@@ -172,6 +186,8 @@ function b420_upsert_loyalty(array &$ledger, array $patch): array {
             'own_code' => b420_normalize_code((string)($patch['own_code'] ?? '')),
             'placed_count' => 0,
             'paid_count' => 0,
+            'lifetime_spend' => 0.0,
+            'order_history' => [],
             'last_order_id' => '',
             'last_order_at' => '',
             'note' => '',
@@ -190,6 +206,30 @@ function b420_upsert_loyalty(array &$ledger, array $patch): array {
     if (!empty($patch['bump_paid'])) $row['paid_count'] = (int)$row['paid_count'] + 1;
     if (isset($patch['unbump_paid']) && $patch['unbump_paid'] && (int)$row['paid_count'] > 0) {
         $row['paid_count'] = (int)$row['paid_count'] - 1;
+    }
+    if (isset($patch['lifetime_spend']) && is_numeric($patch['lifetime_spend'])) {
+        $row['lifetime_spend'] = b420_round_money(max(0.0, (float)$patch['lifetime_spend']));
+    }
+    if (!empty($patch['add_spend'])) {
+        $row['lifetime_spend'] = b420_round_money((float)($row['lifetime_spend'] ?? 0) + (float)$patch['add_spend']);
+    }
+    if (!empty($patch['history_entry']) && is_array($patch['history_entry'])) {
+        if (!isset($row['order_history']) || !is_array($row['order_history'])) $row['order_history'] = [];
+        $row['order_history'][] = [
+            'id' => (string)($patch['history_entry']['id'] ?? ''),
+            'at' => (string)($patch['history_entry']['at'] ?? gmdate('c')),
+            'merch' => b420_round_money((float)($patch['history_entry']['merch'] ?? 0)),
+            'status' => (string)($patch['history_entry']['status'] ?? 'received'),
+        ];
+        $row['order_history'] = array_slice($row['order_history'], -20);
+    }
+    if (!empty($patch['history_status']) && !empty($patch['last_order_id']) && is_array($row['order_history'] ?? null)) {
+        foreach ($row['order_history'] as &$h) {
+            if (($h['id'] ?? '') === (string)$patch['last_order_id']) {
+                $h['status'] = (string)$patch['history_status'];
+            }
+        }
+        unset($h);
     }
     $ledger['loyalty'][$idx] = b420_loyalty_enrich($row);
     return $ledger['loyalty'][$idx];
@@ -219,15 +259,13 @@ function b420_on_order_created(array &$order): void {
     $creditCode = b420_normalize_code((string)($order['referral_credit_code'] ?? ''));
 
     $idx = b420_find_loyalty($ledger, $loyaltyId, $email);
-    $priorPlaced = 0;
-    $priorPaid = 0;
+    $priorSpend = 0.0;
     if ($idx !== null) {
-        $priorPlaced = (int)($ledger['loyalty'][$idx]['placed_count'] ?? 0);
-        $priorPaid = (int)($ledger['loyalty'][$idx]['paid_count'] ?? 0);
+        $priorSpend = b420_round_money((float)($ledger['loyalty'][$idx]['lifetime_spend'] ?? 0));
         if ($ownCode === '') $ownCode = b420_normalize_code((string)($ledger['loyalty'][$idx]['own_code'] ?? ''));
     }
-    $thisOrderNumber = $priorPlaced + 1;
-    $loyaltyPercent = b420_loyalty_percent($thisOrderNumber);
+    $loyaltyPoints = b420_loyalty_percent_from_spend($priorSpend);
+    $loyaltyPercent = $loyaltyPoints / 100.0;
 
     $subtotal = b420_round_money((float)($order['total'] ?? 0));
     $promoPercent = (float)($order['discount_percent'] ?? 0);
@@ -312,14 +350,19 @@ function b420_on_order_created(array &$order): void {
             : "Referral {$refCode}: referrer earns \$25 store credit PENDING until this order is marked paid. Credit is honored after payment clears. ";
     }
     if ($loyaltyPercent > 0) {
-        $opsNote .= sprintf('Loyalty order #%d: %.0f%% off ($%.2f). ', $thisOrderNumber, $loyaltyPercent * 100, $loyaltyAmount);
+        $opsNote .= sprintf(
+            'Loyalty %.0f%% off ($%.2f) from $%.2f lifetime merch before this order (cap 25%%). ',
+            $loyaltyPercent * 100,
+            $loyaltyAmount,
+            $priorSpend
+        );
     }
     if ($creditApplied > 0) {
         $opsNote .= sprintf('Referral credit %s applied: −$%.2f. ', $creditCode, $creditApplied);
     }
 
     $order['loyalty_id'] = $loyaltyId;
-    $order['loyalty_order_number'] = $thisOrderNumber;
+    $order['loyalty_lifetime_spend'] = $priorSpend;
     $order['loyalty_percent'] = $loyaltyPercent;
     $order['loyalty_amount'] = $loyaltyAmount;
     $order['referral_code'] = $refCode;
@@ -342,6 +385,13 @@ function b420_on_order_created(array &$order): void {
         'last_order_id' => (string)($order['id'] ?? ''),
         'last_order_at' => (string)($order['created_at'] ?? gmdate('c')),
         'bump_placed' => true,
+        'add_spend' => $subtotal,
+        'history_entry' => [
+            'id' => (string)($order['id'] ?? ''),
+            'at' => (string)($order['created_at'] ?? gmdate('c')),
+            'merch' => $subtotal,
+            'status' => 'received',
+        ],
     ]);
 
     b420_write_ledger($ledger);
@@ -400,6 +450,7 @@ function b420_on_order_paid(array &$order): void {
         'last_order_id' => $id,
         'last_order_at' => gmdate('c'),
         'bump_paid' => true,
+        'history_status' => 'paid',
     ]);
     b420_write_ledger($ledger);
 }
@@ -422,22 +473,24 @@ function b420_on_order_unpaid(array &$order): void {
 function b420_public_loyalty(string $loyaltyId): array {
     $ledger = b420_read_ledger();
     $idx = b420_find_loyalty($ledger, $loyaltyId, '');
-    $paid = 0;
+    $spend = 0.0;
     $placed = 0;
+    $history = [];
     if ($idx !== null) {
         $row = b420_loyalty_enrich($ledger['loyalty'][$idx]);
-        $paid = (int)$row['paid_count'];
-        $placed = (int)$row['placed_count'];
+        $spend = (float)$row['lifetime_spend'];
+        $placed = (int)($row['placed_count'] ?? 0);
+        $history = $row['order_history'] ?? [];
     }
-    $thisN = $placed + 1;
-    $next = b420_next_milestone($paid > 0 ? $paid : $placed);
+    $points = b420_loyalty_percent_from_spend($spend);
     return [
         'ok' => true,
-        'paid_count' => $paid,
-        'placed_count' => $placed,
-        'this_order_number' => $thisN,
-        'loyalty_percent' => b420_loyalty_percent($thisN),
-        'next_milestone' => $next,
+        'lifetime_spend' => $spend,
+        'loyalty_percent' => $points / 100.0,
+        'loyalty_percent_points' => $points,
+        'order_count' => $placed,
+        'next_milestone' => b420_next_spend_milestone($spend),
+        'history' => $history,
     ];
 }
 

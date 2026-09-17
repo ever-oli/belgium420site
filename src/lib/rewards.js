@@ -8,12 +8,14 @@ export const ATTRIBUTION_DAYS = 30;
 export const LOYALTY_ID_DAYS = 400;
 export const SHARE_ORIGIN = "https://belgium420.com";
 
+export const LOYALTY_DOLLARS_PER_PERCENT = 100;
+export const LOYALTY_PERCENT_CAP = 25;
+
 export const STORAGE_KEYS = {
   ref: "b420_ref_v1",
   loyaltyId: "b420_loyalty_id_v1",
+  loyaltySpend: "b420_loyalty_spend_v1",
   loyaltyPlaced: "b420_loyalty_placed_v1",
-  loyaltyPaid: "b420_loyalty_paid_v1",
-  loyaltyPaidKnown: "b420_loyalty_paid_known_v1",
   ownCode: "b420_my_ref_code_v1",
   ledger: "b420_rewards_ledger_v1",
 };
@@ -47,36 +49,55 @@ export function shareUrlForCode(code) {
   return c ? `${SHARE_ORIGIN}/?ref=${encodeURIComponent(c)}` : `${SHARE_ORIGIN}/?ref=YOURCODE`;
 }
 
-/** Every 5th → 5%, every 10th (20th, …) → 10%. */
-export function loyaltyPercentForOrderNumber(n) {
-  const num = Number(n);
-  if (!Number.isFinite(num) || num <= 0) return 0;
-  const order = Math.floor(num);
-  if (order % 10 === 0) return 0.1;
-  if (order % 5 === 0) return 0.05;
-  return 0;
+/** Integer percent: floor(lifetime merch $ / 100), capped at 25. */
+export function loyaltyPercentFromSpend(spendUsd) {
+  const spend = Math.max(0, Number(spendUsd) || 0);
+  const pct = Math.floor(spend / LOYALTY_DOLLARS_PER_PERCENT);
+  return Math.min(LOYALTY_PERCENT_CAP, Math.max(0, pct));
 }
 
-export function loyaltyLabel(orderNumber, percent) {
-  const pct = percent ?? loyaltyPercentForOrderNumber(orderNumber);
-  if (pct >= 0.1) return `Loyalty: 10% off (${orderNumber}th order)`;
-  if (pct >= 0.05) return `Loyalty: 5% off (${orderNumber}th order)`;
-  return "";
+/** Fraction 0–0.25 for money math. */
+export function loyaltyRateFromSpend(spendUsd) {
+  return loyaltyPercentFromSpend(spendUsd) / 100;
 }
 
-/**
- * @param {number} completedCount paid/placed orders already on file
- */
-export function nextLoyaltyMilestone(completedCount) {
-  const done = Math.max(0, Math.floor(Number(completedCount) || 0));
-  let n = done + 1;
-  while (n % 5 !== 0) n += 1;
-  const percent = n % 10 === 0 ? 10 : 5;
+export function loyaltyLabel(percentOrRate, spendUsd) {
+  let points = Number(percentOrRate);
+  if (!Number.isFinite(points) || points <= 0) {
+    points = loyaltyPercentFromSpend(spendUsd);
+  } else if (points > 0 && points <= 1) {
+    points = Math.round(points * 100);
+  }
+  points = Math.min(LOYALTY_PERCENT_CAP, Math.max(0, Math.floor(points)));
+  if (points <= 0) return "";
+  const spend = Number(spendUsd);
+  if (Number.isFinite(spend) && spend > 0) {
+    return `Loyalty: ${points}% off ($${Math.floor(spend)} spent, cap ${LOYALTY_PERCENT_CAP}%)`;
+  }
+  return `Loyalty: ${points}% off (cap ${LOYALTY_PERCENT_CAP}%)`;
+}
+
+export function nextSpendMilestone(spendUsd) {
+  const spend = Math.max(0, Number(spendUsd) || 0);
+  const current = loyaltyPercentFromSpend(spend);
+  if (current >= LOYALTY_PERCENT_CAP) {
+    return {
+      nextPercent: LOYALTY_PERCENT_CAP,
+      spendNeeded: 0,
+      atSpend: spend,
+      capped: true,
+      label: `Capped at ${LOYALTY_PERCENT_CAP}% off`,
+    };
+  }
+  const nextPercent = current + 1;
+  const atSpend = nextPercent * LOYALTY_DOLLARS_PER_PERCENT;
+  const spendNeeded = roundMoney(atSpend - spend);
   return {
-    orderNumber: n,
-    percent,
-    ordersAway: n - done,
-    label: `${percent}% off on order ${n}`,
+    nextPercent,
+    spendNeeded,
+    atSpend,
+    capped: false,
+    label: `$${atSpend} lifetime → ${nextPercent}% off ($${spendNeeded.toFixed(2)} to go)`,
   };
 }
 
@@ -86,7 +107,7 @@ export function nextLoyaltyMilestone(completedCount) {
  *   promoPercent?: number,
  *   promoCode?: string,
  *   loyaltyPercent?: number,
- *   loyaltyOrderNumber?: number,
+ *   lifetimeSpend?: number,
  *   referralCredit?: number,
  *   referralCode?: string,
  *   referralCreditCode?: string,
@@ -104,16 +125,16 @@ export function computeBreakdown(input) {
   const merch = Math.max(0, roundMoney(afterPercents - referralCreditAmount));
   const shipping = merch > 0 && merch < 50 ? 25 : 0;
   const total = roundMoney(merch + shipping);
-  const loyaltyOrderNumber = Math.max(0, Math.floor(Number(input.loyaltyOrderNumber) || 0));
+  const lifetimeSpend = roundMoney(input.lifetimeSpend || 0);
   return {
     subtotal,
     promoCode: input.promoCode ? String(input.promoCode).trim().toUpperCase() : "",
     promoPercent,
     promoAmount,
-    loyaltyOrderNumber,
+    lifetimeSpend,
     loyaltyPercent,
     loyaltyAmount,
-    loyaltyLabel: loyaltyLabel(loyaltyOrderNumber, loyaltyPercent),
+    loyaltyLabel: loyaltyLabel(loyaltyPercent, lifetimeSpend),
     referralCode: normalizeReferralCode(input.referralCode || ""),
     referralCreditCode: normalizeReferralCode(input.referralCreditCode || ""),
     referralCreditAmount,
@@ -294,6 +315,30 @@ export function ensureLoyaltyId(storage) {
 }
 
 /** @param {Storage | null} [storage] */
+export function getLifetimeSpend(storage) {
+  const store = storage === undefined ? defaultStorage() : storage;
+  const n = Number(store?.getItem(STORAGE_KEYS.loyaltySpend) || 0);
+  return Number.isFinite(n) && n > 0 ? roundMoney(n) : 0;
+}
+
+/** @param {number} n @param {Storage | null} [storage] */
+export function setLifetimeSpend(n, storage) {
+  const store = storage === undefined ? defaultStorage() : storage;
+  const v = roundMoney(Math.max(0, Number(n) || 0));
+  try {
+    store?.setItem(STORAGE_KEYS.loyaltySpend, String(v));
+  } catch {
+    /* ignore */
+  }
+  return v;
+}
+
+/** @param {number} merch @param {Storage | null} [storage] */
+export function addLifetimeSpend(merch, storage) {
+  return setLifetimeSpend(getLifetimeSpend(storage) + roundMoney(merch), storage);
+}
+
+/** @param {Storage | null} [storage] */
 export function getLoyaltyPlacedCount(storage) {
   const store = storage === undefined ? defaultStorage() : storage;
   const n = Number(store?.getItem(STORAGE_KEYS.loyaltyPlaced) || 0);
@@ -317,42 +362,9 @@ export function bumpLoyaltyPlacedCount(storage) {
   return setLoyaltyPlacedCount(getLoyaltyPlacedCount(storage) + 1, storage);
 }
 
-/** @param {Storage | null} [storage] */
-export function getCachedPaidCount(storage) {
-  const store = storage === undefined ? defaultStorage() : storage;
-  if (store?.getItem(STORAGE_KEYS.loyaltyPaidKnown) !== "1") return null;
-  const n = Number(store?.getItem(STORAGE_KEYS.loyaltyPaid) || 0);
-  return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
-}
-
-/** @param {number} n @param {Storage | null} [storage] */
-export function setCachedPaidCount(n, storage) {
-  const store = storage === undefined ? defaultStorage() : storage;
-  const v = Math.max(0, Math.floor(Number(n) || 0));
-  try {
-    store?.setItem(STORAGE_KEYS.loyaltyPaid, String(v));
-    store?.setItem(STORAGE_KEYS.loyaltyPaidKnown, "1");
-  } catch {
-    /* ignore */
-  }
-  return v;
-}
-
-/**
- * Next order number for this shopper. Prefers server paid count when known,
- * otherwise same-browser placed count so 5th/10th still works without PHP.
- * @param {Storage | null} [storage]
- */
-export function thisLoyaltyOrderNumber(storage) {
-  const paid = getCachedPaidCount(storage);
-  const placed = getLoyaltyPlacedCount(storage);
-  const completed = paid == null ? placed : Math.max(paid, placed);
-  return completed + 1;
-}
-
 /**
  * @param {string} loyaltyId
- * @returns {Promise<{ paid_count: number, placed_count: number, this_order_number: number, loyalty_percent: number } | null>}
+ * @returns {Promise<{ lifetime_spend: number, loyalty_percent: number, loyalty_percent_points: number, order_count: number, next_milestone: object } | null>}
  */
 export async function fetchLoyaltySnapshot(loyaltyId) {
   const id = String(loyaltyId || "").trim();
@@ -362,11 +374,13 @@ export async function fetchLoyaltySnapshot(loyaltyId) {
     if (!r.ok) return null;
     const data = await r.json();
     if (!data?.ok) return null;
+    const spend = Number(data.lifetime_spend) || 0;
     return {
-      paid_count: Number(data.paid_count) || 0,
-      placed_count: Number(data.placed_count) || 0,
-      this_order_number: Number(data.this_order_number) || 0,
-      loyalty_percent: Number(data.loyalty_percent) || 0,
+      lifetime_spend: spend,
+      loyalty_percent: Number(data.loyalty_percent) || loyaltyRateFromSpend(spend),
+      loyalty_percent_points: Number(data.loyalty_percent_points) || loyaltyPercentFromSpend(spend),
+      order_count: Number(data.order_count || data.placed_count) || 0,
+      next_milestone: data.next_milestone || nextSpendMilestone(spend),
     };
   } catch {
     return null;

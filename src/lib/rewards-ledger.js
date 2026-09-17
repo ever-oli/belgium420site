@@ -7,9 +7,10 @@
 import {
   REFERRAL_CREDIT_GRANT,
   STORAGE_KEYS,
+  loyaltyPercentFromSpend,
+  nextSpendMilestone,
   normalizeEmail,
   normalizeReferralCode,
-  nextLoyaltyMilestone,
   roundMoney,
 } from "./rewards.js";
 
@@ -103,19 +104,33 @@ function normalizeLoyalty(row) {
   if (!loyalty_id && !email) return null;
   const placed = Math.max(0, Math.floor(Number(row.placed_count) || 0));
   const paid = Math.max(0, Math.floor(Number(row.paid_count) || 0));
-  const next = nextLoyaltyMilestone(paid || placed);
+  const lifetime_spend = roundMoney(row.lifetime_spend);
+  const current_percent = loyaltyPercentFromSpend(lifetime_spend);
+  const next = nextSpendMilestone(lifetime_spend);
+  const history = Array.isArray(row.order_history)
+    ? row.order_history
+        .filter((h) => h && typeof h === "object")
+        .slice(-20)
+        .map((h) => ({
+          id: String(h.id || ""),
+          at: h.at || "",
+          merch: roundMoney(h.merch),
+          status: String(h.status || ""),
+        }))
+    : [];
   return {
     loyalty_id,
     email,
     own_code: normalizeReferralCode(row.own_code),
     placed_count: placed,
     paid_count: paid,
+    lifetime_spend,
+    current_percent,
     last_order_id: String(row.last_order_id || ""),
     last_order_at: row.last_order_at || "",
     note: String(row.note || "").slice(0, 500),
     next_reward: next.label,
-    next_order_number: next.orderNumber,
-    next_percent: next.percent,
+    order_history: history,
   };
 }
 
@@ -255,6 +270,8 @@ export function upsertLoyalty(ledger, patch) {
       own_code: patch.own_code,
       placed_count: 0,
       paid_count: 0,
+      lifetime_spend: 0,
+      order_history: [],
     });
     ledger.loyalty.push(row);
   }
@@ -268,10 +285,23 @@ export function upsertLoyalty(ledger, patch) {
   if (patch.bump_paid) row.paid_count += 1;
   if (Number.isFinite(Number(patch.placed_count))) row.placed_count = Math.max(0, Math.floor(patch.placed_count));
   if (Number.isFinite(Number(patch.paid_count))) row.paid_count = Math.max(0, Math.floor(patch.paid_count));
-  const next = nextLoyaltyMilestone(row.paid_count || row.placed_count);
+  if (Number.isFinite(Number(patch.lifetime_spend))) row.lifetime_spend = roundMoney(Math.max(0, patch.lifetime_spend));
+  if (Number.isFinite(Number(patch.add_spend))) {
+    row.lifetime_spend = roundMoney((row.lifetime_spend || 0) + Number(patch.add_spend));
+  }
+  if (patch.history_entry && typeof patch.history_entry === "object") {
+    if (!Array.isArray(row.order_history)) row.order_history = [];
+    row.order_history.push({
+      id: String(patch.history_entry.id || ""),
+      at: patch.history_entry.at || new Date().toISOString(),
+      merch: roundMoney(patch.history_entry.merch),
+      status: String(patch.history_entry.status || "received"),
+    });
+    row.order_history = row.order_history.slice(-20);
+  }
+  const next = nextSpendMilestone(row.lifetime_spend || 0);
+  row.current_percent = loyaltyPercentFromSpend(row.lifetime_spend || 0);
   row.next_reward = next.label;
-  row.next_order_number = next.orderNumber;
-  row.next_percent = next.percent;
   return row;
 }
 
@@ -305,7 +335,7 @@ export function mergeLedgers(base, incoming) {
 
 export function ledgerToCsv(ledger) {
   const L = normalizeLedger(ledger);
-  const lines = ["type,code,pending,available,redeemed,referred_orders,email,paid_count,placed_count,note"];
+  const lines = ["type,code,pending,available,redeemed,referred_orders,email,lifetime_spend,current_percent,note"];
   for (const row of Object.values(L.codes)) {
     lines.push(
       [
@@ -332,8 +362,8 @@ export function ledgerToCsv(ledger) {
         "",
         "",
         csv(row.email || row.loyalty_id),
-        row.paid_count,
-        row.placed_count,
+        row.lifetime_spend,
+        row.current_percent,
         csv(row.next_reward),
       ].join(","),
     );

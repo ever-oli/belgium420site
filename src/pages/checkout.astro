@@ -479,7 +479,7 @@ const year = new Date().getFullYear();
           <span>Total</span>
           <strong id="checkoutFinalTotal">$0.00</strong>
         </div>
-        <p class="checkout-summary-note">No order minimum. $25 shipping on orders under $50; free shipping at $50+. Loyalty: 5% off every 5th order, 10% off every 10th. Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
+        <p class="checkout-summary-note">No order minimum. $25 shipping on orders under $50; free shipping at $50+. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
         <a href="/" class="checkout-edit">Edit cart</a>
       </aside>
     </div>
@@ -487,7 +487,7 @@ const year = new Date().getFullYear();
 
   <footer class="checkout-footer">
     <div>&copy; {year} Belgium420. All rights reserved.</div>
-    <div class="checkout-fineprint" style="margin-top:0.5rem">Refer a friend — they shop, you get $25 credit when their order clears. Share belgium420.com/?ref=YOURCODE. Loyalty: 5% off every 5th paid-sequence order, 10% off every 10th. Ops reject self-referrals.</div>
+    <div class="checkout-fineprint" style="margin-top:0.5rem">Refer a friend — they shop, you get $25 credit when their order clears. Share belgium420.com/?ref=YOURCODE. Loyalty: 1% off per $100 spent (cap 25%). Ops reject self-referrals.</div>
   </footer>
 
   <script>
@@ -501,18 +501,19 @@ const year = new Date().getFullYear();
       cartBreakdown,
     } from "../scripts/cart.ts";
     import {
+      addLifetimeSpend,
       bumpLoyaltyPlacedCount,
       captureReferralFromUrl,
       ensureLoyaltyId,
       fetchLoyaltySnapshot,
       fetchReferralCreditAvailable,
+      getLifetimeSpend,
       getOwnReferralCode,
       getReferralAttribution,
       isSelfReferral,
       normalizeReferralCode,
-      setCachedPaidCount,
+      setLifetimeSpend,
       setLoyaltyPlacedCount,
-      thisLoyaltyOrderNumber,
     } from "../lib/rewards.js";
 
     captureReferralFromUrl();
@@ -535,7 +536,7 @@ const year = new Date().getFullYear();
     const creditAmountEl = document.getElementById("checkoutCreditAmount");
 
     let availableCredit = 0;
-    let loyaltyOrderNumber = thisLoyaltyOrderNumber();
+    let lifetimeSpend = getLifetimeSpend();
 
     const attr = getReferralAttribution();
     if (refAttrMsg) {
@@ -563,7 +564,7 @@ const year = new Date().getFullYear();
         promoCode: code && isValidDiscount(code) ? code : "",
         referralCredit: creditCode ? availableCredit : 0,
         referralCreditCode: creditCode,
-        loyaltyOrderNumber,
+        lifetimeSpend,
       });
     }
 
@@ -650,9 +651,9 @@ const year = new Date().getFullYear();
 
     void fetchLoyaltySnapshot(loyaltyId).then((snap) => {
       if (!snap) return;
-      setCachedPaidCount(snap.paid_count);
-      if (snap.placed_count > 0) setLoyaltyPlacedCount(Math.max(snap.placed_count, 0));
-      loyaltyOrderNumber = snap.this_order_number || thisLoyaltyOrderNumber();
+      setLifetimeSpend(snap.lifetime_spend);
+      lifetimeSpend = snap.lifetime_spend;
+      if (snap.order_count > 0) setLoyaltyPlacedCount(Math.max(snap.order_count, 0));
       refreshTotals();
     });
 
@@ -745,7 +746,7 @@ const year = new Date().getFullYear();
         shipping: quote.shipping,
         final_total: quote.total,
         loyalty_id: loyaltyId,
-        loyalty_order_number: quote.loyaltyOrderNumber,
+        loyalty_lifetime_spend: quote.lifetimeSpend,
         loyalty_percent: quote.loyaltyPercent,
         loyalty_amount: quote.loyaltyAmount,
         referral_code: referralCode,
@@ -763,7 +764,7 @@ const year = new Date().getFullYear();
             : "",
           selfRef ? `SELF-REFERRAL blocked for ${referralCode}. Ops should reject self-referrals.` : "",
           quote.loyaltyPercent > 0
-            ? `Loyalty order #${quote.loyaltyOrderNumber}: ${Math.round(quote.loyaltyPercent * 100)}% off.`
+            ? `Loyalty ${Math.round(quote.loyaltyPercent * 100)}% off (lifetime merch spend before this order: $${quote.lifetimeSpend.toFixed(2)}, cap 25%).`
             : "",
           quote.referralCreditAmount > 0
             ? `Referral credit ${creditCode} applied: −$${quote.referralCreditAmount.toFixed(2)}.`
@@ -795,7 +796,8 @@ const year = new Date().getFullYear();
           }
           return;
         }
-        // Success — clear cart, bump local loyalty count, show confirmation.
+        // Success — add this order's merch into lifetime spend for next time.
+        addLifetimeSpend(cartTotal());
         bumpLoyaltyPlacedCount();
         clearCart();
         document.body.classList.add("checkout-success");
@@ -812,7 +814,7 @@ const year = new Date().getFullYear();
               ? `<p>Referral <strong>${escapeHtml(payload.referral_code)}</strong> is on this order. Their $25 credit stays pending until payment clears.</p>`
               : ""}
             ${payload.loyalty_percent > 0
-              ? `<p>${escapeHtml(`Loyalty: ${Math.round(payload.loyalty_percent * 100)}% off (order #${payload.loyalty_order_number}).`)}</p>`
+              ? `<p>${escapeHtml(`Loyalty: ${Math.round(payload.loyalty_percent * 100)}% off.`)}</p>`
               : ""}
             <a href="/" class="checkout-back">Back to shop</a>
           `;

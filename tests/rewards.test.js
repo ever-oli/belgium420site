@@ -8,20 +8,22 @@ import {
   captureReferralFromUrl,
   codeFromName,
   computeBreakdown,
+  getLifetimeSpend,
   getOwnReferralCode,
   getReferralAttribution,
   isSelfReferral,
   loyaltyLabel,
-  loyaltyPercentForOrderNumber,
-  nextLoyaltyMilestone,
+  loyaltyPercentFromSpend,
+  loyaltyRateFromSpend,
+  nextSpendMilestone,
   normalizeReferralCode,
   setOwnReferralCode,
   shareUrlForCode,
-  thisLoyaltyOrderNumber,
-  setLoyaltyPlacedCount,
-  setCachedPaidCount,
+  setLifetimeSpend,
+  addLifetimeSpend,
   STORAGE_KEYS,
   REFERRAL_CREDIT_GRANT,
+  LOYALTY_PERCENT_CAP,
 } from '../src/lib/rewards.js';
 import {
   emptyLedger,
@@ -56,55 +58,56 @@ describe('normalizeReferralCode', () => {
 });
 
 describe('loyalty percents', () => {
-  test('5th is 5%, 10th is 10%, other multiples follow the 10th rule', () => {
-    assert.equal(loyaltyPercentForOrderNumber(1), 0);
-    assert.equal(loyaltyPercentForOrderNumber(4), 0);
-    assert.equal(loyaltyPercentForOrderNumber(5), 0.05);
-    assert.equal(loyaltyPercentForOrderNumber(10), 0.1);
-    assert.equal(loyaltyPercentForOrderNumber(15), 0.05);
-    assert.equal(loyaltyPercentForOrderNumber(20), 0.1);
-    assert.equal(loyaltyPercentForOrderNumber(0), 0);
+  test('1% per $100 spent, integer floor, cap 25%', () => {
+    assert.equal(loyaltyPercentFromSpend(0), 0);
+    assert.equal(loyaltyPercentFromSpend(99), 0);
+    assert.equal(loyaltyPercentFromSpend(100), 1);
+    assert.equal(loyaltyPercentFromSpend(199), 1);
+    assert.equal(loyaltyPercentFromSpend(250), 2);
+    assert.equal(loyaltyPercentFromSpend(1000), 10);
+    assert.equal(loyaltyPercentFromSpend(2500), 25);
+    assert.equal(loyaltyPercentFromSpend(9999), 25);
+    assert.equal(LOYALTY_PERCENT_CAP, 25);
+    assert.equal(loyaltyRateFromSpend(250), 0.02);
   });
 
   test('labels match checkout copy', () => {
-    assert.equal(loyaltyLabel(5, 0.05), 'Loyalty: 5% off (5th order)');
-    assert.equal(loyaltyLabel(10, 0.1), 'Loyalty: 10% off (10th order)');
-    assert.equal(loyaltyLabel(3, 0), '');
+    assert.match(loyaltyLabel(0.02, 250), /Loyalty: 2% off/);
+    assert.match(loyaltyLabel(2, 250), /cap 25%/);
+    assert.equal(loyaltyLabel(0, 50), '');
   });
 
-  test('next milestone', () => {
-    assert.deepEqual(nextLoyaltyMilestone(0).orderNumber, 5);
-    assert.equal(nextLoyaltyMilestone(0).percent, 5);
-    assert.equal(nextLoyaltyMilestone(4).ordersAway, 1);
-    assert.equal(nextLoyaltyMilestone(9).percent, 10);
-    assert.equal(nextLoyaltyMilestone(9).orderNumber, 10);
-    assert.equal(nextLoyaltyMilestone(10).orderNumber, 15);
+  test('next spend milestone', () => {
+    assert.equal(nextSpendMilestone(0).nextPercent, 1);
+    assert.equal(nextSpendMilestone(0).spendNeeded, 100);
+    assert.equal(nextSpendMilestone(250).nextPercent, 3);
+    assert.equal(nextSpendMilestone(2500).capped, true);
   });
 });
 
 describe('computeBreakdown', () => {
-  test('loyalty 5% on $100 merch, free shipping', () => {
+  test('loyalty 2% on $100 merch after $250 lifetime, free shipping', () => {
     const b = computeBreakdown({
       subtotal: 100,
-      loyaltyPercent: 0.05,
-      loyaltyOrderNumber: 5,
+      loyaltyPercent: loyaltyRateFromSpend(250),
+      lifetimeSpend: 250,
     });
-    assert.equal(b.loyaltyAmount, 5);
-    assert.equal(b.merch, 95);
+    assert.equal(b.loyaltyAmount, 2);
+    assert.equal(b.merch, 98);
     assert.equal(b.shipping, 0);
-    assert.equal(b.total, 95);
-    assert.match(b.loyaltyLabel, /5% off \(5th order\)/);
+    assert.equal(b.total, 98);
+    assert.match(b.loyaltyLabel, /2% off/);
   });
 
-  test('loyalty 10% takes priority on 10th', () => {
+  test('this order does not include itself in spend', () => {
+    const prior = 90;
     const b = computeBreakdown({
-      subtotal: 80,
-      loyaltyPercent: loyaltyPercentForOrderNumber(10),
-      loyaltyOrderNumber: 10,
+      subtotal: 50,
+      loyaltyPercent: loyaltyRateFromSpend(prior),
+      lifetimeSpend: prior,
     });
-    assert.equal(b.loyaltyPercent, 0.1);
-    assert.equal(b.loyaltyAmount, 8);
-    assert.equal(b.total, 72);
+    assert.equal(b.loyaltyPercent, 0);
+    assert.equal(b.loyaltyAmount, 0);
   });
 
   test('promo then loyalty then $25 credit, shipping on remaining merch', () => {
@@ -112,18 +115,18 @@ describe('computeBreakdown', () => {
       subtotal: 50,
       promoPercent: 0.1,
       promoCode: 'BELGIUM10',
-      loyaltyPercent: 0.05,
-      loyaltyOrderNumber: 5,
+      loyaltyPercent: 0.02,
+      lifetimeSpend: 250,
       referralCredit: REFERRAL_CREDIT_GRANT,
       referralCreditCode: 'ALICE',
     });
-    // 50 - 5 promo - 2.50 loyalty = 42.50, then $25 credit → 17.50 merch + $25 ship
+    // 50 - 5 promo - 1.00 loyalty = 44.00, then $25 credit → 19.00 merch + $25 ship
     assert.equal(b.promoAmount, 5);
-    assert.equal(b.loyaltyAmount, 2.5);
+    assert.equal(b.loyaltyAmount, 1);
     assert.equal(b.referralCreditAmount, 25);
-    assert.equal(b.merch, 17.5);
+    assert.equal(b.merch, 19);
     assert.equal(b.shipping, 25);
-    assert.equal(b.total, 42.5);
+    assert.equal(b.total, 44);
   });
 
   test('credit cannot exceed merch after percents', () => {
@@ -172,18 +175,17 @@ describe('referral attribution', () => {
   });
 });
 
-describe('loyalty order number', () => {
-  test('uses placed count when paid cache is unknown', () => {
+describe('lifetime spend', () => {
+  test('stores spend used for the next order percent', () => {
     const s = mem();
-    setLoyaltyPlacedCount(4, s);
-    assert.equal(thisLoyaltyOrderNumber(s), 5);
-  });
-
-  test('uses max of paid cache and placed', () => {
-    const s = mem();
-    setLoyaltyPlacedCount(2, s);
-    setCachedPaidCount(4, s);
-    assert.equal(thisLoyaltyOrderNumber(s), 5);
+    assert.equal(getLifetimeSpend(s), 0);
+    addLifetimeSpend(80, s);
+    assert.equal(loyaltyPercentFromSpend(getLifetimeSpend(s)), 0);
+    addLifetimeSpend(40, s);
+    assert.equal(getLifetimeSpend(s), 120);
+    assert.equal(loyaltyPercentFromSpend(getLifetimeSpend(s)), 1);
+    setLifetimeSpend(1000, s);
+    assert.equal(loyaltyPercentFromSpend(getLifetimeSpend(s)), 10);
   });
 });
 
@@ -213,9 +215,10 @@ describe('ledger', () => {
     const L = emptyLedger();
     adjustAvailable(L, { code: 'TEST', delta: 25 });
     assert.equal(L.codes.TEST.available, 25);
-    const row = upsertLoyalty(L, { email: 'a@b.com', loyalty_id: 'L1', bump_paid: true, bump_placed: true });
-    assert.equal(row.paid_count, 1);
-    assert.match(row.next_reward, /5% off on order 5/);
+    const row = upsertLoyalty(L, { email: 'a@b.com', loyalty_id: 'L1', add_spend: 250, bump_placed: true });
+    assert.equal(row.lifetime_spend, 250);
+    assert.equal(row.current_percent, 2);
+    assert.match(row.next_reward, /3% off/);
   });
 
   test('merge keeps higher balances', () => {

@@ -475,7 +475,7 @@ const year = new Date().getFullYear();
         Referral: when a referred order is placed, the code gets <strong>$25 pending</strong>.
         <strong>Mark as Paid</strong> on the order (or Clear pending here) moves it to <strong>available</strong>.
         Checkout “store credit / referral code” spends available balance (also use Mark redeemed).
-        Loyalty: 5% off every 5th order, 10% off every 10th. Reject self-referrals.
+        Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Reject self-referrals.
         Share URL example: <code>https://belgium420.com/?ref=CODE</code>.
         Ledger also mirrors to this browser’s localStorage — export JSON as backup.
       </p>
@@ -516,11 +516,11 @@ const year = new Date().getFullYear();
           <thead>
             <tr>
               <th>Email / ID</th>
-              <th>Paid orders</th>
-              <th>Placed</th>
+              <th>Lifetime spend</th>
+              <th>Current % off</th>
+              <th>Next</th>
+              <th>Orders</th>
               <th>Last order</th>
-              <th>Next reward</th>
-              <th>Code</th>
             </tr>
           </thead>
           <tbody id="loyTableBody"></tbody>
@@ -682,7 +682,7 @@ const year = new Date().getFullYear();
             <div class="card-items">${items}</div>
             <div class="card-total">${money(o.final_total ?? o.total)}${o.discount_percent > 0 ? ` <span style="color:var(--belgian-red);font-size:0.75rem">−${Math.round(o.discount_percent * 100)}%</span>` : ""}</div>
             ${o.referral_code ? `<div class="card-flag">Ref ${escapeHtml(o.referral_code)} · ${escapeHtml(o.referrer_credit_status || "pending")}${o.self_referral_blocked ? " · SELF-REF" : ""}</div>` : ""}
-            ${o.loyalty_percent > 0 ? `<div class="card-flag">Loyalty ${Math.round(o.loyalty_percent * 100)}% (order #${escapeHtml(String(o.loyalty_order_number || ""))})</div>` : ""}
+            ${o.loyalty_percent > 0 ? `<div class="card-flag">Loyalty ${Math.round(o.loyalty_percent * 100)}% off</div>` : ""}
           `;
           card.addEventListener("click", () => openModal(o));
           list.appendChild(card);
@@ -730,7 +730,7 @@ const year = new Date().getFullYear();
           <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Discount (${escapeHtml(o.discount_code)}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.discount_amount)}</span></div>
           ` : ""}
           ${(o.loyalty_percent > 0) ? `
-          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>${escapeHtml(`Loyalty ${Math.round(o.loyalty_percent * 100)}% (order #${o.loyalty_order_number || "?"})`)}:</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.loyalty_amount)}</span></div>
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>${escapeHtml(`Loyalty ${Math.round(o.loyalty_percent * 100)}% off`)}:</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.loyalty_amount)}</span></div>
           ` : ""}
           ${(o.referral_credit_applied > 0) ? `
           <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Referral credit (${escapeHtml(o.referral_credit_code || "")}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.referral_credit_applied)}</span></div>
@@ -741,12 +741,13 @@ const year = new Date().getFullYear();
           <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Total:</strong><span style="color:var(--belgian-yellow);font-weight:700;margin-left:0.5rem">${money(o.final_total ?? o.total)}</span></div>
         </div>
 
-        ${(o.referral_code || o.loyalty_order_number) ? `
+        ${(o.referral_code || o.loyalty_percent || o.loyalty_lifetime_spend) ? `
         <div class="modal-section">
           <h3>Rewards</h3>
           ${o.referral_code ? `<div class="modal-row"><strong>Referral code:</strong>${escapeHtml(o.referral_code)} ${o.self_referral_blocked ? "<em>(self-referral — reject)</em>" : ""}</div>` : ""}
           ${o.referrer_credit_pending ? `<div class="modal-row"><strong>Referrer credit:</strong>$${Number(o.referrer_credit_pending).toFixed(2)} ${escapeHtml(o.referrer_credit_status || "pending")} — honor after payment clears</div>` : ""}
           ${o.loyalty_id ? `<div class="modal-row"><strong>Loyalty ID:</strong>${escapeHtml(o.loyalty_id)}</div>` : ""}
+          ${o.loyalty_lifetime_spend != null ? `<div class="modal-row"><strong>Lifetime merch before this order:</strong>${money(o.loyalty_lifetime_spend)}</div>` : ""}
           ${o.admin_note ? `<div class="modal-row"><strong>Ops note:</strong>${escapeHtml(o.admin_note)}</div>` : ""}
         </div>
         ` : ""}
@@ -916,17 +917,20 @@ const year = new Date().getFullYear();
         if (code) ensureCode(ledger, code);
       }
       // Recount placed/paid from orders (source of truth backup)
-      const byKey = new Map<string, { placed: number; paid: number; last: string; lastId: string; email: string; loyalty_id: string; own: string }>();
+      const byKey = new Map<string, { placed: number; paid: number; spend: number; last: string; lastId: string; email: string; loyalty_id: string; own: string; history: { id: string; at: string; merch: number; status: string }[] }>();
       for (const o of allOrders) {
         const key = (o.email || o.loyalty_id || "").toLowerCase();
         if (!key) continue;
-        const cur = byKey.get(key) || { placed: 0, paid: 0, last: "", lastId: "", email: o.email || "", loyalty_id: o.loyalty_id || "", own: o.own_referral_code || "" };
+        const cur = byKey.get(key) || { placed: 0, paid: 0, spend: 0, last: "", lastId: "", email: o.email || "", loyalty_id: o.loyalty_id || "", own: o.own_referral_code || "", history: [] };
         cur.placed += 1;
+        const merch = Number(o.total) || 0;
+        cur.spend += merch;
         if (o.status === "paid" || o.status === "shipped") cur.paid += 1;
         if ((o.created_at || "") > cur.last) {
           cur.last = o.created_at || "";
           cur.lastId = o.id || "";
         }
+        cur.history.push({ id: o.id || "", at: o.created_at || "", merch, status: o.status || "received" });
         byKey.set(key, cur);
       }
       for (const row of byKey.values()) {
@@ -936,9 +940,14 @@ const year = new Date().getFullYear();
           own_code: row.own,
           placed_count: row.placed,
           paid_count: row.paid,
+          lifetime_spend: row.spend,
           last_order_id: row.lastId,
           last_order_at: row.last,
         });
+        const found = ledger.loyalty.find(
+          (r) => (row.loyalty_id && r.loyalty_id === row.loyalty_id) || (row.email && r.email === row.email),
+        );
+        if (found) found.order_history = row.history.slice(-20);
       }
       return ledger;
     }
@@ -1008,16 +1017,18 @@ const year = new Date().getFullYear();
       if (loyalty.length === 0) {
         loyBody.innerHTML = `<tr><td colspan="6" style="color:var(--concrete)">No loyalty customers yet. They appear after checkout.</td></tr>`;
       } else {
-        loyBody.innerHTML = loyalty.map((r: any) => `
+        loyBody.innerHTML = loyalty.map((r: any) => {
+          const hist = (r.order_history || []).slice(-5).map((h: any) => `${h.id || "?"} ${money(h.merch)} ${h.status || ""}`).join(" · ");
+          return `
           <tr>
-            <td>${escapeHtml(r.email || r.loyalty_id || "—")}<div style="font-size:0.68rem;color:var(--concrete)">${escapeHtml(r.loyalty_id || "")}</div></td>
-            <td>${r.paid_count || 0}</td>
-            <td>${r.placed_count || 0}</td>
-            <td>${escapeHtml(r.last_order_id || "—")}<div style="font-size:0.68rem;color:var(--concrete)">${r.last_order_at ? escapeHtml(new Date(r.last_order_at).toLocaleString()) : ""}</div></td>
+            <td>${escapeHtml(r.email || r.loyalty_id || "—")}<div style="font-size:0.68rem;color:var(--concrete)">${escapeHtml(r.loyalty_id || "")}${hist ? "<br/>" + escapeHtml(hist) : ""}</div></td>
+            <td>${money(r.lifetime_spend || 0)}</td>
+            <td>${r.current_percent || 0}%</td>
             <td>${escapeHtml(r.next_reward || "")}</td>
-            <td><code>${escapeHtml(r.own_code || "—")}</code></td>
-          </tr>
-        `).join("");
+            <td>${r.placed_count || 0}${r.paid_count ? ` <span style="color:var(--concrete)">(${r.paid_count} paid)</span>` : ""}</td>
+            <td>${escapeHtml(r.last_order_id || "—")}<div style="font-size:0.68rem;color:var(--concrete)">${r.last_order_at ? escapeHtml(new Date(r.last_order_at).toLocaleString()) : ""}</div></td>
+          </tr>`;
+        }).join("");
       }
 
       const evt = document.getElementById("evtList")!;

@@ -4,9 +4,9 @@
 
 import {
   computeBreakdown,
+  getLifetimeSpend,
   getReferralAttribution,
-  loyaltyPercentForOrderNumber,
-  thisLoyaltyOrderNumber,
+  loyaltyRateFromSpend,
 } from "../lib/rewards.js";
 
 export type CartItem = {
@@ -131,22 +131,22 @@ export type RewardsQuote = {
   promoCode?: string;
   referralCredit?: number;
   referralCreditCode?: string;
-  loyaltyOrderNumber?: number;
+  lifetimeSpend?: number;
 };
 
 export function cartBreakdown(opts: RewardsQuote = {}) {
   const subtotal = cartTotal();
   const promoCode = (opts.promoCode || "").trim();
   const promoPercent = promoCode && isValidDiscount(promoCode) ? getDiscountPercent(promoCode) : 0;
-  const loyaltyOrderNumber = opts.loyaltyOrderNumber ?? thisLoyaltyOrderNumber();
-  const loyaltyPercent = loyaltyPercentForOrderNumber(loyaltyOrderNumber);
+  const lifetimeSpend = opts.lifetimeSpend ?? getLifetimeSpend();
+  const loyaltyPercent = loyaltyRateFromSpend(lifetimeSpend);
   const attr = getReferralAttribution();
   return computeBreakdown({
     subtotal,
     promoPercent,
     promoCode,
     loyaltyPercent,
-    loyaltyOrderNumber,
+    lifetimeSpend,
     referralCredit: opts.referralCredit || 0,
     referralCreditCode: opts.referralCreditCode || "",
     referralCode: attr?.code || "",

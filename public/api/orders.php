@@ -151,10 +151,10 @@ function owner_notify_email(array $order): bool {
     $rewards_line = '';
     if (!empty($order['loyalty_percent']) && (float)$order['loyalty_percent'] > 0) {
         $rewards_line .= sprintf(
-            "Loyalty: order #%d, %.0f%% off (-$%.2f)\n",
-            (int)($order['loyalty_order_number'] ?? 0),
+            "Loyalty: %.0f%% off (-$%.2f) from $%.2f lifetime merch (cap 25%%)\n",
             (float)$order['loyalty_percent'] * 100,
-            (float)($order['loyalty_amount'] ?? 0)
+            (float)($order['loyalty_amount'] ?? 0),
+            (float)($order['loyalty_lifetime_spend'] ?? 0)
         );
     }
     if (!empty($order['referral_code'])) {
@@ -331,7 +331,7 @@ if ($method === 'POST') {
         'discount_amount' => $discount_amount,
         'final_total' => $final_total,
         'loyalty_id' => sanitize_string((string)($data['loyalty_id'] ?? ''), 80),
-        'loyalty_order_number' => (int)($data['loyalty_order_number'] ?? 0),
+        'loyalty_lifetime_spend' => (float)($data['loyalty_lifetime_spend'] ?? 0),
         'loyalty_percent' => (float)($data['loyalty_percent'] ?? 0),
         'loyalty_amount' => (float)($data['loyalty_amount'] ?? 0),
         'referral_code' => b420_normalize_code((string)($data['referral_code'] ?? $data['referralCode'] ?? '')),
@@ -367,7 +367,7 @@ if ($method === 'POST') {
         $resp['discount_percent'] = $order['discount_percent'];
     }
     $resp['final_total'] = $order['final_total'];
-    $resp['loyalty_order_number'] = $order['loyalty_order_number'] ?? 0;
+    $resp['loyalty_lifetime_spend'] = $order['loyalty_lifetime_spend'] ?? 0;
     $resp['loyalty_percent'] = $order['loyalty_percent'] ?? 0;
     $resp['referral_code'] = $order['referral_code'] ?? '';
     $resp['referral_credit_applied'] = $order['referral_credit_applied'] ?? 0;
