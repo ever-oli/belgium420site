@@ -70,12 +70,14 @@ export function normalizeLedger(raw) {
 function normalizeCodeRow(v, code) {
   return {
     code,
+    owner_name: String(v?.owner_name || "").slice(0, 80),
     owner_email: normalizeEmail(v?.owner_email),
     note: String(v?.note || "").slice(0, 500),
     pending: roundMoney(v?.pending),
     available: roundMoney(v?.available),
     redeemed: roundMoney(v?.redeemed),
     referred_orders: Math.max(0, Math.floor(Number(v?.referred_orders) || 0)),
+    active: v?.active === false ? false : true,
     created_at: v?.created_at || new Date().toISOString(),
     updated_at: v?.updated_at || new Date().toISOString(),
   };
@@ -147,10 +149,75 @@ export function ensureCode(ledger, code, extra = {}) {
     if (extra.owner_email && !ledger.codes[c].owner_email) {
       ledger.codes[c].owner_email = normalizeEmail(extra.owner_email);
     }
+    if (extra.owner_name && !ledger.codes[c].owner_name) {
+      ledger.codes[c].owner_name = String(extra.owner_name).slice(0, 80);
+    }
     if (extra.note) ledger.codes[c].note = String(extra.note).slice(0, 500);
   }
   ledger.codes[c].updated_at = new Date().toISOString();
   return ledger.codes[c];
+}
+
+/** Create or overwrite shop-owner fields on a code (does not change balances). */
+export function updateCodeMeta(ledger, { code, owner_name, owner_email, note, active } = {}) {
+  const row = ensureCode(ledger, code);
+  if (!row) return null;
+  if (owner_name != null) row.owner_name = String(owner_name).slice(0, 80);
+  if (owner_email != null) row.owner_email = normalizeEmail(owner_email);
+  if (note != null) row.note = String(note).slice(0, 500);
+  if (active != null) row.active = !!active;
+  row.updated_at = new Date().toISOString();
+  return row;
+}
+
+export function setCodeActive(ledger, { code, active, note = "" }) {
+  const row = ensureCode(ledger, code);
+  if (!row) return ledger;
+  row.active = !!active;
+  row.updated_at = new Date().toISOString();
+  ledger.events.push({
+    id: newEventId(),
+    at: new Date().toISOString(),
+    type: active ? "activated" : "deactivated",
+    code: row.code,
+    order_id: "",
+    amount: 0,
+    note: note || (active ? "code reactivated" : "code deactivated — stop sharing this link"),
+  });
+  return ledger;
+}
+
+/** KPI totals for the admin Overview / Rewards strip. Accepts a ledger or API snapshot. */
+export function summarizeRewards(source = {}) {
+  const codes = Array.isArray(source.codes)
+    ? source.codes
+    : Object.values(source.codes || {});
+  const loyalty = Array.isArray(source.loyalty) ? source.loyalty : [];
+  let pending = 0;
+  let available = 0;
+  let redeemed = 0;
+  let referredOrders = 0;
+  let activeCodes = 0;
+  for (const c of codes) {
+    pending += Number(c.pending) || 0;
+    available += Number(c.available) || 0;
+    redeemed += Number(c.redeemed) || 0;
+    referredOrders += Number(c.referred_orders) || 0;
+    if (c.active !== false) activeCodes += 1;
+  }
+  const loyaltyActive = loyalty.filter(
+    (r) => (Number(r.lifetime_spend) || 0) > 0 || (Number(r.placed_count) || 0) > 0,
+  ).length;
+  return {
+    totalCodes: codes.length,
+    activeCodes,
+    pending: roundMoney(pending),
+    available: roundMoney(available),
+    redeemed: roundMoney(redeemed),
+    referredOrders,
+    loyaltyCustomers: loyalty.length,
+    loyaltyActive,
+  };
 }
 
 export function recordReferredOrder(ledger, { code, orderId, selfReferral = false, note = "" }) {
@@ -313,12 +380,14 @@ export function mergeLedgers(base, incoming) {
     else {
       a.codes[code] = {
         ...a.codes[code],
+        owner_name: a.codes[code].owner_name || row.owner_name,
         owner_email: a.codes[code].owner_email || row.owner_email,
         note: row.note || a.codes[code].note,
         pending: roundMoney(Math.max(a.codes[code].pending, row.pending)),
         available: roundMoney(Math.max(a.codes[code].available, row.available)),
         redeemed: roundMoney(Math.max(a.codes[code].redeemed, row.redeemed)),
         referred_orders: Math.max(a.codes[code].referred_orders, row.referred_orders),
+        active: a.codes[code].active === false || row.active === false ? false : true,
         updated_at: new Date().toISOString(),
       };
     }
@@ -335,16 +404,18 @@ export function mergeLedgers(base, incoming) {
 
 export function ledgerToCsv(ledger) {
   const L = normalizeLedger(ledger);
-  const lines = ["type,code,pending,available,redeemed,referred_orders,email,lifetime_spend,current_percent,note"];
+  const lines = ["type,code,owner_name,pending,available,redeemed,referred_orders,active,email,lifetime_spend,current_percent,note"];
   for (const row of Object.values(L.codes)) {
     lines.push(
       [
         "referral",
         csv(row.code),
+        csv(row.owner_name),
         row.pending,
         row.available,
         row.redeemed,
         row.referred_orders,
+        row.active === false ? "no" : "yes",
         csv(row.owner_email),
         "",
         "",
@@ -357,6 +428,8 @@ export function ledgerToCsv(ledger) {
       [
         "loyalty",
         csv(row.own_code),
+        "",
+        "",
         "",
         "",
         "",

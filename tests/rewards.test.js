@@ -33,6 +33,9 @@ import {
   adjustAvailable,
   upsertLoyalty,
   mergeLedgers,
+  updateCodeMeta,
+  setCodeActive,
+  summarizeRewards,
 } from '../src/lib/rewards-ledger.js';
 
 function mem() {
@@ -230,5 +233,30 @@ describe('ledger', () => {
     const m = mergeLedgers(a, b);
     assert.ok(m.codes.TEST.referred_orders >= 1);
     assert.ok(m.events.length >= 2);
+  });
+
+  test('owner name, deactivate, and KPI strip', () => {
+    const L = emptyLedger();
+    updateCodeMeta(L, {
+      code: 'ALICE',
+      owner_name: 'Alice',
+      owner_email: 'alice@shop.test',
+      note: 'VIP',
+    });
+    assert.equal(L.codes.ALICE.owner_name, 'Alice');
+    assert.equal(L.codes.ALICE.owner_email, 'alice@shop.test');
+    assert.equal(L.codes.ALICE.active, true);
+    recordReferredOrder(L, { code: 'ALICE', orderId: 'B420-1' });
+    markCleared(L, { code: 'ALICE', orderId: 'B420-1' });
+    setCodeActive(L, { code: 'ALICE', active: false });
+    assert.equal(L.codes.ALICE.active, false);
+    upsertLoyalty(L, { email: 'buyer@shop.test', add_spend: 250, bump_placed: true });
+    const k = summarizeRewards(L);
+    assert.equal(k.totalCodes, 1);
+    assert.equal(k.activeCodes, 0);
+    assert.equal(k.pending, 0);
+    assert.equal(k.available, 25);
+    assert.equal(k.referredOrders, 1);
+    assert.equal(k.loyaltyActive, 1);
   });
 });

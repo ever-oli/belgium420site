@@ -127,12 +127,14 @@ function b420_ensure_code(array &$ledger, string $code, array $extra = []): ?arr
     if (!isset($ledger['codes'][$c]) || !is_array($ledger['codes'][$c])) {
         $ledger['codes'][$c] = [
             'code' => $c,
+            'owner_name' => substr(trim((string)($extra['owner_name'] ?? '')), 0, 80),
             'owner_email' => b420_normalize_email((string)($extra['owner_email'] ?? '')),
             'note' => substr((string)($extra['note'] ?? ''), 0, 500),
             'pending' => 0.0,
             'available' => 0.0,
             'redeemed' => 0.0,
             'referred_orders' => 0,
+            'active' => array_key_exists('active', $extra) ? (bool)$extra['active'] : true,
             'created_at' => gmdate('c'),
             'updated_at' => gmdate('c'),
         ];
@@ -140,8 +142,17 @@ function b420_ensure_code(array &$ledger, string $code, array $extra = []): ?arr
         if (!empty($extra['owner_email']) && empty($ledger['codes'][$c]['owner_email'])) {
             $ledger['codes'][$c]['owner_email'] = b420_normalize_email((string)$extra['owner_email']);
         }
+        if (!empty($extra['owner_name']) && empty($ledger['codes'][$c]['owner_name'])) {
+            $ledger['codes'][$c]['owner_name'] = substr(trim((string)$extra['owner_name']), 0, 80);
+        }
         if (!empty($extra['note'])) {
             $ledger['codes'][$c]['note'] = substr((string)$extra['note'], 0, 500);
+        }
+        if (!isset($ledger['codes'][$c]['active'])) {
+            $ledger['codes'][$c]['active'] = true;
+        }
+        if (!isset($ledger['codes'][$c]['owner_name'])) {
+            $ledger['codes'][$c]['owner_name'] = '';
         }
     }
     $ledger['codes'][$c]['updated_at'] = gmdate('c');
@@ -510,6 +521,8 @@ function b420_admin_snapshot(): array {
     $codes = [];
     foreach ($ledger['codes'] as $c => $row) {
         if (!is_array($row)) continue;
+        if (!isset($row['active'])) $row['active'] = true;
+        if (!isset($row['owner_name'])) $row['owner_name'] = '';
         $row['share_url'] = 'https://belgium420.com/?ref=' . rawurlencode((string)$row['code']);
         $codes[] = $row;
     }
