@@ -2616,7 +2616,8 @@ const typeCounts = [
     }
     .effect-bar,
     .type-bar,
-    .cat-bar {
+    .cat-bar,
+    .sort-bar {
       display: flex;
       flex-wrap: wrap;
       gap: 0.4rem;
@@ -2626,7 +2627,8 @@ const typeCounts = [
     }
     .effect-chip,
     .type-chip,
-    .cat-chip {
+    .cat-chip,
+    .sort-chip {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
@@ -2651,7 +2653,8 @@ const typeCounts = [
       border-color: var(--belgian-red);
       color: var(--chalk);
     }
-    .cat-chip:hover {
+    .cat-chip:hover,
+    .sort-chip:hover {
       border-color: var(--belgian-yellow);
       color: var(--chalk);
     }
@@ -2668,7 +2671,8 @@ const typeCounts = [
       border-color: var(--belgian-yellow);
       box-shadow: 0 0 18px rgba(245, 196, 0, 0.32);
     }
-    .cat-chip.is-active {
+    .cat-chip.is-active,
+    .sort-chip.is-active {
       background: var(--belgian-yellow);
       color: var(--ink);
       border-color: var(--belgian-yellow);
@@ -3217,7 +3221,8 @@ const typeCounts = [
     }
     .shop-filter-sheet .effect-chip,
     .shop-filter-sheet .type-chip,
-    .shop-filter-sheet .cat-chip {
+    .shop-filter-sheet .cat-chip,
+    .shop-filter-sheet .sort-chip {
       padding: 0.38rem 0.72rem;
       font-size: 0.68rem;
     }
@@ -3337,7 +3342,8 @@ const typeCounts = [
       .filter-label { margin: 0; }
       .cat-bar,
       .effect-bar,
-      .type-bar {
+      .type-bar,
+      .sort-bar {
         flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -3348,10 +3354,12 @@ const typeCounts = [
       }
       .cat-bar::-webkit-scrollbar,
       .effect-bar::-webkit-scrollbar,
-      .type-bar::-webkit-scrollbar { display: none; }
+      .type-bar::-webkit-scrollbar,
+      .sort-bar::-webkit-scrollbar { display: none; }
       .cat-chip,
       .effect-chip,
-      .type-chip {
+      .type-chip,
+      .sort-chip {
         flex-shrink: 0;
         padding: 0.55rem 0.8rem;
         font-size: 0.7rem;
@@ -3725,6 +3733,15 @@ const typeCounts = [
           ))}
         </div>
       </div>
+      <div class="filter-row">
+        <div class="filter-label">Sort</div>
+        <div class="sort-bar" role="tablist" aria-label="Sort products">
+          <button type="button" class="sort-chip is-active" data-sort="featured" role="tab" aria-selected="true">Featured</button>
+          <button type="button" class="sort-chip" data-sort="price-asc" role="tab" aria-selected="false">Price · low → high</button>
+          <button type="button" class="sort-chip" data-sort="price-desc" role="tab" aria-selected="false">Price · high → low</button>
+          <button type="button" class="sort-chip" data-sort="name-asc" role="tab" aria-selected="false">Name · A–Z</button>
+        </div>
+      </div>
     </div>
 
     <div class="collections-grid" id="productGrid">
@@ -3745,7 +3762,7 @@ const typeCounts = [
         const effects = inferEffects(p);
         const strainType = inferType(p);
         return (
-          <div class="product-card" data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''}>
+          <div class="product-card" data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''} data-price={priceNum}>
             <div class="product-card-coa">COA ✓</div>
             {p.categories.filter((c) => !['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)).slice(0, 2).map((c) => {
               const meta = categoryDefs.find((d) => d.id === c);
@@ -4146,6 +4163,15 @@ const typeCounts = [
           ))}
         </div>
       </div>
+      <div class="shop-filter-group">
+        <div class="shop-filter-heading">Sort</div>
+        <div class="shop-filter-row" role="tablist" aria-label="Sort products">
+          <button type="button" class="sort-chip is-active" data-sort="featured" role="tab" aria-selected="true">Featured</button>
+          <button type="button" class="sort-chip" data-sort="price-asc" role="tab" aria-selected="false">Price · low → high</button>
+          <button type="button" class="sort-chip" data-sort="price-desc" role="tab" aria-selected="false">Price · high → low</button>
+          <button type="button" class="sort-chip" data-sort="name-asc" role="tab" aria-selected="false">Name · A–Z</button>
+        </div>
+      </div>
     </div>
     <button type="button" class="shop-filter-fab" id="shopFilterFab" aria-expanded="false" aria-controls="shopFilterSheet">
       Filters
@@ -4274,6 +4300,7 @@ const typeCounts = [
       var activeCat = 'all';
       var activeEffect = 'all';
       var activeType = 'all';
+      var activeSort = 'featured';
 
       function matchesMeta(meta, cat, effect, type) {
         var catOk = cat === 'all' || meta.tags.indexOf(cat) !== -1;
@@ -4298,6 +4325,35 @@ const typeCounts = [
           if (show) visible++;
         });
         if (empty) empty.hidden = visible !== 0;
+      }
+
+      function cardName(card) {
+        var el = card.querySelector('.product-card-name');
+        return ((el && el.textContent) || '').trim();
+      }
+
+      function applySort() {
+        var ordered = cards.slice();
+        if (activeSort === 'price-asc' || activeSort === 'price-desc') {
+          ordered.sort(function (a, b) {
+            var pa = parseFloat(a.getAttribute('data-price')) || 0;
+            var pb = parseFloat(b.getAttribute('data-price')) || 0;
+            return activeSort === 'price-asc' ? pa - pb : pb - pa;
+          });
+        } else if (activeSort === 'name-asc') {
+          ordered.sort(function (a, b) {
+            return cardName(a).localeCompare(cardName(b), undefined, { sensitivity: 'base' });
+          });
+        }
+        ordered.forEach(function (card) {
+          grid.appendChild(card);
+        });
+      }
+
+      function setSort(id) {
+        activeSort = id || 'featured';
+        syncChips('.sort-chip', 'data-sort', activeSort);
+        applySort();
       }
 
       function syncChips(sel, attr, id) {
@@ -4398,6 +4454,11 @@ const typeCounts = [
         chip.addEventListener('click', function () {
           if (chip.hidden) return;
           setFilter('type', chip.getAttribute('data-type') || 'all');
+        });
+      });
+      document.querySelectorAll('.sort-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          setSort(chip.getAttribute('data-sort') || 'featured');
         });
       });
 
