@@ -281,10 +281,10 @@ export function initCart() {
       if (!item.batch || !item.name) return;
       if (!Number.isFinite(item.price) || item.price <= 0) return;
       addToCart(item);
-      // Let the nav badge spring before the drawer covers it.
+      // Let the nav badge finish its spring before the drawer covers it.
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduceMotion) openDrawer(refs);
-      else window.setTimeout(() => openDrawer(refs), 280);
+      else window.setTimeout(() => openDrawer(refs), 560);
     });
   });
 }
