@@ -91,10 +91,26 @@ function closeDrawer() {
 
 // ---------- render ----------
 
+let lastBadgeCount = -1;
+
+function paintCartBadge(countEl: HTMLElement, count: number) {
+  const num = countEl.querySelector<HTMLElement>(".nav-cart-count-num");
+  if (num) num.textContent = String(count);
+  else countEl.textContent = String(count);
+  const show = count > 0;
+  countEl.classList.toggle("is-hidden", !show);
+  countEl.setAttribute("data-open", show ? "true" : "false");
+  const grew = lastBadgeCount >= 0 && count > lastBadgeCount;
+  lastBadgeCount = count;
+  if (!grew || !show) return;
+  countEl.classList.remove("is-pop");
+  void countEl.offsetWidth;
+  countEl.classList.add("is-pop");
+}
+
 function render(refs: ReturnType<typeof buildDrawer>) {
   const items = getCart();
-  refs.countEl.textContent = String(items.length);
-  refs.countEl.classList.toggle("is-hidden", items.length === 0);
+  paintCartBadge(refs.countEl, items.length);
 
   if (items.length === 0) {
     refs.body.innerHTML = `
@@ -265,8 +281,10 @@ export function initCart() {
       if (!item.batch || !item.name) return;
       if (!Number.isFinite(item.price) || item.price <= 0) return;
       addToCart(item);
-      // Flash the drawer briefly so the user sees it worked.
-      openDrawer(refs);
+      // Let the nav badge finish its spring before the drawer covers it.
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduceMotion) openDrawer(refs);
+      else window.setTimeout(() => openDrawer(refs), 560);
     });
   });
 }
