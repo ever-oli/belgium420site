@@ -1,0 +1,20 @@
+services:
+  web:
+    image: node:22-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env.base44-defaults
+      - /run/base44/app.env
+    command: sh -c "npm install && npx astro dev --port 3000 --host 0.0.0.0"
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000').then(r=>{if(!r.ok)throw new Error('bad status '+r.status)}).catch(e=>{throw e})"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 40s

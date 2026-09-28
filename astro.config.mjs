@@ -20,6 +20,8 @@ export default defineConfig({
       __AUTH_ENABLED__: JSON.stringify(AUTH_ENABLED),
     },
     server: {
+      host: true,
+      allowedHosts: true,
       proxy: {
         '/auth': {
           target: 'http://localhost:3001',
