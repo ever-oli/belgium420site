@@ -10,7 +10,7 @@ services:
     env_file:
       - ./.env.base44-defaults
       - /run/base44/app.env
-    command: sh -c "npm install && npx astro dev --port 3000 --host 0.0.0.0"
+    command: sh -c "npm install && npx concurrently -n astro,auth 'astro dev --port 3000 --host 0.0.0.0' 'node server/index.mjs'"
     restart: on-failure
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://localhost:3000').then(r=>{if(!r.ok)throw new Error('bad status '+r.status)}).catch(e=>{throw e})"]
