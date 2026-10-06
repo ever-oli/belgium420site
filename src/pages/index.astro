@@ -2049,8 +2049,8 @@ const typeCounts = [
       overflow: hidden;
       background: var(--belgian-black);
       max-width: none;
-      padding-left: max(2rem, calc((100% - 1200px) / 2 + 2rem));
-      padding-right: max(2rem, calc((100% - 1200px) / 2 + 2rem));
+      padding-left: max(2rem, calc((100% - 1680px) / 2 + 2rem));
+      padding-right: max(2rem, calc((100% - 1680px) / 2 + 2rem));
     }
     .collections::before {
       content: '';
@@ -3389,9 +3389,6 @@ const typeCounts = [
         padding-left: 1.75rem;
         padding-right: 1.75rem;
       }
-      .collections-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      }
     }
 
     @media (max-width: 900px) {
@@ -3509,9 +3506,19 @@ const typeCounts = [
       }
 
       .collections-grid {
+        display: grid;
         grid-template-columns: repeat(2, 1fr);
       }
-      .product-card { padding: 0; }
+      .collections-grid[data-count="1"] .product-card {
+        grid-column: 1 / -1;
+      }
+      .product-card {
+        padding: 0;
+        flex: none;
+        width: auto;
+        max-width: none;
+        min-width: 0;
+      }
       .product-card-img { height: 200px; margin-bottom: 0; }
       .product-card-name { font-size: 0.9rem; }
       .product-card-thc { font-size: 0.58rem; }
@@ -3586,7 +3593,10 @@ const typeCounts = [
         padding: 1rem 1.25rem;
       }
 
-      .collections-grid { grid-template-columns: 1fr; }
+      .collections-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
       .product-card-img { height: 220px; }
       .marquee span {
         font-size: 0.7rem;
@@ -3602,6 +3612,7 @@ const typeCounts = [
 
     @media (min-width: 561px) and (max-width: 900px) {
       .collections-grid {
+        display: grid;
         grid-template-columns: repeat(2, 1fr);
       }
       .hero-brand .brand-logo-word {
@@ -3609,6 +3620,70 @@ const typeCounts = [
         font-size: clamp(2rem, 5.5vw, 2.8rem);
       }
       .hero-brand { flex-wrap: nowrap; }
+    }
+
+    /* Desktop: equal columns that fill the catalog width. A short last row is
+       centered at that same card width, instead of a left-hand stub in an
+       empty auto-fill track. One to four matches share the row. */
+    @media (min-width: 901px) {
+      .collections-grid {
+        --shop-cols: 4;
+        --shop-gap: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: stretch;
+        gap: var(--shop-gap);
+      }
+      .collections-grid .product-card {
+        --card-w: calc((100% - (var(--shop-cols) - 1) * var(--shop-gap)) / var(--shop-cols));
+        flex: 1 1 auto;
+        width: var(--card-w);
+        max-width: var(--card-w);
+        min-width: 0;
+      }
+      .collections-grid[data-count="1"] { --shop-cols: 1; }
+      .collections-grid[data-count="2"] { --shop-cols: 2; }
+      .collections-grid[data-count="3"] { --shop-cols: 3; }
+      .collections-grid[data-count="4"] { --shop-cols: 4; }
+      .collections-grid[data-count="1"] .product-card,
+      .collections-grid[data-count="2"] .product-card {
+        display: grid;
+        align-items: stretch;
+      }
+      .collections-grid[data-count="1"] .product-card {
+        grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
+        width: 100%;
+        max-width: 100%;
+      }
+      .collections-grid[data-count="2"] .product-card {
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      }
+      .collections-grid[data-count="1"] .product-card-img,
+      .collections-grid[data-count="2"] .product-card-img {
+        height: auto;
+        align-self: stretch;
+      }
+      .collections-grid[data-count="1"] .product-card-img { min-height: 420px; }
+      .collections-grid[data-count="2"] .product-card-img { min-height: 280px; }
+      .collections-grid[data-count="1"] .product-card-body,
+      .collections-grid[data-count="2"] .product-card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .collections-grid[data-count="1"] .product-card-body {
+        padding: 1.75rem 2rem;
+      }
+      .collections-grid[data-count="1"] .product-card-name {
+        font-size: clamp(1.45rem, 2.2vw, 2rem);
+      }
+      .collections-grid[data-count="2"] .product-card-body {
+        padding: 1.25rem 1.35rem;
+      }
+      .collections-grid[data-count="3"] .product-card-img {
+        height: 300px;
+      }
     }
 
     @media (hover: none) {
@@ -3893,7 +3968,7 @@ const typeCounts = [
       </div>
     </div>
 
-    <div class="collections-grid" id="productGrid">
+    <div class="collections-grid" id="productGrid" data-count={products.length}>
       {products.map((p) => {
         const primaryCat = p.categories.find((c) => ['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)) || p.categories[0];
         const mark = categoryDefs.find((d) => d.id === primaryCat)?.mark || '✦';
@@ -4514,6 +4589,42 @@ const typeCounts = [
         return n;
       }
 
+      function visibleCardCount() {
+        var n = 0;
+        for (var i = 0; i < cards.length; i++) {
+          if (cards[i].style.display !== 'none') n++;
+        }
+        return n;
+      }
+
+      function layoutShopGrid() {
+        var visible = visibleCardCount();
+        grid.setAttribute('data-count', String(visible));
+        if (window.innerWidth <= 900 || visible <= 4) {
+          grid.style.removeProperty('--shop-cols');
+          return;
+        }
+        var gap = parseFloat(getComputedStyle(grid).columnGap) || 16;
+        var width = grid.clientWidth;
+        if (!width) return;
+        var minCard = 250;
+        var maxCard = 380;
+        var maxCols = Math.max(1, Math.floor((width + gap) / (minCard + gap)));
+        var minCols = Math.max(1, Math.ceil((width + gap) / (maxCard + gap)));
+        var cols = maxCols;
+        if (visible > 0 && visible <= maxCols) {
+          cols = visible;
+        } else if (visible % cols === 1) {
+          for (var c = cols - 1; c >= minCols; c--) {
+            if (visible % c !== 1) {
+              cols = c;
+              break;
+            }
+          }
+        }
+        grid.style.setProperty('--shop-cols', String(cols));
+      }
+
       function applyFilter() {
         var visible = 0;
         cards.forEach(function (card, i) {
@@ -4522,6 +4633,7 @@ const typeCounts = [
           if (show) visible++;
         });
         if (empty) empty.hidden = visible !== 0;
+        layoutShopGrid();
       }
 
       function cardName(card) {
@@ -4704,7 +4816,11 @@ const typeCounts = [
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(function () { layoutChipPills(false); });
       }
-      window.addEventListener('resize', function () { layoutChipPills(false); });
+      layoutShopGrid();
+      window.addEventListener('resize', function () {
+        layoutChipPills(false);
+        layoutShopGrid();
+      });
 
       if (filterFab && filterWrap) {
         filterFab.addEventListener('click', function (e) {
