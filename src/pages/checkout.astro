@@ -479,7 +479,7 @@ const year = new Date().getFullYear();
           <span>Total</span>
           <strong id="checkoutFinalTotal">$0.00</strong>
         </div>
-        <p class="checkout-summary-note">No order minimum. $25 shipping on orders under $50; free shipping at $50+. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
+        <p class="checkout-summary-note" id="checkoutSummaryNote">No order minimum. $25 shipping on orders under $50; free shipping at $50+. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
         <a href="/" class="checkout-edit">Edit cart</a>
       </aside>
     </div>
@@ -511,6 +511,8 @@ const year = new Date().getFullYear();
       getOwnReferralCode,
       getReferralAttribution,
       isSelfReferral,
+      LOYALTY_PERCENT_CAP,
+      LOYALTY_POUNDS_PERCENT_CAP,
       normalizeReferralCode,
       setLifetimeSpend,
       setLoyaltyPlacedCount,
@@ -635,6 +637,12 @@ const year = new Date().getFullYear();
       shipLabel.textContent = quote.shipping === 0 ? "Shipping (free over $50)" : "Shipping (orders under $50)";
       shipEl.textContent = quote.shipping === 0 ? "FREE" : formatPrice(quote.shipping);
       finalTotalEl.textContent = formatPrice(quote.total);
+
+      const summaryNote = document.getElementById("checkoutSummaryNote");
+      if (summaryNote) {
+        const poundsBit = quote.poundsSubtotal > 0 ? `; pounds max ${LOYALTY_POUNDS_PERCENT_CAP}%` : "";
+        summaryNote.textContent = `No order minimum. $25 shipping on orders under $50; free shipping at $50+. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsBit}). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.`;
+      }
     }
 
     discountInput?.addEventListener("input", refreshTotals);
@@ -764,7 +772,7 @@ const year = new Date().getFullYear();
             : "",
           selfRef ? `SELF-REFERRAL blocked for ${referralCode}. Ops should reject self-referrals.` : "",
           quote.loyaltyPercent > 0
-            ? `Loyalty ${Math.round(quote.loyaltyPercent * 100)}% off (lifetime merch spend before this order: $${quote.lifetimeSpend.toFixed(2)}, cap 25%).`
+            ? `Loyalty ${Math.round(quote.loyaltyPercent * 100)}% off (lifetime merch spend before this order: $${quote.lifetimeSpend.toFixed(2)}, cap ${LOYALTY_PERCENT_CAP}%${quote.poundsSubtotal > 0 ? `, pounds max ${LOYALTY_POUNDS_PERCENT_CAP}%` : ""}).`
             : "",
           quote.referralCreditAmount > 0
             ? `Referral credit ${creditCode} applied: −$${quote.referralCreditAmount.toFixed(2)}.`
@@ -814,7 +822,7 @@ const year = new Date().getFullYear();
               ? `<p>Referral <strong>${escapeHtml(payload.referral_code)}</strong> is on this order. Their $25 credit stays pending until payment clears.</p>`
               : ""}
             ${payload.loyalty_percent > 0
-              ? `<p>${escapeHtml(`Loyalty: ${Math.round(payload.loyalty_percent * 100)}% off.`)}</p>`
+              ? `<p>${escapeHtml(`Loyalty: ${Math.round(payload.loyalty_percent * 100)}% off${quote.poundsSubtotal > 0 ? ` (pounds max ${LOYALTY_POUNDS_PERCENT_CAP}%)` : ""}.`)}</p>`
               : ""}
             <a href="/" class="checkout-back">Back to shop</a>
           `;

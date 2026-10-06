@@ -17,6 +17,8 @@ const B420_ADMIN_KEY = '420Belgium';
 const B420_REFERRAL_GRANT = 25.0;
 const B420_SHIP_THRESHOLD = 50.0;
 const B420_SHIP_FEE = 25.0;
+const B420_LOYALTY_PERCENT_CAP = 25;
+const B420_LOYALTY_POUNDS_PERCENT_CAP = 10;
 
 function b420_data_dir(): string {
     return __DIR__ . '/../../../data';
@@ -43,19 +45,54 @@ function b420_normalize_email(string $email): string {
 
 function b420_loyalty_percent_from_spend(float $spend): int {
     $pct = (int) floor(max(0.0, $spend) / 100.0);
-    if ($pct > 25) return 25;
+    if ($pct > B420_LOYALTY_PERCENT_CAP) return B420_LOYALTY_PERCENT_CAP;
     return max(0, $pct);
+}
+
+function b420_item_categories(array $item): array {
+    $raw = $item['categories'] ?? [];
+    if (is_string($raw)) {
+        $raw = preg_split('/\s+/', trim($raw)) ?: [];
+    }
+    if (!is_array($raw)) return [];
+    $out = [];
+    foreach ($raw as $c) {
+        if (count($out) >= 12) break;
+        $s = strtolower(trim((string)$c));
+        $s = preg_replace('/[^a-z0-9_-]/', '', $s) ?? '';
+        if ($s === '' || strlen($s) > 40 || in_array($s, $out, true)) continue;
+        $out[] = $s;
+    }
+    return $out;
+}
+
+function b420_item_is_pound(array $item): bool {
+    foreach (b420_item_categories($item) as $c) {
+        if ($c === 'pounds') return true;
+    }
+    return !empty($item['isPound']) || !empty($item['is_pound']);
+}
+
+/** Pounds loyalty is capped; everything else uses the customer's full rate. */
+function b420_loyalty_amount(float $subtotal, float $poundsSubtotal, float $loyaltyPercent): float {
+    $sub = max(0.0, b420_round_money($subtotal));
+    $pounds = max(0.0, b420_round_money($poundsSubtotal));
+    if ($pounds > $sub) $pounds = $sub;
+    $other = b420_round_money($sub - $pounds);
+    $rate = max(0.0, $loyaltyPercent);
+    $poundsRate = min($rate, B420_LOYALTY_POUNDS_PERCENT_CAP / 100.0);
+    return b420_round_money($pounds * $poundsRate + $other * $rate);
 }
 
 function b420_next_spend_milestone(float $spend): array {
     $current = b420_loyalty_percent_from_spend($spend);
-    if ($current >= 25) {
+    if ($current >= B420_LOYALTY_PERCENT_CAP) {
         return [
-            'nextPercent' => 25,
+            'nextPercent' => B420_LOYALTY_PERCENT_CAP,
             'spendNeeded' => 0.0,
             'atSpend' => $spend,
             'capped' => true,
-            'label' => 'Capped at 25% off',
+            'label' => 'Capped at ' . B420_LOYALTY_PERCENT_CAP . '% off',
         ];
     }
     $next = $current + 1;
@@ -279,9 +316,15 @@ function b420_on_order_created(array &$order): void {
     $loyaltyPercent = $loyaltyPoints / 100.0;
 
     $subtotal = b420_round_money((float)($order['total'] ?? 0));
+    $poundsSubtotal = 0.0;
+    foreach (($order['items'] ?? []) as $it) {
+        if (!is_array($it)) continue;
+        if (b420_item_is_pound($it)) $poundsSubtotal += (float)($it['price'] ?? 0);
+    }
+    $poundsSubtotal = b420_round_money($poundsSubtotal);
     $promoPercent = (float)($order['discount_percent'] ?? 0);
     $promoAmount = b420_round_money($subtotal * $promoPercent);
-    $loyaltyAmount = b420_round_money($subtotal * $loyaltyPercent);
+    $loyaltyAmount = b420_loyalty_amount($subtotal, $poundsSubtotal, $loyaltyPercent);
 
     $ownerEmail = '';
     if ($refCode !== '' && isset($ledger['codes'][$refCode]['owner_email'])) {
@@ -362,10 +405,12 @@ function b420_on_order_created(array &$order): void {
     }
     if ($loyaltyPercent > 0) {
         $opsNote .= sprintf(
-            'Loyalty %.0f%% off ($%.2f) from $%.2f lifetime merch before this order (cap 25%%). ',
+            'Loyalty %.0f%% off ($%.2f) from $%.2f lifetime merch before this order (cap %d%%%s). ',
             $loyaltyPercent * 100,
             $loyaltyAmount,
-            $priorSpend
+            $priorSpend,
+            B420_LOYALTY_PERCENT_CAP,
+            $poundsSubtotal > 0 ? ', pounds max ' . B420_LOYALTY_POUNDS_PERCENT_CAP . '%' : ''
         );
     }
     if ($creditApplied > 0) {
@@ -376,6 +421,7 @@ function b420_on_order_created(array &$order): void {
     $order['loyalty_lifetime_spend'] = $priorSpend;
     $order['loyalty_percent'] = $loyaltyPercent;
     $order['loyalty_amount'] = $loyaltyAmount;
+    $order['loyalty_pounds_subtotal'] = $poundsSubtotal;
     $order['referral_code'] = $refCode;
     $order['referralCode'] = $refCode;
     $order['own_referral_code'] = $ownCode;

@@ -150,11 +150,13 @@ function owner_notify_email(array $order): bool {
     }
     $rewards_line = '';
     if (!empty($order['loyalty_percent']) && (float)$order['loyalty_percent'] > 0) {
+        $poundsSub = (float)($order['loyalty_pounds_subtotal'] ?? 0);
         $rewards_line .= sprintf(
-            "Loyalty: %.0f%% off (-$%.2f) from $%.2f lifetime merch (cap 25%%)\n",
+            "Loyalty: %.0f%% off (-$%.2f) from $%.2f lifetime merch (cap 25%%%s)\n",
             (float)$order['loyalty_percent'] * 100,
             (float)($order['loyalty_amount'] ?? 0),
-            (float)($order['loyalty_lifetime_spend'] ?? 0)
+            (float)($order['loyalty_lifetime_spend'] ?? 0),
+            $poundsSub > 0 ? ', pounds max 10%' : ''
         );
     }
     if (!empty($order['referral_code'])) {
@@ -292,7 +294,7 @@ if ($method === 'POST') {
         $itone = sanitize_string($it['tone'] ?? 'black', 16);
         $iimg = sanitize_string($it['img'] ?? '', 500);
         if ($iname === '' || $iprice <= 0) continue;
-        $items[] = [
+        $item = [
             'name' => $iname,
             'type' => $itype,
             'batch' => $ibatch,
@@ -300,6 +302,10 @@ if ($method === 'POST') {
             'tone' => $itone,
             'img' => $iimg,
         ];
+        $icats = b420_item_categories(is_array($it) ? $it : []);
+        if ($icats) $item['categories'] = $icats;
+        if (!empty($it['isPound']) || !empty($it['is_pound'])) $item['isPound'] = true;
+        $items[] = $item;
         $recomputed_total += $iprice;
     }
     if (empty($items)) bad_request('No valid items in cart.');

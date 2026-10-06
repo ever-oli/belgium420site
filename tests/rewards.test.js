@@ -17,6 +17,7 @@ import {
   loyaltyRateFromSpend,
   nextSpendMilestone,
   normalizeReferralCode,
+  poundsSubtotalFromLines,
   setOwnReferralCode,
   shareUrlForCode,
   setLifetimeSpend,
@@ -24,6 +25,7 @@ import {
   STORAGE_KEYS,
   REFERRAL_CREDIT_GRANT,
   LOYALTY_PERCENT_CAP,
+  LOYALTY_POUNDS_PERCENT_CAP,
 } from '../src/lib/rewards.js';
 import {
   emptyLedger,
@@ -71,6 +73,7 @@ describe('loyalty percents', () => {
     assert.equal(loyaltyPercentFromSpend(2500), 25);
     assert.equal(loyaltyPercentFromSpend(9999), 25);
     assert.equal(LOYALTY_PERCENT_CAP, 25);
+    assert.equal(LOYALTY_POUNDS_PERCENT_CAP, 10);
     assert.equal(loyaltyRateFromSpend(250), 0.02);
   });
 
@@ -141,6 +144,119 @@ describe('computeBreakdown', () => {
     assert.equal(b.merch, 0);
     assert.equal(b.shipping, 0);
     assert.equal(b.total, 0);
+  });
+
+  test('pure pounds cart at 25% loyalty is only 10% off pounds', () => {
+    const b = computeBreakdown({
+      subtotal: 1000,
+      loyaltyPercent: loyaltyRateFromSpend(2500),
+      lifetimeSpend: 2500,
+      poundsSubtotal: 1000,
+    });
+    assert.equal(b.loyaltyPercent, 0.25);
+    assert.equal(b.poundsLoyaltyPercent, 0.1);
+    assert.equal(b.poundsSubtotal, 1000);
+    assert.equal(b.otherSubtotal, 0);
+    assert.equal(b.loyaltyAmount, 100);
+    assert.equal(b.merch, 900);
+    assert.equal(b.total, 900);
+    assert.match(b.loyaltyLabel, /25% off/);
+    assert.match(b.loyaltyLabel, /pounds max 10%/);
+  });
+
+  test('mixed cart caps pounds at 10% and keeps the full rate on the rest', () => {
+    const b = computeBreakdown({
+      subtotal: 1000,
+      loyaltyPercent: 0.25,
+      lifetimeSpend: 2500,
+      poundsSubtotal: 400,
+    });
+    // 400 * 10% + 600 * 25% = 40 + 150
+    assert.equal(b.otherSubtotal, 600);
+    assert.equal(b.loyaltyAmount, 190);
+    assert.equal(b.promoAmount, 0);
+    assert.equal(b.merch, 810);
+    assert.match(b.loyaltyLabel, /pounds max 10%/);
+  });
+
+  test('non-pounds cart still gets the full loyalty rate', () => {
+    const b = computeBreakdown({
+      subtotal: 200,
+      loyaltyPercent: 0.25,
+      lifetimeSpend: 2500,
+    });
+    assert.equal(b.poundsSubtotal, 0);
+    assert.equal(b.loyaltyAmount, 50);
+    assert.equal(b.merch, 150);
+    assert.doesNotMatch(b.loyaltyLabel, /pounds/);
+  });
+
+  test('loyalty at exactly 10% is unchanged on a mixed cart', () => {
+    const b = computeBreakdown({
+      subtotal: 200,
+      loyaltyPercent: 0.1,
+      lifetimeSpend: 1000,
+      poundsSubtotal: 50,
+    });
+    // 50 * 10% + 150 * 10% = 20 — the pounds cap does not stack below the rate
+    assert.equal(b.poundsLoyaltyPercent, 0.1);
+    assert.equal(b.loyaltyAmount, 20);
+    assert.match(b.loyaltyLabel, /pounds max 10%/);
+  });
+
+  test('loyalty under the pounds cap still applies in full to pounds', () => {
+    const b = computeBreakdown({
+      subtotal: 80,
+      loyaltyPercent: loyaltyRateFromSpend(500),
+      poundsSubtotal: 80,
+    });
+    assert.equal(b.loyaltyPercent, 0.05);
+    assert.equal(b.loyaltyAmount, 4);
+  });
+
+  test('promo and referral credit are unchanged when pounds are capped', () => {
+    const b = computeBreakdown({
+      subtotal: 100,
+      promoPercent: 0.1,
+      promoCode: 'belgium10',
+      loyaltyPercent: 0.25,
+      lifetimeSpend: 2500,
+      poundsSubtotal: 100,
+      referralCredit: REFERRAL_CREDIT_GRANT,
+      referralCreditCode: 'ALICE',
+    });
+    assert.equal(b.promoCode, 'BELGIUM10');
+    assert.equal(b.promoAmount, 10);
+    assert.equal(b.loyaltyAmount, 10);
+    assert.equal(b.referralCreditAmount, 25);
+    assert.equal(b.merch, 55);
+    assert.equal(b.shipping, 0);
+    assert.equal(b.total, 55);
+  });
+
+  test('pounds subtotal cannot exceed the cart subtotal', () => {
+    const b = computeBreakdown({
+      subtotal: 100,
+      loyaltyPercent: 0.25,
+      poundsSubtotal: 500,
+    });
+    assert.equal(b.poundsSubtotal, 100);
+    assert.equal(b.otherSubtotal, 0);
+    assert.equal(b.loyaltyAmount, 10);
+  });
+
+  test('poundsSubtotalFromLines uses the pounds category or isPound flag', () => {
+    assert.equal(
+      poundsSubtotalFromLines([
+        { price: 400, categories: ['flower', 'pounds'] },
+        { price: 20, categories: ['edibles'] },
+        { price: 30 },
+        { price: 50, isPound: true },
+        { price: 15, categories: 'concentrates pounds' },
+      ]),
+      465,
+    );
+    assert.equal(poundsSubtotalFromLines([{ price: 20, categories: ['flower', 'small-sizes'] }]), 0);
   });
 });
 

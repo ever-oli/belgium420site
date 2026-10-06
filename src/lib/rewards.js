@@ -10,6 +10,9 @@ export const SHARE_ORIGIN = "https://belgium420.com";
 
 export const LOYALTY_DOLLARS_PER_PERCENT = 100;
 export const LOYALTY_PERCENT_CAP = 25;
+/** Pounds merchandise loyalty discount cannot exceed this percent. */
+export const LOYALTY_POUNDS_PERCENT_CAP = 10;
+export const POUNDS_CATEGORY = "pounds";
 
 export const STORAGE_KEYS = {
   ref: "b420_ref_v1",
@@ -61,7 +64,12 @@ export function loyaltyRateFromSpend(spendUsd) {
   return loyaltyPercentFromSpend(spendUsd) / 100;
 }
 
-export function loyaltyLabel(percentOrRate, spendUsd) {
+/**
+ * @param {number} percentOrRate
+ * @param {number} [spendUsd]
+ * @param {{ hasPounds?: boolean }} [opts]
+ */
+export function loyaltyLabel(percentOrRate, spendUsd, opts) {
   let points = Number(percentOrRate);
   if (!Number.isFinite(points) || points <= 0) {
     points = loyaltyPercentFromSpend(spendUsd);
@@ -70,11 +78,12 @@ export function loyaltyLabel(percentOrRate, spendUsd) {
   }
   points = Math.min(LOYALTY_PERCENT_CAP, Math.max(0, Math.floor(points)));
   if (points <= 0) return "";
+  const poundsBit = opts?.hasPounds ? `, pounds max ${LOYALTY_POUNDS_PERCENT_CAP}%` : "";
   const spend = Number(spendUsd);
   if (Number.isFinite(spend) && spend > 0) {
-    return `Loyalty: ${points}% off ($${Math.floor(spend)} spent, cap ${LOYALTY_PERCENT_CAP}%)`;
+    return `Loyalty: ${points}% off ($${Math.floor(spend)} spent, cap ${LOYALTY_PERCENT_CAP}%${poundsBit})`;
   }
-  return `Loyalty: ${points}% off (cap ${LOYALTY_PERCENT_CAP}%)`;
+  return `Loyalty: ${points}% off (cap ${LOYALTY_PERCENT_CAP}%${poundsBit})`;
 }
 
 export function nextSpendMilestone(spendUsd) {
@@ -101,9 +110,57 @@ export function nextSpendMilestone(spendUsd) {
   };
 }
 
+/** True when a cart line is pounds merchandise (category id `pounds`). */
+export function lineIsPound(line) {
+  if (!line || typeof line !== "object") return false;
+  if (line.isPound === true || line.is_pound === true) return true;
+  const cats = line.categories;
+  if (Array.isArray(cats)) {
+    return cats.some((c) => String(c).trim().toLowerCase() === POUNDS_CATEGORY);
+  }
+  if (typeof cats === "string") {
+    return cats.split(/\s+/).some((c) => c.trim().toLowerCase() === POUNDS_CATEGORY);
+  }
+  return false;
+}
+
+/** Merchandise dollars that take the pounds loyalty cap. */
+export function poundsSubtotalFromLines(lines) {
+  let pounds = 0;
+  for (const line of lines || []) {
+    const price = Number(line?.price);
+    if (!Number.isFinite(price) || price <= 0) continue;
+    if (lineIsPound(line)) pounds += price;
+  }
+  return roundMoney(pounds);
+}
+
+/**
+ * Loyalty dollars off. Pounds are capped at LOYALTY_POUNDS_PERCENT_CAP;
+ * the rest of the cart uses the customer's full loyalty rate.
+ * @param {number} subtotal
+ * @param {number} poundsSubtotal
+ * @param {number} loyaltyPercent fraction (0.25 = 25%)
+ */
+export function loyaltyDiscountForSubtotals(subtotal, poundsSubtotal, loyaltyPercent) {
+  const sub = Math.max(0, roundMoney(subtotal || 0));
+  let pounds = Math.max(0, roundMoney(poundsSubtotal || 0));
+  if (pounds > sub) pounds = sub;
+  const other = roundMoney(sub - pounds);
+  const rate = Math.max(0, Number(loyaltyPercent) || 0);
+  const poundsRate = Math.min(rate, LOYALTY_POUNDS_PERCENT_CAP / 100);
+  return {
+    poundsSubtotal: pounds,
+    otherSubtotal: other,
+    poundsLoyaltyPercent: poundsRate,
+    loyaltyAmount: roundMoney(pounds * poundsRate + other * rate),
+  };
+}
+
 /**
  * @param {{
  *   subtotal: number,
+ *   poundsSubtotal?: number,
  *   promoPercent?: number,
  *   promoCode?: string,
  *   loyaltyPercent?: number,
@@ -117,8 +174,9 @@ export function computeBreakdown(input) {
   const subtotal = Math.max(0, roundMoney(input.subtotal || 0));
   const promoPercent = Math.max(0, Number(input.promoPercent) || 0);
   const loyaltyPercent = Math.max(0, Number(input.loyaltyPercent) || 0);
+  const split = loyaltyDiscountForSubtotals(subtotal, input.poundsSubtotal || 0, loyaltyPercent);
   const promoAmount = roundMoney(subtotal * promoPercent);
-  const loyaltyAmount = roundMoney(subtotal * loyaltyPercent);
+  const loyaltyAmount = split.loyaltyAmount;
   const afterPercents = Math.max(0, roundMoney(subtotal - promoAmount - loyaltyAmount));
   const wantCredit = Math.max(0, Number(input.referralCredit) || 0);
   const referralCreditAmount = roundMoney(Math.min(wantCredit, afterPercents));
@@ -126,15 +184,19 @@ export function computeBreakdown(input) {
   const shipping = merch > 0 && merch < 50 ? 25 : 0;
   const total = roundMoney(merch + shipping);
   const lifetimeSpend = roundMoney(input.lifetimeSpend || 0);
+  const hasPounds = split.poundsSubtotal > 0;
   return {
     subtotal,
+    poundsSubtotal: split.poundsSubtotal,
+    otherSubtotal: split.otherSubtotal,
     promoCode: input.promoCode ? String(input.promoCode).trim().toUpperCase() : "",
     promoPercent,
     promoAmount,
     lifetimeSpend,
     loyaltyPercent,
+    poundsLoyaltyPercent: split.poundsLoyaltyPercent,
     loyaltyAmount,
-    loyaltyLabel: loyaltyLabel(loyaltyPercent, lifetimeSpend),
+    loyaltyLabel: loyaltyLabel(loyaltyPercent, lifetimeSpend, { hasPounds }),
     referralCode: normalizeReferralCode(input.referralCode || ""),
     referralCreditCode: normalizeReferralCode(input.referralCreditCode || ""),
     referralCreditAmount,
