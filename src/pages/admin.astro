@@ -768,7 +768,7 @@
         <div class="panel-head">
           <div>
             <h1>Rewards</h1>
-            <p class="panel-lead">Create share links, watch pending $25 credits, and keep loyalty spend honest. Math is unchanged: 1% off per $100 merchandise, cap 25%.</p>
+            <p class="panel-lead">Create share links, watch pending $25 credits, and keep loyalty spend honest. 1% off per $100 merchandise, cap 25%. Pounds merchandise is capped at 10% off.</p>
           </div>
         </div>
         <div class="create-card" id="createCodeCard">
@@ -1100,7 +1100,7 @@
               <div class="card-total">${money(o.final_total ?? o.total)}${o.discount_percent > 0 ? ` <span style="color:var(--belgian-red);font-size:0.72rem">−${Math.round(o.discount_percent * 100)}%</span>` : ""}</div>
               <div class="badges">
                 ${o.referral_code ? `<span class="chip ${escapeHtml(creditStatus === "available" || creditStatus === "cleared" ? "available" : creditStatus === "redeemed" ? "redeemed" : "pending")}">Ref ${escapeHtml(o.referral_code)}${o.self_referral_blocked ? " · self" : creditStatus ? " · " + escapeHtml(creditStatus) : ""}</span>` : ""}
-                ${o.loyalty_percent > 0 ? `<span class="chip loyalty">Loyalty ${Math.round(o.loyalty_percent * 100)}%</span>` : ""}
+                ${o.loyalty_percent > 0 ? `<span class="chip loyalty">Loyalty ${Math.round(o.loyalty_percent * 100)}%${Number(o.loyalty_pounds_subtotal) > 0 ? " · pounds max 10%" : ""}</span>` : ""}
               </div>
             </div>
           `;
@@ -1215,7 +1215,7 @@
           <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Discount (${escapeHtml(o.discount_code)}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.discount_amount)}</span></div>
           ` : ""}
           ${(o.loyalty_percent > 0) ? `
-          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>${escapeHtml(`Loyalty ${Math.round(o.loyalty_percent * 100)}% off`)}:</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.loyalty_amount)}</span></div>
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>${escapeHtml(`Loyalty ${Math.round(o.loyalty_percent * 100)}% off${Number(o.loyalty_pounds_subtotal) > 0 ? " (pounds max 10%)" : ""}`)}:</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.loyalty_amount)}</span></div>
           ` : ""}
           ${(o.referral_credit_applied > 0) ? `
           <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Referral credit (${escapeHtml(o.referral_credit_code || "")}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.referral_credit_applied)}</span></div>
@@ -1638,7 +1638,7 @@
       });
       const loyBody = document.getElementById("loyTableBody")!;
       if (loyalty.length === 0) {
-        loyBody.innerHTML = `<tr><td colspan="6"><div class="empty"><strong>No loyalty customers yet.</strong><br/>They appear after checkout. Discount is 1% off per $100 lifetime merchandise spend, capped at 25%.</div></td></tr>`;
+        loyBody.innerHTML = `<tr><td colspan="6"><div class="empty"><strong>No loyalty customers yet.</strong><br/>They appear after checkout. Discount is 1% off per $100 lifetime merchandise spend, capped at 25%. Pounds merchandise is capped at 10% off.</div></td></tr>`;
       } else if (loyFiltered.length === 0) {
         loyBody.innerHTML = `<tr><td colspan="6"><div class="empty">No customers match that search.</div></td></tr>`;
       } else {

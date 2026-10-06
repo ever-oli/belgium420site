@@ -7,6 +7,7 @@ import {
   removeFromCart,
   formatPrice,
   cartBreakdown,
+  backfillCategories,
   type CartItem,
 } from "./cart";
 import {
@@ -14,6 +15,8 @@ import {
   ensureLoyaltyId,
   fetchLoyaltySnapshot,
   getReferralAttribution,
+  LOYALTY_PERCENT_CAP,
+  LOYALTY_POUNDS_PERCENT_CAP,
   setLifetimeSpend,
   setLoyaltyPlacedCount,
   shareUrlForCode,
@@ -157,6 +160,7 @@ function render(refs: ReturnType<typeof buildDrawer>) {
   const loyaltyRow = quote.loyaltyAmount > 0
     ? `<div class="cart-foot-row is-off"><span>${escapeHtml(quote.loyaltyLabel)}</span><strong>−${money(quote.loyaltyAmount)}</strong></div>`
     : "";
+  const poundsPolicy = quote.poundsSubtotal > 0 ? `; pounds max ${LOYALTY_POUNDS_PERCENT_CAP}%` : "";
   const refNote = attr?.code
     ? `<p class="cart-foot-note">Referred by <strong>${escapeHtml(attr.code)}</strong> — they get $25 off their next order after yours clears. ${escapeHtml(shareUrlForCode(attr.code))}</p>`
     : "";
@@ -174,7 +178,7 @@ function render(refs: ReturnType<typeof buildDrawer>) {
       <span>Total</span>
       <strong>${money(quote.total)}</strong>
     </div>
-    <p class="cart-foot-note">No order minimum. $25 shipping under $50 — free shipping at $50+. Tax confirmed by email. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%).</p>
+    <p class="cart-foot-note">No order minimum. $25 shipping under $50 — free shipping at $50+. Tax confirmed by email. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsPolicy}).</p>
     ${refNote}
     <a href="/checkout/" class="cart-checkout-btn">Checkout</a>
     <button type="button" class="cart-clear-btn" data-cart-clear>Clear cart</button>
@@ -196,9 +200,28 @@ function escapeAttr(s: string) {
 
 // ---------- init ----------
 
+function categoriesFromButton(btn: HTMLButtonElement): string[] {
+  const card = btn.closest(".product-card");
+  const raw = btn.dataset.categories || card?.getAttribute("data-cats") || "";
+  return raw.split(/\s+/).map((c) => c.trim()).filter(Boolean);
+}
+
 export function initCart() {
   captureReferralFromUrl();
   const loyaltyId = ensureLoyaltyId();
+  backfillCategories((it) => {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(".product-card .add-to-cart");
+    for (const btn of buttons) {
+      const batch = btn.dataset.batch || "";
+      const base = btn.dataset.baseBatch || "";
+      const matches =
+        batch === it.batch || (base !== "" && (it.batch === base || it.batch.startsWith(`${base}-`)));
+      if (!matches) continue;
+      const cats = categoriesFromButton(btn);
+      if (cats.length) return cats;
+    }
+    return undefined;
+  });
 
   const refs = buildDrawer();
   if (!refs.countEl) {
@@ -270,6 +293,7 @@ export function initCart() {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
+      const categories = categoriesFromButton(btn);
       const item: CartItem = {
         batch: btn.dataset.batch || "",
         name: btn.dataset.name || "",
@@ -277,6 +301,7 @@ export function initCart() {
         price: parseFloat(btn.dataset.price || "0"),
         tone: btn.dataset.tone || "black",
         img: btn.dataset.img || null,
+        ...(categories.length ? { categories } : {}),
       };
       if (!item.batch || !item.name) return;
       if (!Number.isFinite(item.price) || item.price <= 0) return;

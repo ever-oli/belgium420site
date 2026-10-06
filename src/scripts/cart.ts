@@ -7,6 +7,7 @@ import {
   getLifetimeSpend,
   getReferralAttribution,
   loyaltyRateFromSpend,
+  poundsSubtotalFromLines,
 } from "../lib/rewards.js";
 
 export type CartItem = {
@@ -16,6 +17,8 @@ export type CartItem = {
   price: number;       // numeric, dollars
   tone: string;
   img: string | null;  // optional, may be null for the placeholder cards
+  categories?: string[]; // shop category ids; includes "pounds" for bulk pounds
+  isPound?: boolean;
 };
 
 const STORAGE_KEY = "b420_cart_v1";
@@ -36,14 +39,48 @@ function isSaneItem(i: unknown): i is CartItem {
   );
 }
 
+function normalizeCategories(raw: unknown): string[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: string[] = [];
+  for (const c of raw) {
+    if (out.length >= 12) break;
+    const s = String(c).trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+    if (!s || s.length > 40 || out.includes(s)) continue;
+    out.push(s);
+  }
+  return out.length ? out : undefined;
+}
+
+function sanitizeItem(item: CartItem): CartItem {
+  const categories = normalizeCategories(item.categories);
+  const next: CartItem = {
+    batch: item.batch,
+    name: item.name,
+    type: item.type,
+    price: item.price,
+    tone: item.tone,
+    img: item.img ?? null,
+  };
+  if (categories) next.categories = categories;
+  if (item.isPound === true) next.isPound = true;
+  return next;
+}
+
 function read(): CartItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    const clean = parsed.filter(isSaneItem);
-    if (clean.length !== parsed.length) write(clean);
+    const sane = parsed.filter(isSaneItem);
+    const clean = sane.map(sanitizeItem);
+    const categoriesChanged = clean.some((it, i) => {
+      const prev = sane[i].categories;
+      const next = it.categories;
+      if (!prev && !next && sane[i].isPound === it.isPound) return false;
+      return JSON.stringify(prev ?? null) !== JSON.stringify(next ?? null) || Boolean(sane[i].isPound) !== Boolean(it.isPound);
+    });
+    if (clean.length !== parsed.length || categoriesChanged) write(clean);
     return clean;
   } catch {
     return [];
@@ -68,8 +105,22 @@ export function addToCart(item: CartItem) {
   const items = read();
   // No qty stacking in v1 — each add is a separate line. Simplifies admin view.
   // If a customer wants 2 of the same thing, they add twice.
-  items.push(item);
+  items.push(sanitizeItem(item));
   write(items);
+}
+
+/** Fill categories on lines saved before pounds were tracked. No-op when already set. */
+export function backfillCategories(lookup: (item: CartItem) => string[] | undefined) {
+  const items = read();
+  let changed = false;
+  const next = items.map((it) => {
+    if ((it.categories && it.categories.length) || it.isPound) return it;
+    const categories = normalizeCategories(lookup(it));
+    if (!categories) return it;
+    changed = true;
+    return { ...it, categories };
+  });
+  if (changed) write(next);
 }
 
 export function removeFromCart(batch: string) {
@@ -135,7 +186,8 @@ export type RewardsQuote = {
 };
 
 export function cartBreakdown(opts: RewardsQuote = {}) {
-  const subtotal = cartTotal();
+  const items = read();
+  const subtotal = items.reduce((sum, i) => sum + i.price, 0);
   const promoCode = (opts.promoCode || "").trim();
   const promoPercent = promoCode && isValidDiscount(promoCode) ? getDiscountPercent(promoCode) : 0;
   const lifetimeSpend = opts.lifetimeSpend ?? getLifetimeSpend();
@@ -143,6 +195,7 @@ export function cartBreakdown(opts: RewardsQuote = {}) {
   const attr = getReferralAttribution();
   return computeBreakdown({
     subtotal,
+    poundsSubtotal: poundsSubtotalFromLines(items),
     promoPercent,
     promoCode,
     loyaltyPercent,
