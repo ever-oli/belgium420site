@@ -4,6 +4,8 @@
  */
 
 export const REFERRAL_CREDIT_GRANT = 25;
+/** Flat shipping on any order that still has merchandise after discounts. */
+export const SHIPPING_FEE = 75;
 export const ATTRIBUTION_DAYS = 30;
 export const LOYALTY_ID_DAYS = 400;
 export const SHARE_ORIGIN = "https://belgium420.com";
@@ -181,7 +183,7 @@ export function computeBreakdown(input) {
   const wantCredit = Math.max(0, Number(input.referralCredit) || 0);
   const referralCreditAmount = roundMoney(Math.min(wantCredit, afterPercents));
   const merch = Math.max(0, roundMoney(afterPercents - referralCreditAmount));
-  const shipping = merch > 0 && merch < 50 ? 25 : 0;
+  const shipping = merch > 0 ? SHIPPING_FEE : 0;
   const total = roundMoney(merch + shipping);
   const lifetimeSpend = roundMoney(input.lifetimeSpend || 0);
   const hasPounds = split.poundsSubtotal > 0;

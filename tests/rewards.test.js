@@ -24,6 +24,7 @@ import {
   addLifetimeSpend,
   STORAGE_KEYS,
   REFERRAL_CREDIT_GRANT,
+  SHIPPING_FEE,
   LOYALTY_PERCENT_CAP,
   LOYALTY_POUNDS_PERCENT_CAP,
 } from '../src/lib/rewards.js';
@@ -92,16 +93,17 @@ describe('loyalty percents', () => {
 });
 
 describe('computeBreakdown', () => {
-  test('loyalty 2% on $100 merch after $250 lifetime, free shipping', () => {
+  test('loyalty 2% on $100 merch after $250 lifetime, flat shipping', () => {
     const b = computeBreakdown({
       subtotal: 100,
       loyaltyPercent: loyaltyRateFromSpend(250),
       lifetimeSpend: 250,
     });
+    assert.equal(SHIPPING_FEE, 75);
     assert.equal(b.loyaltyAmount, 2);
     assert.equal(b.merch, 98);
-    assert.equal(b.shipping, 0);
-    assert.equal(b.total, 98);
+    assert.equal(b.shipping, SHIPPING_FEE);
+    assert.equal(b.total, 173);
     assert.match(b.loyaltyLabel, /2% off/);
   });
 
@@ -126,13 +128,13 @@ describe('computeBreakdown', () => {
       referralCredit: REFERRAL_CREDIT_GRANT,
       referralCreditCode: 'ALICE',
     });
-    // 50 - 5 promo - 1.00 loyalty = 44.00, then $25 credit → 19.00 merch + $25 ship
+    // 50 - 5 promo - 1.00 loyalty = 44.00, then $25 credit → 19.00 merch + $75 ship
     assert.equal(b.promoAmount, 5);
     assert.equal(b.loyaltyAmount, 1);
     assert.equal(b.referralCreditAmount, 25);
     assert.equal(b.merch, 19);
-    assert.equal(b.shipping, 25);
-    assert.equal(b.total, 44);
+    assert.equal(b.shipping, SHIPPING_FEE);
+    assert.equal(b.total, 94);
   });
 
   test('credit cannot exceed merch after percents', () => {
@@ -159,7 +161,8 @@ describe('computeBreakdown', () => {
     assert.equal(b.otherSubtotal, 0);
     assert.equal(b.loyaltyAmount, 100);
     assert.equal(b.merch, 900);
-    assert.equal(b.total, 900);
+    assert.equal(b.shipping, SHIPPING_FEE);
+    assert.equal(b.total, 975);
     assert.match(b.loyaltyLabel, /25% off/);
     assert.match(b.loyaltyLabel, /pounds max 10%/);
   });
@@ -230,8 +233,8 @@ describe('computeBreakdown', () => {
     assert.equal(b.loyaltyAmount, 10);
     assert.equal(b.referralCreditAmount, 25);
     assert.equal(b.merch, 55);
-    assert.equal(b.shipping, 0);
-    assert.equal(b.total, 55);
+    assert.equal(b.shipping, SHIPPING_FEE);
+    assert.equal(b.total, 130);
   });
 
   test('pounds subtotal cannot exceed the cart subtotal', () => {

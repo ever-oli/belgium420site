@@ -8,7 +8,10 @@ import {
   getReferralAttribution,
   loyaltyRateFromSpend,
   poundsSubtotalFromLines,
+  SHIPPING_FEE,
 } from "../lib/rewards.js";
+
+export { SHIPPING_FEE };
 
 export type CartItem = {
   batch: string;
@@ -169,13 +172,12 @@ export function discountAmount(code: string): number {
 
 
 // ---------- shipping ----------
-// No order minimum. $25 shipping when merchandise total (after discount) is under $50.
-export const SHIPPING_THRESHOLD = 50;
-export const SHIPPING_FEE = 25;
+// No order minimum. Flat SHIPPING_FEE on every order that still has merchandise.
+// A $0 merchandise total (empty cart or fully credited) is not charged shipping.
 
 export function shippingCost(merchandiseTotal: number): number {
   if (!Number.isFinite(merchandiseTotal) || merchandiseTotal <= 0) return 0;
-  return merchandiseTotal < SHIPPING_THRESHOLD ? SHIPPING_FEE : 0;
+  return SHIPPING_FEE;
 }
 
 export type RewardsQuote = {
