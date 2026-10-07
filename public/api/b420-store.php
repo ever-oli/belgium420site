@@ -15,8 +15,7 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
 
 const B420_ADMIN_KEY = '420Belgium';
 const B420_REFERRAL_GRANT = 25.0;
-const B420_SHIP_THRESHOLD = 50.0;
-const B420_SHIP_FEE = 25.0;
+const B420_SHIP_FEE = 75.0;
 const B420_LOYALTY_PERCENT_CAP = 25;
 const B420_LOYALTY_POUNDS_PERCENT_CAP = 10;
 
@@ -394,7 +393,7 @@ function b420_on_order_created(array &$order): void {
     }
 
     $merch = max(0.0, b420_round_money($subtotal - $promoAmount - $loyaltyAmount - $creditApplied));
-    $shipping = ($merch > 0 && $merch < B420_SHIP_THRESHOLD) ? B420_SHIP_FEE : 0.0;
+    $shipping = $merch > 0 ? B420_SHIP_FEE : 0.0;
     $final = b420_round_money($merch + $shipping);
 
     $opsNote = '';

@@ -3,6 +3,8 @@
 // Reuses the same age-gate, nav, and footer styling as the home page.
 // CSS is inlined in <style> below so the page is fully self-contained.
 
+import { SHIPPING_FEE } from '../lib/rewards.js';
+
 const year = new Date().getFullYear();
 ---
 <!DOCTYPE html>
@@ -479,7 +481,7 @@ const year = new Date().getFullYear();
           <span>Total</span>
           <strong id="checkoutFinalTotal">$0.00</strong>
         </div>
-        <p class="checkout-summary-note" id="checkoutSummaryNote">No order minimum. $25 shipping on orders under $50; free shipping at $50+. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
+        <p class="checkout-summary-note" id="checkoutSummaryNote">No order minimum. Flat ${SHIPPING_FEE} shipping on every order. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
         <a href="/" class="checkout-edit">Edit cart</a>
       </aside>
     </div>
@@ -499,6 +501,7 @@ const year = new Date().getFullYear();
       isValidDiscount,
       getDiscountPercent,
       cartBreakdown,
+      SHIPPING_FEE,
     } from "../scripts/cart.ts";
     import {
       addLifetimeSpend,
@@ -634,14 +637,14 @@ const year = new Date().getFullYear();
         }
       }
 
-      shipLabel.textContent = quote.shipping === 0 ? "Shipping (free over $50)" : "Shipping (orders under $50)";
+      shipLabel.textContent = "Shipping";
       shipEl.textContent = quote.shipping === 0 ? "FREE" : formatPrice(quote.shipping);
       finalTotalEl.textContent = formatPrice(quote.total);
 
       const summaryNote = document.getElementById("checkoutSummaryNote");
       if (summaryNote) {
         const poundsBit = quote.poundsSubtotal > 0 ? `; pounds max ${LOYALTY_POUNDS_PERCENT_CAP}%` : "";
-        summaryNote.textContent = `No order minimum. $25 shipping on orders under $50; free shipping at $50+. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsBit}). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.`;
+        summaryNote.textContent = `No order minimum. Flat $${SHIPPING_FEE} shipping on every order. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsBit}). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.`;
       }
     }
 

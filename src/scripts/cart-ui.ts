@@ -8,6 +8,7 @@ import {
   formatPrice,
   cartBreakdown,
   backfillCategories,
+  SHIPPING_FEE,
   type CartItem,
 } from "./cart";
 import {
@@ -171,14 +172,14 @@ function render(refs: ReturnType<typeof buildDrawer>) {
     </div>
     ${loyaltyRow}
     <div class="cart-foot-row">
-      <span>Shipping${quote.shipping === 0 ? " (free over $50)" : " (orders under $50)"}</span>
+      <span>Shipping</span>
       <strong>${quote.shipping === 0 ? "FREE" : money(quote.shipping)}</strong>
     </div>
     <div class="cart-foot-row">
       <span>Total</span>
       <strong>${money(quote.total)}</strong>
     </div>
-    <p class="cart-foot-note">No order minimum. $25 shipping under $50 — free shipping at $50+. Tax confirmed by email. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsPolicy}).</p>
+    <p class="cart-foot-note">No order minimum. Flat $${SHIPPING_FEE} shipping on every order. Tax confirmed by email. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsPolicy}).</p>
     ${refNote}
     <a href="/checkout/" class="cart-checkout-btn">Checkout</a>
     <button type="button" class="cart-clear-btn" data-cart-clear>Clear cart</button>

@@ -2,6 +2,7 @@
 // Belgium420 — European Heritage × Street Culture × Lab-Backed
 // Visual system driven by brand flag artwork (grunge Belgian flag)
 import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
+import { SHIPPING_FEE } from '../lib/rewards.js';
 
 const year = new Date().getFullYear();
 const AUTH_ENABLED = (process.env.AUTH_ENABLED || '').toLowerCase() === 'true';
@@ -336,7 +337,7 @@ const products = [
   {
     name: 'MIdKidz Gummies',
     type: 'Gummies · Multi-pack',
-    price: '$25.00',
+    price: '$35.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'red',
     batch: 'B420-2026-1601',
@@ -3860,7 +3861,7 @@ const typeCounts = [
   <!-- Marquee -->
   <div class="marquee">
     <div class="marquee-inner">
-      <span>Free Shipping Over $50</span>
+      <span>Flat ${SHIPPING_FEE} Shipping</span>
       <span>·</span>
       <span>Refer a friend — you get $25 off</span>
       <span>·</span>
@@ -3874,7 +3875,7 @@ const typeCounts = [
       <span>·</span>
       <span>2018 Farm Bill Compliant</span>
       <span>·</span>
-      <span>Free Shipping Over $50</span>
+      <span>Flat ${SHIPPING_FEE} Shipping</span>
       <span>·</span>
       <span>Refer a friend — you get $25 off</span>
       <span>·</span>
@@ -4223,7 +4224,7 @@ const typeCounts = [
       </div>
       <div class="shipping-card">
         <h3>Shipping Details</h3>
-        <p>No order minimum. Orders under $50 ship for $25. Free shipping on orders $50 and up. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend for $25 off your next order after theirs clears. Ships within 24-48 hours via USPS Ground Advantage. All packages include a QR code linking to the batch COA. Discrete packaging — no product names or logos on the exterior.</p>
+        <p>No order minimum. Flat ${SHIPPING_FEE} shipping on every order. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend for $25 off your next order after theirs clears. Ships within 24-48 hours via USPS Ground Advantage. All packages include a QR code linking to the batch COA. Discrete packaging — no product names or logos on the exterior.</p>
       </div>
     </div>
   </section>
