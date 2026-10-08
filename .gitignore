@@ -24,6 +24,9 @@ yarn-error.log*
 belgium420-signal/signal-cli-config/
 belgium420-signal/data/
 
+# Generated responsive inventory derivatives (built by scripts/optimize-inventory.mjs)
+public/opt/
+
 # Temp
 *.tmp
 *.temp

@@ -1,0 +1,92 @@
+/* Self-hosted latin subsets. Space Grotesk 500 is unused, so it is not shipped.
+   Fallbacks are size-adjusted to Arial so headings do not jump while fonts swap. */
+
+@font-face {
+  font-family: 'Anton';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/anton-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Anton Fallback';
+  src: local('Arial');
+  size-adjust: 90.69%;
+  ascent-override: 129.7022%;
+  descent-override: 36.2886%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk Fallback';
+  src: local('Arial');
+  size-adjust: 109.6903%;
+  ascent-override: 89.7072%;
+  descent-override: 26.6204%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono Fallback';
+  src: local('Arial');
+  size-adjust: 134.5893%;
+  ascent-override: 75.7861%;
+  descent-override: 22.29%;
+  line-gap-override: 0%;
+}
+
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+.product-card-price,
+.cart-row-price,
+.product-variant-price,
+.summary-price,
+.checkout-total-row strong {
+  font-variant-numeric: tabular-nums;
+}

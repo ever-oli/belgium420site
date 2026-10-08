@@ -5,6 +5,7 @@
 
 import { SHIPPING_FEE } from '../lib/rewards.js';
 import '../styles/brand.css';
+import '../styles/fonts.css';
 
 const year = new Date().getFullYear();
 ---
@@ -14,16 +15,19 @@ const year = new Date().getFullYear();
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark" />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#050505" />
   <title>Checkout — Belgium420</title>
   <meta name="description" content="Place your Belgium420 order. Fill in your contact + shipping info and we'll confirm payment and tracking by email." />
-  <link rel="icon" href="/brand/belgium-flag-grunge.jpg" type="image/jpeg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preload" href="/fonts/anton-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/space-grotesk-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', system-ui, sans-serif;
       background: var(--belgian-black);
       color: var(--chalk);
       line-height: 1.6;
@@ -57,7 +61,7 @@ const year = new Date().getFullYear();
     }
     .age-gate-inner { position: relative; z-index: 1; text-align: center; max-width: 440px; }
     .age-gate h2 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: clamp(1.6rem, 4.5vw, 2.25rem);
       text-transform: uppercase; letter-spacing: 0.04em;
       margin-bottom: 0.75rem;
@@ -92,7 +96,7 @@ const year = new Date().getFullYear();
     .checkout-nav-back {
       color: var(--chalk);
       text-decoration: none;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.85rem;
       letter-spacing: 0.05em;
     }
@@ -106,7 +110,7 @@ const year = new Date().getFullYear();
     .checkout-main { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem 4rem; }
     .checkout-head { margin-bottom: 2.5rem; }
     .checkout-head h1 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: clamp(2.2rem, 5vw, 3.2rem);
       text-transform: uppercase; letter-spacing: 0.02em;
       margin-bottom: 0.5rem;
@@ -131,7 +135,7 @@ const year = new Date().getFullYear();
       padding: 1.5rem;
     }
     .checkout-form legend {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.05rem;
       text-transform: uppercase; letter-spacing: 0.06em;
       padding: 0 0.5rem;
@@ -144,7 +148,7 @@ const year = new Date().getFullYear();
     .checkout-form label:last-child { margin-bottom: 0; }
     .checkout-form label > span {
       display: block;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.7rem;
       text-transform: uppercase; letter-spacing: 0.06em;
       color: var(--concrete);
@@ -159,7 +163,7 @@ const year = new Date().getFullYear();
       background: var(--belgian-black);
       color: var(--chalk);
       border: 1px solid var(--chalk-a18);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-size: max(16px, 1rem);
       transition: border-color 0.15s;
     }
@@ -189,7 +193,7 @@ const year = new Date().getFullYear();
       cursor: pointer;
     }
     .checkbox-row input { width: auto !important; margin: 0; }
-    .checkbox-row > span { margin: 0 !important; font-family: 'Space Grotesk' !important; font-size: max(16px, 1rem) !important; text-transform: none !important; letter-spacing: 0 !important; color: var(--chalk) !important; }
+    .checkbox-row > span { margin: 0 !important; font-family: 'Space Grotesk', 'Space Grotesk Fallback', system-ui, sans-serif !important; font-size: max(16px, 1rem) !important; text-transform: none !important; letter-spacing: 0 !important; color: var(--chalk) !important; }
 
     /* ============ SUBMIT / ERROR ============ */
     .checkout-error {
@@ -205,7 +209,7 @@ const year = new Date().getFullYear();
       padding: 1rem;
       background: var(--belgian-yellow);
       color: var(--ink);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-weight: 700;
       font-size: 0.9rem;
       text-transform: uppercase;
@@ -236,7 +240,7 @@ const year = new Date().getFullYear();
       padding: 1.5rem;
     }
     .checkout-summary h2 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.05rem;
       text-transform: uppercase; letter-spacing: 0.06em;
       color: var(--belgian-yellow);
@@ -252,7 +256,7 @@ const year = new Date().getFullYear();
     }
     .summary-row:last-child { border-bottom: none; }
     .summary-name {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 0.85rem;
       text-transform: uppercase; letter-spacing: 0.04em;
     }
@@ -262,7 +266,7 @@ const year = new Date().getFullYear();
       margin-top: 0.15rem;
     }
     .summary-price {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.85rem;
       font-weight: 700;
       color: var(--belgian-yellow);
@@ -275,7 +279,7 @@ const year = new Date().getFullYear();
       padding-top: 1rem;
       margin-top: 0.5rem;
       border-top: 1px solid var(--chalk-a15);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
     }
     .checkout-total-row strong { color: var(--belgian-yellow); font-size: 1.2rem; }
     .checkout-summary-note {
@@ -289,7 +293,7 @@ const year = new Date().getFullYear();
       text-align: center;
       padding: 0.6rem;
       color: var(--concrete);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -315,7 +319,7 @@ const year = new Date().getFullYear();
       text-align: center;
     }
     .checkout-ok h1 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 2.2rem;
       text-transform: uppercase; letter-spacing: 0.04em;
       color: var(--belgian-yellow);
@@ -364,9 +368,11 @@ const year = new Date().getFullYear();
     </div>
   </div>
 
+  <header>
   <nav class="checkout-nav">
     <a href="/" class="checkout-nav-back">&larr; Back to shop</a>
   </nav>
+  </header>
 
   <main class="checkout-main">
     <header class="checkout-head">
