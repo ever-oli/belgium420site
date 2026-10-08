@@ -3,6 +3,7 @@
 // Auth: simple password gate stored in sessionStorage. The same password is the
 // admin key for the API. Shared-hosting-tier security — adequate for a small shop.
 import '../styles/brand.css';
+import '../styles/fonts.css';
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -12,14 +13,14 @@ import '../styles/brand.css';
   <meta name="color-scheme" content="dark" />
   <title>Ops — Belgium420</title>
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#050505" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { min-height: 100vh; }
     body {
-      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', system-ui, sans-serif;
       background: var(--belgian-black);
       color: var(--chalk);
       line-height: 1.5;
@@ -43,7 +44,7 @@ import '../styles/brand.css';
       border: 1px solid var(--line-strong);
     }
     .login-kicker {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.68rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -51,7 +52,7 @@ import '../styles/brand.css';
       margin-bottom: 0.45rem;
     }
     .login-box h1 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.7rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -64,7 +65,7 @@ import '../styles/brand.css';
       background: var(--belgian-black);
       color: var(--chalk);
       border: 1px solid var(--line-strong);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: max(16px, 1rem);
       margin-bottom: 0.75rem;
     }
@@ -108,7 +109,7 @@ import '../styles/brand.css';
       flex-wrap: wrap;
     }
     .brand {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.15rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -128,7 +129,7 @@ import '../styles/brand.css';
       background: transparent;
       color: var(--concrete);
       border: 1px solid transparent;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -146,7 +147,7 @@ import '../styles/brand.css';
     }
     .app-actions { display: flex; gap: 0.45rem; align-items: center; margin-left: auto; }
     .app-meta {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.72rem;
       color: var(--concrete);
       white-space: nowrap;
@@ -157,7 +158,7 @@ import '../styles/brand.css';
       background: transparent;
       color: var(--chalk);
       border: 1px solid var(--line-strong);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -204,7 +205,7 @@ import '../styles/brand.css';
       margin-bottom: 1.1rem;
     }
     .panel-head h1 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: clamp(1.4rem, 3vw, 1.9rem);
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -233,7 +234,7 @@ import '../styles/brand.css';
       min-height: 5.2rem;
     }
     .kpi-label {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.62rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -241,7 +242,7 @@ import '../styles/brand.css';
       margin-bottom: 0.35rem;
     }
     .kpi-value {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 1.25rem;
       font-weight: 600;
       color: var(--chalk);
@@ -261,7 +262,7 @@ import '../styles/brand.css';
       padding: 1rem;
     }
     .card-block h2 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 0.95rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -293,7 +294,7 @@ import '../styles/brand.css';
       margin-bottom: 1rem;
       line-height: 1.55;
     }
-    .how code { color: var(--belgian-yellow); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+    .how code { color: var(--belgian-yellow); font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace; font-size: 0.78rem; }
 
     .create-card {
       background: var(--asphalt);
@@ -302,7 +303,7 @@ import '../styles/brand.css';
       margin-bottom: 1.25rem;
     }
     .create-card h2 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.15rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -344,7 +345,7 @@ import '../styles/brand.css';
       word-break: break-all;
       margin: 0.4rem 0 0.75rem;
       font-size: 0.85rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
     }
     .create-success .btn { width: 100%; }
     .create-card--mini .btn { width: auto; min-width: 220px; }
@@ -380,7 +381,7 @@ import '../styles/brand.css';
       border-bottom: 1px solid var(--line);
     }
     .col-title {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 0.95rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -389,7 +390,7 @@ import '../styles/brand.css';
     .col-paid .col-title { color: var(--belgian-yellow); }
     .col-shipped .col-title { color: var(--belgian-red); }
     .col-count {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.75rem;
       color: var(--concrete);
       background: var(--belgian-black);
@@ -418,13 +419,13 @@ import '../styles/brand.css';
       margin-bottom: 0.3rem;
     }
     .card-id {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.66rem;
       color: var(--belgian-yellow);
     }
     .card-when { font-size: 0.66rem; color: var(--concrete); }
     .card-name {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 0.92rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -441,7 +442,7 @@ import '../styles/brand.css';
       flex-wrap: wrap;
     }
     .card-total {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.88rem;
       font-weight: 700;
       color: var(--belgian-yellow);
@@ -453,7 +454,7 @@ import '../styles/brand.css';
       display: inline-flex;
       align-items: center;
       padding: 0.12rem 0.45rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.62rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -502,7 +503,7 @@ import '../styles/brand.css';
       margin: 1.4rem 0 0.7rem;
     }
     .section-h h2 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.05rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -516,7 +517,7 @@ import '../styles/brand.css';
     }
     .crm-table th {
       text-align: left;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.64rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -536,7 +537,7 @@ import '../styles/brand.css';
     .crm-table tr:hover td { background: var(--yellow-a4); }
 
     }
-    .crm-table code { color: var(--belgian-yellow); font-family: 'JetBrains Mono', monospace; }
+    .crm-table code { color: var(--belgian-yellow); font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace; }
     .muted { color: var(--concrete); font-size: 0.72rem; }
     .row-actions { display: flex; flex-wrap: wrap; gap: 0.3rem; }
     .evt-list { font-size: 0.75rem; color: var(--concrete); max-height: 280px; overflow: auto; overscroll-behavior: contain; }
@@ -571,7 +572,7 @@ import '../styles/brand.css';
       border-bottom: 1px solid var(--line);
     }
     .modal-head h2 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.15rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -586,7 +587,7 @@ import '../styles/brand.css';
     }
     .modal-section { margin-bottom: 1.15rem; }
     .modal-section h3 {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -638,14 +639,14 @@ import '../styles/brand.css';
       background: var(--belgian-black);
       color: var(--chalk);
       border: 1px solid var(--line-strong);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: max(16px, 1rem);
       margin-bottom: 0.45rem;
     }
     .modal-track:focus, .field-input:focus { border-color: var(--belgian-yellow); }
     .modal-label, .field-label {
       display: block;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -656,7 +657,7 @@ import '../styles/brand.css';
     .status-pill {
       display: inline-block;
       padding: 0.2rem 0.55rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -676,7 +677,7 @@ import '../styles/brand.css';
       background: var(--belgian-yellow);
       color: var(--ink);
       padding: 0.65rem 0.95rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -1216,7 +1217,7 @@ import '../styles/brand.css';
       const itemsHtml = (o.items || []).map((i: any) => `
         <li>
           <span>${escapeHtml(i.name)} <small style="color:var(--concrete)">· Batch ${escapeHtml(i.batch || "")}</small></span>
-          <span style="font-family:'JetBrains Mono',monospace;color:var(--belgian-yellow)">${money(i.price)}</span>
+          <span style="font-family:'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;color:var(--belgian-yellow)">${money(i.price)}</span>
         </li>
       `).join("");
       const pays = (o.payments || []).join(", ") || "(none selected)";
@@ -1244,20 +1245,20 @@ import '../styles/brand.css';
         <div class="modal-section">
           <h3>Items</h3>
           <ul class="modal-items">${itemsHtml}</ul>
-          <div class="modal-row" style="margin-top:0.5rem;text-align:right;font-family:'JetBrains Mono',monospace"><strong>Subtotal:</strong><span style="color:var(--chalk);font-weight:700;margin-left:0.5rem">${money(o.total)}</span></div>
+          <div class="modal-row" style="margin-top:0.5rem;text-align:right;font-family:'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace"><strong>Subtotal:</strong><span style="color:var(--chalk);font-weight:700;margin-left:0.5rem">${money(o.total)}</span></div>
           ${o.discount_percent > 0 ? `
-          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Discount (${escapeHtml(o.discount_code)}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.discount_amount)}</span></div>
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace"><strong>Discount (${escapeHtml(o.discount_code)}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.discount_amount)}</span></div>
           ` : ""}
           ${(o.loyalty_percent > 0) ? `
-          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>${escapeHtml(`Loyalty ${Math.round(o.loyalty_percent * 100)}% off${Number(o.loyalty_pounds_subtotal) > 0 ? " (pounds max 10%)" : ""}`)}:</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.loyalty_amount)}</span></div>
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace"><strong>${escapeHtml(`Loyalty ${Math.round(o.loyalty_percent * 100)}% off${Number(o.loyalty_pounds_subtotal) > 0 ? " (pounds max 10%)" : ""}`)}:</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.loyalty_amount)}</span></div>
           ` : ""}
           ${(o.referral_credit_applied > 0) ? `
-          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Referral credit (${escapeHtml(o.referral_credit_code || "")}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.referral_credit_applied)}</span></div>
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace"><strong>Referral credit (${escapeHtml(o.referral_credit_code || "")}):</strong><span style="color:var(--belgian-red);font-weight:700;margin-left:0.5rem">−${money(o.referral_credit_applied)}</span></div>
           ` : ""}
           ${typeof o.shipping === "number" ? `
-          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Shipping:</strong><span style="margin-left:0.5rem">${money(o.shipping)}</span></div>
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace"><strong>Shipping:</strong><span style="margin-left:0.5rem">${money(o.shipping)}</span></div>
           ` : ""}
-          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono',monospace"><strong>Total:</strong><span style="color:var(--belgian-yellow);font-weight:700;margin-left:0.5rem">${money(o.final_total ?? o.total)}</span></div>
+          <div class="modal-row" style="text-align:right;font-family:'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace"><strong>Total:</strong><span style="color:var(--belgian-yellow);font-weight:700;margin-left:0.5rem">${money(o.final_total ?? o.total)}</span></div>
         </div>
 
         ${(o.referral_code || o.loyalty_percent || o.loyalty_lifetime_spend) ? `

@@ -3,7 +3,13 @@
 // Visual system driven by brand flag artwork (grunge Belgian flag)
 import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
 import { SHIPPING_FEE } from '../lib/rewards.js';
+import { savePercents } from '../lib/tier-savings.js';
+import imageManifest from '../data/image-manifest.json';
 import '../styles/brand.css';
+import '../styles/fonts.css';
+
+const PHOTO_SIZES = '(max-width: 900px) 85vw, (min-width: 1600px) 280px, 320px';
+const FIRST_ROW = 6;
 
 const year = new Date().getFullYear();
 const AUTH_ENABLED = (process.env.AUTH_ENABLED || '').toLowerCase() === 'true';
@@ -1292,20 +1298,78 @@ const typeCounts = [
   <meta name="color-scheme" content="dark" />
   <title>Belgium420 — Lab-Backed Hemp. Belgian Roots.</title>
   <meta name="description" content="Belgium420 — 2018 Farm Bill compliant hemp products. Third-party lab tested. COA on every batch. Ships to 48 states." />
+  <link rel="canonical" href="https://belgium420.com/" />
+  <meta name="theme-color" content="#050505" />
   <meta property="og:title" content="Belgium420 — Lab-Backed Hemp. Belgian Roots." />
   <meta property="og:description" content="Premium hemp-derived cannabinoids. Third-party tested. COA on every batch. Ships to 48 states." />
-  <meta property="og:image" content="https://belgium420.com/brand/belgium-flag-grunge.jpg" />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://belgium420.com/" />
+  <meta property="og:site_name" content="Belgium420" />
+  <meta property="og:image" content="https://belgium420.com/og/belgium420.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Belgium420 wordmark on black, yellow, and red Belgian stripes" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="/brand/belgium-flag-grunge.jpg" type="image/jpeg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="twitter:image" content="https://belgium420.com/og/belgium420.png" />
+  <meta name="twitter:image:alt" content="Belgium420 wordmark on black, yellow, and red Belgian stripes" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="preload" href="/fonts/anton-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/space-grotesk-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        name: 'Belgium420',
+        url: 'https://belgium420.com/',
+        logo: 'https://belgium420.com/apple-touch-icon.png',
+      },
+      {
+        '@type': 'WebSite',
+        name: 'Belgium420',
+        url: 'https://belgium420.com/',
+      },
+    ],
+  })} />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-padding-top: 72px; }
+    .skip-link {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link:focus {
+      position: fixed;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 100000;
+      width: auto;
+      height: auto;
+      margin: 0;
+      padding: 0.7rem 1rem;
+      overflow: visible;
+      clip: auto;
+      background: var(--belgian-yellow);
+      color: var(--ink);
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', system-ui, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    #productGrid { scroll-margin-top: 88px; }
     body {
-      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', system-ui, sans-serif;
       background: var(--belgian-black);
       color: var(--chalk);
       line-height: 1.6;
@@ -1383,7 +1447,7 @@ const typeCounts = [
       font-size: clamp(1.5rem, 4vw, 2rem);
     }
     .age-gate h2 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: clamp(1.6rem, 4.5vw, 2.25rem);
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -1404,7 +1468,7 @@ const typeCounts = [
     }
     .age-btn {
       padding: 0.9rem 2.25rem;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-weight: 700;
       font-size: 0.85rem;
       text-transform: uppercase;
@@ -1477,7 +1541,7 @@ const typeCounts = [
       text-align: center;
     }
     .auth-gate h2 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: clamp(1.5rem, 4vw, 2rem);
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -1499,7 +1563,7 @@ const typeCounts = [
       border: 2px solid transparent;
       cursor: pointer;
       transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.7rem;
       font-weight: 600;
       letter-spacing: 0.06em;
@@ -1518,7 +1582,7 @@ const typeCounts = [
       box-shadow: 0 0 0 2px var(--chalk-a25);
     }
     #challengeStatus {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.72rem;
       color: var(--concrete);
       margin-bottom: 1.25rem;
@@ -1544,7 +1608,7 @@ const typeCounts = [
       border: 1px solid var(--chalk-a18);
       background: var(--ink-a65);
       color: var(--chalk);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-size: max(16px, 1rem);
     }
     .auth-form input:focus {
@@ -1556,7 +1620,7 @@ const typeCounts = [
       border: none;
       background: var(--belgian-yellow);
       color: var(--ink);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-weight: 700;
       font-size: 0.85rem;
       letter-spacing: 0.08em;
@@ -1600,7 +1664,7 @@ const typeCounts = [
       background: transparent;
       border: 1px solid var(--chalk-a25);
       color: var(--chalk);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-size: 0.75rem;
       font-weight: 600;
       letter-spacing: 0.06em;
@@ -1675,7 +1739,7 @@ const typeCounts = [
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 0.78rem;
       letter-spacing: 0.06em;
       color: #fff;
@@ -1686,7 +1750,7 @@ const typeCounts = [
       pointer-events: none;
     }
     .brand-logo-word {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.15rem;
       color: var(--chalk);
       text-transform: uppercase;
@@ -1769,7 +1833,7 @@ const typeCounts = [
       padding: 0.5rem 0.9rem;
       background: var(--belgian-yellow);
       color: var(--ink);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
@@ -1866,7 +1930,7 @@ const typeCounts = [
       text-shadow: 0 0 20px var(--yellow-a30);
     }
     .hero-title {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: clamp(1.35rem, 3.2vw, 2rem);
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -1942,7 +2006,7 @@ const typeCounts = [
     .btn {
       display: inline-block;
       padding: 0.95rem 2rem;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-weight: 700;
       font-size: 0.85rem;
       text-transform: uppercase;
@@ -1978,7 +2042,7 @@ const typeCounts = [
       display: inline-block;
     }
     .marquee span {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.78rem;
       font-weight: 600;
       color: var(--ink);
@@ -2004,7 +2068,7 @@ const typeCounts = [
       height: 150px;
     }
     .textpath-text {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 40px;
       letter-spacing: 0.08em;
       fill: var(--belgian-yellow);
@@ -2040,7 +2104,7 @@ const typeCounts = [
     }
     .section-header { margin-bottom: 2.5rem; }
     .section-tag {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.68rem;
       color: var(--belgian-yellow);
       text-transform: uppercase;
@@ -2048,7 +2112,7 @@ const typeCounts = [
       margin-bottom: 0.5rem;
     }
     .section-title {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: clamp(2rem, 4vw, 3rem);
       text-transform: uppercase;
       letter-spacing: 0.02em;
@@ -2169,7 +2233,7 @@ const typeCounts = [
       top: 1rem;
       right: 1rem;
       z-index: 2;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.58rem;
       color: var(--belgian-yellow);
       border: 1px solid var(--yellow-a40);
@@ -2210,20 +2274,19 @@ const typeCounts = [
     }
     .product-card-img[data-has-img="true"] {
       background-color: var(--asphalt);
-      background-repeat: no-repeat;
-      background-size: contain;
-      background-position: center;
     }
-    .product-card-img[data-has-img="true"]::before {
-      content: '';
+    .product-card-img picture {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: inherit;
-      background-repeat: no-repeat;
-      background-size: contain;
-      background-position: center;
-      pointer-events: none;
+      display: block;
+    }
+    .product-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
     }
     .product-card-img[data-has-img="true"] .product-card-mark {
       display: none;
@@ -2252,7 +2315,7 @@ const typeCounts = [
     }
 
     .product-card-mark {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.7rem;
       font-weight: 600;
       letter-spacing: 0.14em;
@@ -2264,7 +2327,7 @@ const typeCounts = [
     .product-card-img[data-tone="yellow"] .product-card-mark { color: var(--ink); }
     .product-card-img[data-tone="red"] .product-card-mark { color: var(--chalk); }
     .product-card-name {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1rem;
       text-transform: uppercase;
       color: var(--chalk);
@@ -2280,7 +2343,7 @@ const typeCounts = [
       margin-bottom: 0.4rem;
     }
     .product-card-price {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 1rem;
       color: var(--belgian-yellow);
       font-weight: 600;
@@ -2298,7 +2361,7 @@ const typeCounts = [
       background: var(--asphalt);
       color: var(--chalk-a85);
       border: 1px solid transparent;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.62rem;
       font-weight: 600;
       letter-spacing: 0.04em;
@@ -2326,8 +2389,23 @@ const typeCounts = [
       font-size: 0.58rem;
     }
     .product-variant.is-selected .product-variant-price { opacity: 1; }
+    .save-badge {
+      display: inline-block;
+      margin-top: 0.28rem;
+      padding: 0.12rem 0.32rem;
+      background: var(--belgian-yellow);
+      color: var(--ink);
+      font-size: 0.52rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+    }
+    .product-variant.is-selected .save-badge {
+      background: var(--ink);
+      color: var(--belgian-yellow);
+    }
     .product-card-thc {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.62rem;
       color: var(--concrete);
       margin-top: 0.45rem;
@@ -2343,7 +2421,7 @@ const typeCounts = [
 
     .product-card:hover .product-card-extras,
     .product-card:focus-within .product-card-extras {
-      max-height: 220px;
+      max-height: 480px;
       opacity: 1;
       transform: translateY(0);
     }
@@ -2352,7 +2430,7 @@ const typeCounts = [
     .product-card-sizes {
       display: block;
       margin-top: 0.35rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.58rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -2365,7 +2443,7 @@ const typeCounts = [
       padding: 0.65rem 0.5rem;
       background: var(--belgian-yellow);
       color: var(--ink);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-weight: 700;
       font-size: 0.72rem;
       text-transform: uppercase;
@@ -2386,7 +2464,7 @@ const typeCounts = [
       padding: 0.65rem 0.5rem;
       background: transparent;
       color: var(--chalk);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-weight: 700;
       font-size: 0.72rem;
       text-transform: uppercase;
@@ -2404,7 +2482,7 @@ const typeCounts = [
     }
     .product-card-inquiry-note {
       margin-top: 0.45rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.58rem;
       color: var(--concrete);
       text-transform: uppercase;
@@ -2449,7 +2527,7 @@ const typeCounts = [
       padding: 0 5px;
       background: var(--belgian-red);
       color: var(--chalk);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.65rem;
       font-weight: 700;
       border-radius: 9px;
@@ -2518,7 +2596,7 @@ const typeCounts = [
       border-bottom: 1px solid var(--chalk-a10);
     }
     :global(.cart-drawer-head h2) {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.25rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -2585,7 +2663,7 @@ const typeCounts = [
     }
     :global(.cart-row-meta) { min-width: 0; }
     :global(.cart-row-name) {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -2599,13 +2677,13 @@ const typeCounts = [
       margin-top: 0.15rem;
     }
     :global(.cart-row-batch) {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.6rem;
       color: var(--concrete);
       margin-top: 0.15rem;
     }
     :global(.cart-row-price) {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.85rem;
       font-weight: 700;
       color: var(--belgian-yellow);
@@ -2628,7 +2706,7 @@ const typeCounts = [
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       margin-bottom: 0.5rem;
     }
     :global(.cart-foot-row strong) { color: var(--belgian-yellow); font-size: 1.1rem; }
@@ -2645,7 +2723,7 @@ const typeCounts = [
       padding: 0.85rem;
       background: var(--belgian-yellow);
       color: var(--ink);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-weight: 700;
       font-size: 0.85rem;
       text-transform: uppercase;
@@ -2686,7 +2764,7 @@ const typeCounts = [
       top: 1rem;
       left: 1rem;
       z-index: 2;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.58rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -2710,7 +2788,7 @@ const typeCounts = [
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
     }
     .shop-filters .filter-source {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.62rem;
       color: var(--concrete);
       max-width: 46rem;
@@ -2726,7 +2804,7 @@ const typeCounts = [
     }
     .filter-row:last-of-type { margin-bottom: 0; }
     .filter-label {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.62rem;
       letter-spacing: 0.16em;
       text-transform: uppercase;
@@ -2759,7 +2837,7 @@ const typeCounts = [
       background: rgba(255, 255, 255, 0.05);
       color: var(--chalk-a82);
       border: 1px solid var(--chalk-a14);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-size: 0.72rem;
       font-weight: 600;
       text-transform: uppercase;
@@ -2855,7 +2933,7 @@ const typeCounts = [
     .effect-chip-count,
     .type-chip-count,
     .cat-chip-count {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.58rem;
       padding: 0.08rem 0.38rem;
       border-radius: 999px;
@@ -2875,12 +2953,12 @@ const typeCounts = [
       display: none !important;
     }
     .cat-chip-mark {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.62rem;
       opacity: 0.7;
     }
     .cat-empty {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.85rem;
       color: var(--concrete);
       text-align: center;
@@ -2932,7 +3010,7 @@ const typeCounts = [
       border: none;
     }
     .lab-card-title {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.75rem;
       color: var(--chalk);
       text-transform: uppercase;
@@ -2949,7 +3027,7 @@ const typeCounts = [
       width: 100%;
       margin-top: 2rem;
       border-collapse: collapse;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.72rem;
       background: var(--ink-a35);
     }
@@ -2989,7 +3067,7 @@ const typeCounts = [
       padding: 1.75rem;
     }
     .shipping-card h3 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1rem;
       text-transform: uppercase;
       color: var(--chalk);
@@ -3024,7 +3102,7 @@ const typeCounts = [
       padding: 1.75rem;
     }
     .rewards-card h3 {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.05rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -3038,7 +3116,7 @@ const typeCounts = [
     }
     .rewards-card ul { padding-left: 1.1rem; margin: 0.5rem 0 1rem; }
     .rewards-share {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.8rem;
       color: var(--belgian-yellow);
       word-break: break-all;
@@ -3057,7 +3135,7 @@ const typeCounts = [
       background: var(--asphalt);
       color: var(--chalk);
       border: 1px solid var(--chalk-a18);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       text-transform: uppercase;
     }
     .rewards-claim button {
@@ -3242,7 +3320,7 @@ const typeCounts = [
       transform-origin: 12px 12px;
     }
     .scroll-pill-label {
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 0.78rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -3385,7 +3463,7 @@ const typeCounts = [
       -webkit-backdrop-filter: blur(16px);
       color: #fff;
       cursor: pointer;
-      font-family: 'Anton', sans-serif;
+      font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 0.78rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -3403,7 +3481,7 @@ const typeCounts = [
       border-radius: 999px;
       background: var(--belgian-yellow);
       color: var(--ink);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.62rem;
       font-weight: 700;
       letter-spacing: 0;
@@ -3429,7 +3507,7 @@ const typeCounts = [
     }
     .shop-filter-wrap.is-open .shop-filter-sheet { display: flex; }
     .shop-filter-heading {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.62rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -3806,12 +3884,12 @@ const typeCounts = [
       }
       .product-card { transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease; }
       .product-card::after { transition: opacity 0.25s ease; }
-      .product-card-img[data-has-img="true"]::before { transition: transform 0.45s ease; }
+      .product-photo { transition: transform 0.45s ease; }
     }
 
     @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
       .product-card:hover { transform: translateY(-4px); }
-      .product-card:hover .product-card-img[data-has-img="true"]::before { transform: scale(1.03); }
+      .product-card:hover .product-photo { transform: scale(1.03); }
       .age-btn-yes:hover,
       .stripe-btn:hover,
       .btn-primary:hover { transform: translateY(-2px); }
@@ -3838,6 +3916,7 @@ const typeCounts = [
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#productGrid">Skip to shop</a>
 
   <!-- Smokey Shader: full-bleed Belgian smoke background layer -->
   <div id="smokeBg" aria-hidden="true"></div>
@@ -3918,6 +3997,7 @@ const typeCounts = [
   )}
 
   <!-- Nav -->
+  <header>
   <nav id="siteNav">
     <a href="/" class="nav-logo brand-logo" aria-label="Belgium420">
       <span class="brand-logo-flag" aria-hidden="true">
@@ -3952,7 +4032,9 @@ const typeCounts = [
       )}
       <li><a href="#shop" class="nav-cta">Shop Now</a></li>
     </ul>
+  </header>
 
+  <main>
   <!-- Hero -->
   <section class="hero" id="top" aria-label="Belgium420">
     <div class="hero-bg" role="img" aria-label="Belgian flag grunge artwork with Brussels skyline and cannabinoid structures"></div>
@@ -4092,8 +4174,8 @@ const typeCounts = [
       </div>
     </div>
 
-    <div class="collections-grid" id="productGrid" data-count={products.length}>
-      {products.map((p) => {
+    <div class="collections-grid" id="productGrid" data-count={products.length} tabindex="-1">
+      {products.map((p, productIndex) => {
         const primaryCat = p.categories.find((c) => ['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)) || p.categories[0];
         const mark = categoryDefs.find((d) => d.id === primaryCat)?.mark || '✦';
         const variants = 'variants' in p && Array.isArray(p.variants) ? p.variants : [];
@@ -4107,6 +4189,9 @@ const typeCounts = [
         const displayType = variants.length > 1 ? p.type : cartType;
         const cartBatch = defaultVariant ? `${p.batch}-${defaultVariant.id}` : p.batch;
         const cartPriceLabel = formatPriceLabel(p, variants);
+        const picture = p.img ? imageManifest[p.img] : null;
+        const saves = savePercents(variants);
+        const eager = productIndex < FIRST_ROW;
         const effects = inferEffects(p);
         const strainType = inferType(p);
         return (
@@ -4118,7 +4203,24 @@ const typeCounts = [
                 <div class="product-card-tag" data-tag={c}>{meta.label}</div>
               ) : null;
             })}
-            <div class="product-card-img" data-tone={p.tone} data-has-img={p.img ? 'true' : 'false'} style={p.img ? `background-image: url('${p.img}');` : undefined}>
+            <div class="product-card-img" data-tone={p.tone} data-has-img={picture ? 'true' : 'false'}>
+              {picture && (
+                <picture>
+                  <source type="image/avif" srcset={picture.avif} sizes={PHOTO_SIZES} />
+                  <source type="image/webp" srcset={picture.srcset} sizes={PHOTO_SIZES} />
+                  <img
+                    class="product-photo"
+                    src={picture.src}
+                    alt={p.name}
+                    width={picture.width}
+                    height={picture.height}
+                    sizes={PHOTO_SIZES}
+                    loading={eager ? 'eager' : 'lazy'}
+                    decoding="async"
+                    fetchpriority={eager ? 'high' : 'low'}
+                  />
+                </picture>
+              )}
               <span class="product-card-mark">{mark}</span>
             </div>
             <div class="product-card-body">
@@ -4144,6 +4246,7 @@ const typeCounts = [
                       >
                         {v.label}
                         <span class="product-variant-price">${v.price}</span>
+                        {saves[i] >= 5 && <span class="save-badge">SAVE {saves[i]}%</span>}
                       </button>
                     ))}
                   </div>
@@ -4164,7 +4267,7 @@ const typeCounts = [
                   data-type={cartType}
                   data-price={priceNum}
                   data-tone={p.tone}
-                  data-img={p.img || ''}
+                  data-img={picture?.thumb || p.img || ''}
                   data-categories={p.categories.join(' ')}
                   data-base-batch={p.batch}
                   data-base-name={p.name}
@@ -4400,6 +4503,7 @@ const typeCounts = [
       </div>
     </div>
   </section>
+  </main>
 
   <!-- Footer -->
   <footer>
@@ -4531,7 +4635,7 @@ const typeCounts = [
         </div>
       </div>
     </div>
-    <button type="button" class="shop-filter-fab" id="shopFilterFab" aria-expanded="false" aria-controls="shopFilterSheet">
+    <button type="button" class="shop-filter-fab" id="shopFilterFab" aria-expanded="false" aria-controls="shopFilterSheet" aria-label="Open filters">
       Filters
       <span class="shop-filter-badge" id="shopFilterBadge" hidden>0</span>
     </button>
@@ -5072,7 +5176,7 @@ const typeCounts = [
       window.addEventListener('resize', update);
     })();
   </script>
-  <script is:inline src="/textmode.umd.js"></script>
+  <script is:inline src="/textmode.umd.js" defer></script>
   <script is:inline src="/js/flag-textmode.js" defer></script>
   <script id="smokeFrag" type="x-shader/x-fragment">
 #ifdef GL_FRAGMENT_PRECISION_HIGH
