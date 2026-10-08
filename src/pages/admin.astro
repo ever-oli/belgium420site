@@ -2,30 +2,20 @@
 // /admin — CRM-style ops dashboard (Overview, Orders kanban, Rewards).
 // Auth: simple password gate stored in sessionStorage. The same password is the
 // admin key for the API. Shared-hosting-tier security — adequate for a small shop.
+import '../styles/brand.css';
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
   <title>Ops — Belgium420</title>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --belgian-black: #050505;
-      --belgian-yellow: #F5C400;
-      --belgian-red: #E31C23;
-      --asphalt: #141414;
-      --surface: #1a1a1a;
-      --concrete: #9A968C;
-      --chalk: #F5F1E8;
-      --ink: #050505;
-      --line: rgba(245,241,232,0.1);
-      --line-strong: rgba(245,241,232,0.2);
-    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { min-height: 100vh; }
     body {
@@ -75,10 +65,10 @@
       color: var(--chalk);
       border: 1px solid var(--line-strong);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
+      font-size: max(16px, 1rem);
       margin-bottom: 0.75rem;
     }
-    .login-box input:focus { outline: none; border-color: var(--belgian-yellow); }
+    .login-box input:focus { border-color: var(--belgian-yellow); }
     .login-box button {
       width: 100%;
       padding: 0.75rem;
@@ -91,7 +81,11 @@
       border: none;
       cursor: pointer;
     }
+    @media (hover: hover) and (pointer: fine) {
+
     .login-box button:hover { background: var(--chalk); }
+
+    }
     .login-error {
       color: var(--belgian-red);
       font-size: 0.85rem;
@@ -141,7 +135,11 @@
       cursor: pointer;
       border-radius: 2px;
     }
+    @media (hover: hover) and (pointer: fine) {
+
     .app-tab:hover { color: var(--chalk); }
+
+    }
     .app-tab.is-on {
       background: var(--belgian-yellow);
       color: var(--ink);
@@ -165,16 +163,28 @@
       letter-spacing: 0.06em;
       cursor: pointer;
     }
+    @media (hover: hover) and (pointer: fine) {
+
     .btn:hover { border-color: var(--belgian-yellow); color: var(--belgian-yellow); }
+
+    }
     .btn.primary {
       background: var(--belgian-yellow);
       color: var(--ink);
       border-color: var(--belgian-yellow);
       font-weight: 700;
     }
+    @media (hover: hover) and (pointer: fine) {
+
     .btn.primary:hover { background: var(--chalk); border-color: var(--chalk); color: var(--ink); }
-    .btn.danger { color: var(--belgian-red); border-color: rgba(227,28,35,0.45); }
+
+    }
+    .btn.danger { color: var(--belgian-red); border-color: var(--red-a45); }
+    @media (hover: hover) and (pointer: fine) {
+
     .btn.danger:hover { background: var(--belgian-red); color: var(--chalk); }
+
+    }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
     .btn-sm { padding: 0.28rem 0.5rem; font-size: 0.64rem; }
 
@@ -395,7 +405,11 @@
       cursor: pointer;
       transition: border-color 0.15s, transform 0.1s;
     }
+    @media (hover: hover) and (pointer: fine) {
+
     .order-card:hover { border-color: var(--belgian-yellow); transform: translateY(-1px); }
+
+    }
     .card-top {
       display: flex;
       justify-content: space-between;
@@ -470,15 +484,15 @@
       background: var(--belgian-black);
       color: var(--chalk);
       border: 1px solid var(--line-strong);
-      font-size: 0.85rem;
+      font-size: max(16px, 1rem);
     }
-    .search:focus { outline: none; border-color: var(--belgian-yellow); }
+    .search:focus { border-color: var(--belgian-yellow); }
     .filter {
       padding: 0.5rem 0.6rem;
       background: var(--belgian-black);
       color: var(--chalk);
       border: 1px solid var(--line-strong);
-      font-size: 0.8rem;
+      font-size: max(16px, 1rem);
     }
     .section-h {
       display: flex;
@@ -494,7 +508,7 @@
       letter-spacing: 0.06em;
       color: var(--belgian-yellow);
     }
-    .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--asphalt); }
+    .table-wrap { overflow-x: auto; overscroll-behavior: contain; border: 1px solid var(--line); background: var(--asphalt); }
     .crm-table {
       width: 100%;
       border-collapse: collapse;
@@ -514,14 +528,18 @@
     }
     .crm-table td {
       padding: 0.7rem;
-      border-bottom: 1px solid rgba(245,241,232,0.06);
+      border-bottom: 1px solid var(--chalk-a6);
       vertical-align: top;
     }
-    .crm-table tr:hover td { background: rgba(245,196,0,0.04); }
+    @media (hover: hover) and (pointer: fine) {
+
+    .crm-table tr:hover td { background: var(--yellow-a4); }
+
+    }
     .crm-table code { color: var(--belgian-yellow); font-family: 'JetBrains Mono', monospace; }
     .muted { color: var(--concrete); font-size: 0.72rem; }
     .row-actions { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-    .evt-list { font-size: 0.75rem; color: var(--concrete); max-height: 280px; overflow: auto; }
+    .evt-list { font-size: 0.75rem; color: var(--concrete); max-height: 280px; overflow: auto; overscroll-behavior: contain; }
     .evt-list div { padding: 0.4rem 0; border-bottom: 1px solid var(--line); }
     .file-btn { display: inline-flex; align-items: center; }
     .file-btn input { display: none; }
@@ -529,7 +547,7 @@
     /* ============ MODALS ============ */
     .modal-bg {
       position: fixed; inset: 0; z-index: 9000;
-      background: rgba(5,5,5,0.78);
+      background: var(--ink-a78);
       display: flex; align-items: center; justify-content: center;
       padding: 1.25rem;
     }
@@ -540,6 +558,7 @@
       max-width: 640px;
       max-height: 90vh;
       overflow-y: auto;
+      overscroll-behavior: contain;
       padding: 1.5rem;
     }
     .modal.narrow { max-width: 440px; }
@@ -580,7 +599,7 @@
     .modal-items li {
       list-style: none;
       padding: 0.4rem 0;
-      border-bottom: 1px solid rgba(245,241,232,0.06);
+      border-bottom: 1px solid var(--chalk-a6);
       font-size: 0.85rem;
       display: flex;
       justify-content: space-between;
@@ -600,9 +619,17 @@
       border: none;
       cursor: pointer;
     }
+    @media (hover: hover) and (pointer: fine) {
+
     .modal-btn:hover { background: var(--chalk); }
+
+    }
     .modal-btn.secondary { background: transparent; color: var(--chalk); border: 1px solid var(--line-strong); }
+    @media (hover: hover) and (pointer: fine) {
+
     .modal-btn.secondary:hover { border-color: var(--belgian-yellow); color: var(--belgian-yellow); }
+
+    }
     .modal-btn.danger { background: var(--belgian-red); color: var(--chalk); }
     .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .modal-track, .field-input {
@@ -612,10 +639,10 @@
       color: var(--chalk);
       border: 1px solid var(--line-strong);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.88rem;
+      font-size: max(16px, 1rem);
       margin-bottom: 0.45rem;
     }
-    .modal-track:focus, .field-input:focus { outline: none; border-color: var(--belgian-yellow); }
+    .modal-track:focus, .field-input:focus { border-color: var(--belgian-yellow); }
     .modal-label, .field-label {
       display: block;
       font-family: 'JetBrains Mono', monospace;
@@ -658,7 +685,7 @@
     }
 
     @media (max-width: 960px) {
-      html, body { overflow-x: hidden; }
+      html, body { overflow-x: clip; }
       .grid-2 { grid-template-columns: 1fr; }
       .kanban { grid-template-columns: 1fr; }
       .col { min-height: 0; }
@@ -686,6 +713,13 @@
       .toolbar { flex-direction: column; align-items: stretch; }
       .toast { left: 0.75rem; right: 0.75rem; bottom: 0.75rem; }
       .panel-head .btn { width: 100%; }
+    }
+    button:active:not(:disabled),
+    .login-box button:active,
+    .app-tab:active,
+    .btn:active,
+    .modal-btn:active:not(:disabled) {
+      transform: scale(0.97);
     }
   </style>
 </head>
