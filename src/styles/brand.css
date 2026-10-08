@@ -1,0 +1,127 @@
+/* Shared Belgium420 tokens. Pages keep their layout rules and reference these. */
+
+:root {
+  color-scheme: dark;
+  scrollbar-gutter: stable;
+
+  --ink: #050505;
+  --belgian-black: var(--ink);
+  --belgian-yellow: #F5C400;
+  --belgian-red: #E31C23;
+  --chalk: #F5F1E8;
+  /* Named neutral. Not a clean mix of chalk and ink, so the hex stays. */
+  --concrete: #9A968C;
+
+  --ink-flag: color-mix(in srgb, var(--ink) 98%, white);       /* #0a0a0a */
+  --ink-stripe: color-mix(in srgb, var(--ink) 95.2%, white);   /* #111111 */
+  --asphalt: color-mix(in srgb, var(--ink) 94%, white);        /* #141414 */
+  --surface: color-mix(in srgb, var(--ink) 91.6%, white);      /* #1a1a1a */
+  --ink-rule: color-mix(in srgb, var(--ink) 89.6%, white);     /* #1f1f1f */
+  --yellow-deep: color-mix(in srgb, var(--belgian-yellow) 86%, black);
+  --red-deep: color-mix(in srgb, var(--belgian-red) 74%, black);
+
+  --chalk-a6: color-mix(in srgb, var(--chalk) 6%, transparent);
+  --chalk-a8: color-mix(in srgb, var(--chalk) 8%, transparent);
+  --chalk-a10: color-mix(in srgb, var(--chalk) 10%, transparent);
+  --chalk-a12: color-mix(in srgb, var(--chalk) 12%, transparent);
+  --chalk-a14: color-mix(in srgb, var(--chalk) 14%, transparent);
+  --chalk-a15: color-mix(in srgb, var(--chalk) 15%, transparent);
+  --chalk-a18: color-mix(in srgb, var(--chalk) 18%, transparent);
+  --chalk-a20: color-mix(in srgb, var(--chalk) 20%, transparent);
+  --chalk-a25: color-mix(in srgb, var(--chalk) 25%, transparent);
+  --chalk-a28: color-mix(in srgb, var(--chalk) 28%, transparent);
+  --chalk-a35: color-mix(in srgb, var(--chalk) 35%, transparent);
+  --chalk-a65: color-mix(in srgb, var(--chalk) 65%, transparent);
+  --chalk-a72: color-mix(in srgb, var(--chalk) 72%, transparent);
+  --chalk-a78: color-mix(in srgb, var(--chalk) 78%, transparent);
+  --chalk-a82: color-mix(in srgb, var(--chalk) 82%, transparent);
+  --chalk-a85: color-mix(in srgb, var(--chalk) 85%, transparent);
+
+  --ink-a5: color-mix(in srgb, var(--ink) 5%, transparent);
+  --ink-a12: color-mix(in srgb, var(--ink) 12%, transparent);
+  --ink-a15: color-mix(in srgb, var(--ink) 15%, transparent);
+  --ink-a28: color-mix(in srgb, var(--ink) 28%, transparent);
+  --ink-a35: color-mix(in srgb, var(--ink) 35%, transparent);
+  --ink-a55: color-mix(in srgb, var(--ink) 55%, transparent);
+  --ink-a60: color-mix(in srgb, var(--ink) 60%, transparent);
+  --ink-a62: color-mix(in srgb, var(--ink) 62%, transparent);
+  --ink-a65: color-mix(in srgb, var(--ink) 65%, transparent);
+  --ink-a72: color-mix(in srgb, var(--ink) 72%, transparent);
+  --ink-a78: color-mix(in srgb, var(--ink) 78%, transparent);
+  --ink-a82: color-mix(in srgb, var(--ink) 82%, transparent);
+  --ink-a88: color-mix(in srgb, var(--ink) 88%, transparent);
+  --ink-a90: color-mix(in srgb, var(--ink) 90%, transparent);
+  --ink-a92: color-mix(in srgb, var(--ink) 92%, transparent);
+  --ink-a94: color-mix(in srgb, var(--ink) 94%, transparent);
+  --ink-a97: color-mix(in srgb, var(--ink) 97%, transparent);
+
+  --yellow-a4: color-mix(in srgb, var(--belgian-yellow) 4%, transparent);
+  --yellow-a10: color-mix(in srgb, var(--belgian-yellow) 10%, transparent);
+  --yellow-a16: color-mix(in srgb, var(--belgian-yellow) 16%, transparent);
+  --yellow-a18: color-mix(in srgb, var(--belgian-yellow) 18%, transparent);
+  --yellow-a20: color-mix(in srgb, var(--belgian-yellow) 20%, transparent);
+  --yellow-a28: color-mix(in srgb, var(--belgian-yellow) 28%, transparent);
+  --yellow-a30: color-mix(in srgb, var(--belgian-yellow) 30%, transparent);
+  --yellow-a32: color-mix(in srgb, var(--belgian-yellow) 32%, transparent);
+  --yellow-a40: color-mix(in srgb, var(--belgian-yellow) 40%, transparent);
+  --yellow-a45: color-mix(in srgb, var(--belgian-yellow) 45%, transparent);
+  --yellow-a70: color-mix(in srgb, var(--belgian-yellow) 70%, transparent);
+  --yellow-a95: color-mix(in srgb, var(--belgian-yellow) 95%, transparent);
+
+  --red-a10: color-mix(in srgb, var(--belgian-red) 10%, transparent);
+  --red-a15: color-mix(in srgb, var(--belgian-red) 15%, transparent);
+  --red-a24: color-mix(in srgb, var(--belgian-red) 24%, transparent);
+  --red-a32: color-mix(in srgb, var(--belgian-red) 32%, transparent);
+  --red-a35: color-mix(in srgb, var(--belgian-red) 35%, transparent);
+  --red-a45: color-mix(in srgb, var(--belgian-red) 45%, transparent);
+  --red-a70: color-mix(in srgb, var(--belgian-red) 70%, transparent);
+  --red-a92: color-mix(in srgb, var(--belgian-red) 92%, transparent);
+
+  --line: var(--chalk-a10);
+  --line-strong: var(--chalk-a20);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+:focus-visible {
+  outline: 2px solid var(--belgian-yellow);
+  outline-offset: 3px;
+}
+
+/* Yellow fills swallow a yellow ring. Chalk stays visible on those controls. */
+:is(
+  .age-btn-yes,
+  .btn-primary,
+  .auth-submit,
+  .add-to-cart,
+  .checkout-submit,
+  .login-box button,
+  .btn.primary,
+  .modal-btn:not(.secondary):not(.danger),
+  .stripe-btn[data-stripe="yellow"],
+  .app-tab.is-on,
+  .product-variant.is-selected
+):focus-visible {
+  outline-color: var(--chalk);
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid CanvasText !important;
+    outline-offset: 3px !important;
+  }
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]),
+textarea,
+select {
+  font-size: max(16px, 1rem);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  button {
+    transition: transform 160ms ease-out;
+  }
+}
