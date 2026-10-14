@@ -224,6 +224,13 @@ const year = new Date().getFullYear();
 
     }
     .checkout-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+    .checkout-age-confirm {
+      display: flex; gap: 0.6rem; align-items: flex-start;
+      margin: 0.9rem 0 0.4rem; padding: 0.75rem 0.85rem;
+      border: 1px solid var(--belgian-yellow); border-radius: 10px;
+      font-size: 0.9rem; color: var(--chalk); cursor: pointer; min-height: 44px;
+    }
+    .checkout-age-confirm input { accent-color: var(--belgian-yellow); width: 18px; height: 18px; margin-top: 2px; flex: none; }
     .checkout-fineprint {
       font-size: 0.75rem;
       color: var(--concrete);
@@ -504,6 +511,7 @@ const year = new Date().getFullYear();
           <span>Total</span>
           <strong id="checkoutFinalTotal">$0.00</strong>
         </div>
+        <label class="checkout-age-confirm"><input type="checkbox" name="age_confirm" id="ageConfirm" form="checkoutForm" required /><span>I confirm I am 21+ years old. *</span></label>
         <p class="checkout-summary-note" id="checkoutSummaryNote">No order minimum. Flat ${SHIPPING_FEE} shipping on every order. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
         <a href="/" class="checkout-edit">Edit cart</a>
       </aside>
@@ -748,6 +756,12 @@ const year = new Date().getFullYear();
       clearError();
       if (getCart().length === 0) {
         showError("Your cart is empty.");
+        return;
+      }
+      const ageBox = document.getElementById("ageConfirm") as HTMLInputElement | null;
+      if (ageBox && !ageBox.checked) {
+        showError("Please confirm you are 21+ (checkbox under Total).");
+        ageBox.focus();
         return;
       }
       const fd = new FormData(form);
