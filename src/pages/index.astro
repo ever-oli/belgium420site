@@ -2301,6 +2301,19 @@ const typeCounts = [
       z-index: 0;
       display: block;
     }
+
+    /* Photo zoom (tap to enlarge, like cozys.market quick view) */
+    .product-zoom { position:absolute; inset:0; z-index:0; display:block; width:100%; height:100%; padding:0; margin:0; border:0; background:none; cursor:zoom-in; -webkit-tap-highlight-color:transparent; }
+    .product-zoom:focus-visible { outline:3px solid #F5C400; outline-offset:-3px; }
+    .zoom-lb { position:fixed; inset:0; z-index:10000; background:#050505; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity .22s ease, visibility 0s linear .22s; touch-action:pinch-zoom; }
+    .zoom-lb.open { opacity:1; visibility:visible; transition:opacity .22s ease; }
+    .zoom-lb img { max-width:100vw; max-height:100vh; max-height:100dvh; width:auto; height:auto; object-fit:contain; transform:scale(.92); transition:transform .28s cubic-bezier(.2,.8,.2,1), opacity .2s; cursor:zoom-out; user-select:none; -webkit-user-drag:none; touch-action:pinch-zoom; }
+    .zoom-lb.open img { transform:none; }
+    .zoom-lb-close { position:absolute; top:max(14px, env(safe-area-inset-top)); right:max(14px, env(safe-area-inset-right)); width:48px; height:48px; border-radius:50%; border:2px solid #F5C400; background:rgba(5,5,5,.75); color:#F5C400; font-size:28px; line-height:1; cursor:pointer; display:grid; place-items:center; z-index:1; }
+    .zoom-lb-close:hover, .zoom-lb-close:focus-visible { background:#F5C400; color:#050505; outline:none; }
+    .zoom-lb-cap { position:absolute; left:0; right:0; bottom:max(16px, env(safe-area-inset-bottom)); text-align:center; color:#F5C400; font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:.85rem; pointer-events:none; }
+    body.zoom-open { overflow:hidden; }
+    @media (prefers-reduced-motion: reduce) { .zoom-lb, .zoom-lb.open, .zoom-lb img { transition:none; transform:none; } }
     .product-photo {
       width: 100%;
       height: 100%;
@@ -4225,6 +4238,7 @@ const typeCounts = [
             })}
             <div class="product-card-img" data-tone={p.tone} data-has-img={picture ? 'true' : 'false'}>
               {picture && (
+                <button type="button" class="product-zoom" data-zoom aria-label={`Enlarge photo of ${p.name}`} aria-haspopup="dialog">
                 <picture>
                   <source type="image/avif" srcset={picture.avif} sizes={PHOTO_SIZES} />
                   <source type="image/webp" srcset={picture.srcset} sizes={PHOTO_SIZES} />
@@ -4240,6 +4254,7 @@ const typeCounts = [
                     fetchpriority={eager ? 'high' : 'low'}
                   />
                 </picture>
+                </button>
               )}
               <span class="product-card-mark">{mark}</span>
             </div>
@@ -5305,5 +5320,47 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
 void main() { mainImage(gl_FragColor, gl_FragCoord.xy); }
   </script>
   <script is:inline src="/js/smoke-bg.js" defer></script>
+  <div class="zoom-lb" id="zoomLb" role="dialog" aria-modal="true" aria-label="Enlarged product photo" aria-hidden="true">
+    <button type="button" class="zoom-lb-close" aria-label="Close photo">&times;</button>
+    <img alt="" decoding="async" />
+    <div class="zoom-lb-cap"></div>
+  </div>
+  <script is:inline>
+  (function(){
+    var lb=document.getElementById('zoomLb'); if(!lb) return;
+    var img=lb.querySelector('img'), cap=lb.querySelector('.zoom-lb-cap'), x=lb.querySelector('.zoom-lb-close'), ret=null, y0=null, dy=0;
+    function best(pic){
+      var small=pic.querySelector('img'), cur=small.currentSrc||small.src||'';
+      var want=/\.avif(\?|$)/i.test(cur)?'image/avif':'image/webp', src=pic.querySelector('source[type="'+want+'"]'), out=null, w=-1;
+      if(src)(src.getAttribute('srcset')||'').split(',').forEach(function(c){var m=c.trim().split(/\s+/),n=parseInt(m[1])||0;if(m[0]&&n>w){w=n;out=m[0];}});
+      return out||cur;
+    }
+    function open(btn){
+      var pic=btn.querySelector('picture'), small=pic.querySelector('img');
+      img.src=small.currentSrc||small.src; img.alt=small.alt; cap.textContent=small.alt;
+      var big=best(pic), pre=new Image(); pre.onload=function(){ if(lb.classList.contains('open')) img.src=big; }; pre.src=big;
+      ret=btn; lb.classList.add('open'); lb.setAttribute('aria-hidden','false'); document.body.classList.add('zoom-open'); x.focus({preventScroll:true});
+    }
+    function close(){
+      if(!lb.classList.contains('open')) return;
+      lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.classList.remove('zoom-open'); img.style.transform='';
+      if(ret&&document.contains(ret)) ret.focus({preventScroll:true}); ret=null;
+    }
+    document.addEventListener('click',function(e){
+      var b=e.target.closest&&e.target.closest('[data-zoom]');
+      if(b){ e.preventDefault(); e.stopPropagation(); open(b); }
+    },true);
+    lb.addEventListener('click',function(e){ e.stopPropagation(); close(); });
+    document.addEventListener('keydown',function(e){
+      if(!lb.classList.contains('open')) return;
+      if(e.key==='Escape'){ e.preventDefault(); close(); }
+      else if(e.key==='Tab'){ e.preventDefault(); x.focus(); }
+    });
+    var zoomed=function(){ return window.visualViewport && window.visualViewport.scale>1.05; };
+    lb.addEventListener('touchstart',function(e){ y0=(e.touches.length===1&&!zoomed())?e.touches[0].clientY:null; dy=0; },{passive:true});
+    lb.addEventListener('touchmove',function(e){ if(y0===null||e.touches.length!==1){y0=null;img.style.transform='';return;} dy=e.touches[0].clientY-y0; if(dy>0){ img.style.transition='none'; img.style.transform='translateY('+dy+'px)'; lb.style.opacity=String(Math.max(.35,1-dy/400)); } },{passive:true});
+    lb.addEventListener('touchend',function(){ img.style.transition=''; lb.style.opacity=''; if(y0!==null&&dy>90){ close(); } else { img.style.transform=''; } y0=null; dy=0; });
+  })();
+  </script>
 </body>
 </html>
