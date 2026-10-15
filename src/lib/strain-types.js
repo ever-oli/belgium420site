@@ -1,5 +1,3 @@
-/** Shop Type chips: indica / hybrid / sativa / branded. Mushrooms stay untyped. */
-
 export const typeDefs = [
   { id: 'indica', label: 'Indica' },
   { id: 'hybrid', label: 'Hybrid' },

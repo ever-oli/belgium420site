@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// Deploy via MCP stdio transport
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 
@@ -17,7 +16,6 @@ const client = new Client({ name: "deploy", version: "1.0" });
 await client.connect(transport);
 console.log("✅ Connected to Hostinger MCP");
 
-// List tools to verify
 const tools = await client.listTools();
 const deployTool = tools.tools?.find(t => t.name === "hosting_deployStaticWebsite");
 console.log(`Found tool: ${deployTool?.name || "NOT FOUND"}`);

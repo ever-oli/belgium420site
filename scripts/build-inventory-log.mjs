@@ -1,8 +1,4 @@
 #!/usr/bin/env node
-/**
- * Build inventory/belgium420-inventory.xlsx from the live products array
- * plus public/inventory photos. Workbook-only; does not change the site.
- */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -77,7 +73,6 @@ const GENERIC_STRAIN_NAMES = new Set([
   '', 'cart', 'gummies', 'chocolate', 'pre-roll', 'preroll', 'blunt', 'pound', 'zip',
 ]);
 
-/** Carts / flavor lines that sell indica AND hybrid AND sativa SKUs. */
 const BRAND_LINE_NAME_RE = new RegExp(
   [
     'raw garden',
@@ -246,7 +241,7 @@ function parseLeaflyHtml(html) {
       effects = raw
         .map((e) => (typeof e === 'string' ? e : e.name || e.effect || ''))
         .filter(Boolean);
-    } catch { /* ignore */ }
+    } catch { }
   }
 
   if (!effects.length) {

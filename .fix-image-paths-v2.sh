@@ -1,7 +1,4 @@
 #!/bin/bash
-# Sync ALL image paths in index.astro to whatever actually exists in
-# public/inventory/ (case-insensitive basename match). Self-heals after
-# any past filename chaos.
 set -e
 
 ROOT=/Users/ever/belgium420-site
@@ -17,7 +14,6 @@ while IFS= read -r f; do
     echo "$catdir/$base|${rel#*/}" >> "$LOOKUP"
 done < <(find "$PUB" -type f)
 
-# Extract every image path from index.astro, find each in the lookup, replace
 CHANGED=0
 grep -oE "/inventory/[a-z]+/[a-zA-Z0-9_.;' ()-]+\.(jpg|jpeg|png)" "$INDEX" | sort -u | while read -r ref; do
     rel="${ref#/inventory/}"

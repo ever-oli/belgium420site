@@ -1,16 +1,10 @@
 #!/bin/bash
-# Pull the still-missing image files from the deployed site.
-# Each missing reference is in index.astro with capital letters (the deployed
-# site still uses those). We lowercase them to match our local convention.
 
 ROOT=/Users/ever/belgium420-site
 DIST="$ROOT/dist"
 
-# Build the list of expected lowercase basenames from HTML references
 REFS=$(grep -oE "/inventory/[a-z]+/[a-zA-Z0-9_.;'() -]+\.(jpg|jpeg|png)" "$ROOT/src/pages/index.astro" | sort -u)
 
-# For each one that's missing on disk, try fetching the same path with a few
-# capital-letter variants from the deployed site.
 count_ok=0
 count_skip=0
 count_fail=0
@@ -27,7 +21,6 @@ for ref in $REFS; do
   fi
 
   mkdir -p "$(dirname "$target")"
-  # Try candidate remote paths: original casing, all-caps first letter, fully lowercased, and PascalCase from basename spelling.
   candidates=(
     "$base"
     "$(tr 'a-z' 'A-Z' <<< "${base:0:1}")${base:1}"

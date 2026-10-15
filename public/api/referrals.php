@@ -1,16 +1,4 @@
 <?php
-/**
- * Belgium420 — Rewards / referral ledger API
- *
- * Public:
- *   GET  /api/referrals.php?code=TEST          — available credit for a code
- *   GET  /api/referrals.php?loyalty_id=ID      — paid/placed counts for loyalty pricing
- *
- * Admin (key = same as orders.php):
- *   GET    /api/referrals.php?key=ADMIN_KEY    — full ledger
- *   POST   /api/referrals.php?key=ADMIN_KEY    — upsert / clear / redeem / import
- *   PATCH  /api/referrals.php?key=ADMIN_KEY    — same actions as POST
- */
 
 declare(strict_types=1);
 

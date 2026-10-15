@@ -1,5 +1,4 @@
 #!/bin/bash
-# Build with auth gate ON. Run from project root.
 export AUTH_ENABLED=true
 cd "$(dirname "$0")"
 rm -rf dist .astro

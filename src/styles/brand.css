@@ -1,5 +1,3 @@
-/* Shared Belgium420 tokens. Pages keep their layout rules and reference these. */
-
 :root {
   color-scheme: dark;
   scrollbar-gutter: stable;
@@ -9,14 +7,13 @@
   --belgian-yellow: #F5C400;
   --belgian-red: #E31C23;
   --chalk: #F5F1E8;
-  /* Named neutral. Not a clean mix of chalk and ink, so the hex stays. */
   --concrete: #9A968C;
 
-  --ink-flag: color-mix(in srgb, var(--ink) 98%, white);       /* #0a0a0a */
-  --ink-stripe: color-mix(in srgb, var(--ink) 95.2%, white);   /* #111111 */
-  --asphalt: color-mix(in srgb, var(--ink) 94%, white);        /* #141414 */
-  --surface: color-mix(in srgb, var(--ink) 91.6%, white);      /* #1a1a1a */
-  --ink-rule: color-mix(in srgb, var(--ink) 89.6%, white);     /* #1f1f1f */
+  --ink-flag: color-mix(in srgb, var(--ink) 98%, white);
+  --ink-stripe: color-mix(in srgb, var(--ink) 95.2%, white);
+  --asphalt: color-mix(in srgb, var(--ink) 94%, white);
+  --surface: color-mix(in srgb, var(--ink) 91.6%, white);
+  --ink-rule: color-mix(in srgb, var(--ink) 89.6%, white);
   --yellow-deep: color-mix(in srgb, var(--belgian-yellow) 86%, black);
   --red-deep: color-mix(in srgb, var(--belgian-red) 74%, black);
 

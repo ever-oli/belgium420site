@@ -1,5 +1,4 @@
 #!/bin/bash
-# link-device.sh — Generate QR code link to register your phone number as a secondary device
 
 set -euo pipefail
 

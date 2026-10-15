@@ -1,12 +1,3 @@
-/**
- * Exhaustive shop filter combos.
- *
- * Category × Effect × Type can stack to an empty grid. This test walks every
- * combination against the live catalog, records why blanks happen, and marks
- * which ones have a tagging/UX avenue vs which are empty by design.
- *
- * Run: npm test
- */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';

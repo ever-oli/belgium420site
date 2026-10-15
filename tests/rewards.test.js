@@ -1,7 +1,3 @@
-/**
- * Rewards math + attribution + ledger helpers.
- * Run: npm test
- */
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
@@ -128,7 +124,6 @@ describe('computeBreakdown', () => {
       referralCredit: REFERRAL_CREDIT_GRANT,
       referralCreditCode: 'ALICE',
     });
-    // 50 - 5 promo - 1.00 loyalty = 44.00, then $25 credit → 19.00 merch + $75 ship
     assert.equal(b.promoAmount, 5);
     assert.equal(b.loyaltyAmount, 1);
     assert.equal(b.referralCreditAmount, 25);
@@ -174,7 +169,6 @@ describe('computeBreakdown', () => {
       lifetimeSpend: 2500,
       poundsSubtotal: 400,
     });
-    // 400 * 10% + 600 * 25% = 40 + 150
     assert.equal(b.otherSubtotal, 600);
     assert.equal(b.loyaltyAmount, 190);
     assert.equal(b.promoAmount, 0);
@@ -201,7 +195,6 @@ describe('computeBreakdown', () => {
       lifetimeSpend: 1000,
       poundsSubtotal: 50,
     });
-    // 50 * 10% + 150 * 10% = 20 — the pounds cap does not stack below the rate
     assert.equal(b.poundsLoyaltyPercent, 0.1);
     assert.equal(b.loyaltyAmount, 20);
     assert.match(b.loyaltyLabel, /pounds max 10%/);

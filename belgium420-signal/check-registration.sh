@@ -1,5 +1,4 @@
 #!/bin/bash
-# check-registration.sh — Check if your Signal number is linked
 
 NUMBER="${1:-+19562224814}"
 

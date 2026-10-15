@@ -1,7 +1,3 @@
-/**
- * Favicon, apple touch icon, and 1200×630 social image.
- * Run when the wordmark changes. Outputs are committed.
- */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

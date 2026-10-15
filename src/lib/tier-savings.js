@@ -1,10 +1,3 @@
-/**
- * Per-unit savings for size and quantity tiers.
- * Weight tiers compare price per gram (a zip is 28g, a QP is 113g).
- * Quantity tiers compare price per unit. The baseline is the smallest tier.
- * Returns a rounded percent, or 0 when the option is the baseline or saves under 5%.
- */
-
 const QP_GRAMS = 113;
 const ZIP_GRAMS = 28;
 

@@ -1,4 +1,3 @@
-// Self-aware auth gate: no-ops entirely when AUTH_ENABLED is false.
 // Astro inlines `__AUTH_ENABLED__` as a compile-time constant via vite.define
 // (see astro.config.mjs), so this becomes a literal `true` or `false` in the
 // final bundle — no runtime env access needed in the browser.
@@ -8,7 +7,6 @@ declare const __AUTH_ENABLED__: boolean;
 const AUTH_ENABLED: boolean = typeof __AUTH_ENABLED__ !== "undefined" ? __AUTH_ENABLED__ : false;
 
 if (AUTH_ENABLED) {
-  // Async IIFE so we can use dynamic import() (static imports must be top-level).
   void (async () => {
     const SuperTokens = (await import("supertokens-web-js")).default;
     const Session = (await import("supertokens-web-js/recipe/session")).default;

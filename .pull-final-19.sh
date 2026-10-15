@@ -1,5 +1,4 @@
 #!/bin/bash
-# Plain sequential curl invocations for each missing file.
 set -e
 cd /Users/ever/belgium420-site
 

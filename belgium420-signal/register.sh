@@ -1,12 +1,4 @@
 #!/bin/bash
-# register.sh — Link a Signal phone number as a secondary device
-#
-# This registers the container as a SECONDARY device linked to your
-# existing Signal phone number. Open the QR code URL in your browser,
-# then scan it with Signal on your phone (Settings → Linked Devices → +).
-#
-# Usage: ./register.sh <your-phone-number-in-intl-format>
-#   e.g. ./register.sh +15551234567
 
 set -euo pipefail
 NUMBER="${1:-}"
@@ -27,7 +19,6 @@ echo "On your phone: Signal → Settings → Linked Devices → tap + → Scan Q
 echo ""
 echo "Polling for registration status (Ctrl+C to cancel)..."
 
-# Poll until registered
 for i in $(seq 1 30); do
   STATUS=$(curl -s "http://localhost:9090/v1/lookup/$NUMBER" 2>/dev/null || true)
   if echo "$STATUS" | grep -q '"name"'; then

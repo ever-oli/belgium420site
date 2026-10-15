@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Deploy belgium420-site via Hostinger MCP HTTP server"""
 import requests, json
 
 BASE = "http://localhost:8100"
@@ -11,7 +10,6 @@ headers = {
     "Accept": "application/json, text/event-stream"
 }
 
-# Init
 init = {
     "jsonrpc": "2.0",
     "id": 1,
@@ -28,7 +26,6 @@ print(f"Init: {resp.status_code}")
 session_id = resp.headers.get("mcp-session-id") or "default"
 print(f"Session: {session_id}")
 
-# List tools
 headers["mcp-session-id"] = session_id
 tools_req = {"jsonrpc": "2.0", "id": 2, "method": "tools/list"}
 resp = requests.post(f"{BASE}/", json=tools_req, headers=headers, timeout=10)
@@ -39,7 +36,6 @@ if resp.status_code == 200:
     deploy_tools = [t for t in tools if "deployStatic" in t or "StaticWebsite" in t]
     print(f"Deploy tools: {deploy_tools}")
 
-# Call deploy
 deploy_req = {
     "jsonrpc": "2.0",
     "id": 3,

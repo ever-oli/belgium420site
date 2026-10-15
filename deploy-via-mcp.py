@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""Deploy belgium420-site to Hostinger via hostinger-api-mcp MCP server"""
 import subprocess, json, sys, os
 
 TOKEN = "5C4GcGnSd2BNdF8VVNikUFGCMyyHzTcgzsfXDeWo30c28a1e"
 ARCHIVE = "/Users/ever/belgium420-site/deploy.zip"
 DOMAIN = "belgium420.com"
 
-# Start MCP server process
 proc = subprocess.Popen(
     ["hostinger-api-mcp", "--stdio"],
     stdin=subprocess.PIPE,
@@ -29,7 +27,6 @@ def read_msg():
         return None
     return json.loads(line)
 
-# Initialize
 send_msg(1, "initialize", {
     "protocolVersion": "2024-11-05",
     "capabilities": {},
@@ -40,14 +37,12 @@ print("Init:", resp.get("result", {}).get("serverInfo", {}))
 
 send_msg(2, "initialized")
 
-# List tools to verify
 send_msg(3, "tools/list")
 resp = read_msg()
 tools = resp.get("result", {}).get("tools", [])
 names = [t["name"] for t in tools if "static" in t["name"].lower() or "deploy" in t["name"].lower()]
 print(f"Deploy tools found: {[n for n in names if 'static' in n.lower() or 'js' in n.lower()]}")
 
-# Call deploy - hosting_deployStaticWebsite
 print(f"\nDeploying {ARCHIVE} to {DOMAIN}...")
 send_msg(4, "tools/call", {"name": "hosting_deployStaticWebsite", "arguments": {
     "domain": DOMAIN,

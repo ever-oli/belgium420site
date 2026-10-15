@@ -1,9 +1,3 @@
-/**
- * Client-side rewards ledger (admin localStorage fallback + export/import).
- * Mirrors the PHP ledger enough that ops can keep working if /api/referrals.php
- * is unreachable (local astro preview). Order payloads remain the source of truth.
- */
-
 import {
   REFERRAL_CREDIT_GRANT,
   STORAGE_KEYS,
@@ -158,7 +152,6 @@ export function ensureCode(ledger, code, extra = {}) {
   return ledger.codes[c];
 }
 
-/** Create or overwrite shop-owner fields on a code (does not change balances). */
 export function updateCodeMeta(ledger, { code, owner_name, owner_email, note, active } = {}) {
   const row = ensureCode(ledger, code);
   if (!row) return null;
@@ -187,7 +180,6 @@ export function setCodeActive(ledger, { code, active, note = "" }) {
   return ledger;
 }
 
-/** KPI totals for the admin Overview / Rewards strip. Accepts a ledger or API snapshot. */
 export function summarizeRewards(source = {}) {
   const codes = Array.isArray(source.codes)
     ? source.codes
@@ -249,7 +241,6 @@ export function recordReferredOrder(ledger, { code, orderId, selfReferral = fals
   return ledger;
 }
 
-/** Move pending $25 for an order (or all pending for a code) to available. */
 export function markCleared(ledger, { code, orderId = "" }) {
   const row = ensureCode(ledger, code);
   if (!row) return ledger;
