@@ -1,5 +1,4 @@
 #!/bin/bash
-# Hardcoded remap of (lowercase-target → deployed-URL) pairs.
 set -e
 cd /Users/ever/belgium420-site
 

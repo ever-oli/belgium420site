@@ -1,10 +1,3 @@
-/**
- * Belgium420 — textmodemata
- * The official textmode.js demo code, verbatim.
- * Only changes: mounts into #flagAutomata (band on page) instead of
- * fullscreen body, and resizes to the host container.
- */
-
 const t = window.textmode.create({
   width: document.getElementById('flagAutomata').clientWidth || window.innerWidth,
   height: document.getElementById('flagAutomata').clientHeight || 240,

@@ -1,9 +1,4 @@
 #!/bin/bash
-# receive.sh — Poll for incoming Signal messages
-#
-# Usage: ./receive.sh
-#
-# Returns any new messages received by the linked Signal number.
 
 set -euo pipefail
 
@@ -15,5 +10,4 @@ if [ -z "$RESPONSE" ] || [ "$RESPONSE" = "null" ]; then
   exit 0
 fi
 
-# Pretty-print
 echo "$RESPONSE" | jq '. | if type == "array" then .[] else . end | {envelope, message: (.data.data.message // "(no message body)")}' 2>/dev/null || echo "$RESPONSE"

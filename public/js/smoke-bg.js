@@ -1,10 +1,3 @@
-/**
- * Belgium420 — Smokey Shader (vanilla WebGL)
- * Full-bleed domain-warped fbm smoke, Belgian palette, sits as a fixed
- * background layer behind all site content (z-index 0, above body bg).
- * Compiled GLSL is the Originkit "Smokey Shader" fragment; host is hand-written.
- * Honors prefers-reduced-motion (renders a single static frame, no rAF loop).
- */
 (() => {
   'use strict';
 
@@ -18,14 +11,13 @@
   const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
   if (!gl) { host.style.display = 'none'; return; }
 
-  // --- Belgian palette (dark->light): black, deep red, red, gold, yellow, chalk-white
   const COLORS = [
-    [0.020, 0.020, 0.020],  // #050505 belgian black
-    [0.141, 0.039, 0.043],  // #241012 deep oxblood
-    [0.890, 0.110, 0.137],  // #E31C23 belgian red
-    [0.961, 0.769, 0.000],  // #F5C400 belgian yellow
-    [1.000, 0.918, 0.320],  // #FFEA52 hot lemon
-    [0.961, 0.945, 0.910],  // #F5F1E8 chalk white
+    [0.020, 0.020, 0.020],
+    [0.141, 0.039, 0.043],
+    [0.890, 0.110, 0.137],
+    [0.961, 0.769, 0.000],
+    [1.000, 0.918, 0.320],
+    [0.961, 0.945, 0.910],
   ];
 
   const VERT = `
@@ -62,7 +54,6 @@
   }
   gl.useProgram(prog);
 
-  // Fullscreen triangle
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
@@ -101,7 +92,6 @@
 
   let W = 0, H = 0, DPR = 1;
   function resize() {
-    // Allow higher DPR on mobile/tablet for crisp smoke on retina screens
     const maxDpr = window.matchMedia('(hover: none)').matches ? 2.5 : 1.5;
     DPR = Math.min(window.devicePixelRatio || 1, maxDpr);
     W = Math.max(2, Math.floor(window.innerWidth * DPR));
@@ -135,14 +125,13 @@
   }
 
   if (reduce) {
-    gl.uniform1f(U.iTime, 12.0); // a pleasant static moment
+    gl.uniform1f(U.iTime, 12.0);
     gl.uniform2f(U.iMouse, W * 0.5, H * 0.5);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   } else {
     raf = requestAnimationFrame(frame);
   }
 
-  // Pause when tab hidden (saves GPU)
   document.addEventListener('visibilitychange', () => {
     if (reduce) return;
     if (document.hidden) { cancelAnimationFrame(raf); }

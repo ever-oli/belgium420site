@@ -1,7 +1,3 @@
-// Cart module — singleton, localStorage-backed.
-// Used by every page that needs to read/write the cart (index, checkout).
-// Keyed by product `batch` so the same product can't be double-counted.
-
 import {
   computeBreakdown,
   getLifetimeSpend,
@@ -17,10 +13,10 @@ export type CartItem = {
   batch: string;
   name: string;
   type: string;
-  price: number;       // numeric, dollars
+  price: number;
   tone: string;
-  img: string | null;  // optional, may be null for the placeholder cards
-  categories?: string[]; // shop category ids; includes "pounds" for bulk pounds
+  img: string | null;
+  categories?: string[];
   isPound?: boolean;
 };
 
@@ -96,7 +92,6 @@ function write(items: CartItem[]) {
   } catch {
     /* quota or disabled — silent */
   }
-  // Fire a window event so the badge / drawer can re-render without a poll.
   window.dispatchEvent(new CustomEvent("cart:changed"));
 }
 
@@ -142,8 +137,6 @@ export function cartTotal(): number {
   return read().reduce((sum, i) => sum + i.price, 0);
 }
 
-// ---------- discount codes ----------
-// Code → fraction off subtotal. Codes are case-insensitive.
 const DISCOUNTS: Record<string, number> = {
   "BELGIUM10": 0.10,
   "BELGIUM20": 0.20,
@@ -170,10 +163,6 @@ export function discountAmount(code: string): number {
   return cartTotal() - discountedTotal(code);
 }
 
-
-// ---------- shipping ----------
-// No order minimum. Flat SHIPPING_FEE on every order that still has merchandise.
-// A $0 merchandise total (empty cart or fully credited) is not charged shipping.
 
 export function shippingCost(merchandiseTotal: number): number {
   if (!Number.isFinite(merchandiseTotal) || merchandiseTotal <= 0) return 0;

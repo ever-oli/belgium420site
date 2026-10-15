@@ -1,25 +1,8 @@
 <?php
-/**
- * Belgium420 — Orders API
- *
- * Routes:
- *   POST   /api/orders.php                      — create new order (public)
- *   GET    /api/orders.php?key=ADMIN_KEY        — list all orders (admin)
- *   GET    /api/orders.php?key=ADMIN_KEY&id=X   — fetch one order (admin)
- *   PATCH  /api/orders.php?key=ADMIN_KEY&id=X   — update status / tracking (admin)
- *
- * Storage: data/orders.json (flat file). Atomic writes via tmp+rename.
- * Email:   PHP mail() to OWNER_EMAIL on new orders.
- *
- * Auth: the admin key is checked against ADMIN_KEY. The site is shared hosting;
- * the API file itself is the only auth surface, so we keep things minimal.
- */
 
 declare(strict_types=1);
 
 require_once __DIR__ . '/b420-store.php';
-
-// ---------- config ----------
 
 const OWNER_EMAIL  = 'mstwntdpacks@gmail.com';
 const FROM_EMAIL    = 'orders@belgium420.com';
@@ -27,7 +10,6 @@ const FROM_NAME     = 'Belgium420 Orders';
 const ADMIN_KEY     = '420Belgium';
 const ALLOWED_ORIGIN = 'https://belgium420.com';
 
-// Valid discount codes (case-insensitive) → fraction off subtotal.
 const DISCOUNT_CODES = [
     'BELGIUM10' => 0.10,
     'BELGIUM20' => 0.20,
@@ -47,8 +29,6 @@ function orders_file(): string {
     return orders_dir() . '/orders.json';
 }
 
-// ---------- CORS / headers ----------
-
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: no-referrer');
@@ -66,8 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
-
-// ---------- helpers ----------
 
 function respond(int $status, array $body): void {
     http_response_code($status);
@@ -101,12 +79,10 @@ function write_orders(array $orders): bool {
         @unlink($tmp);
         return false;
     }
-    // atomic rename
     return rename($tmp, $f);
 }
 
 function new_order_id(): string {
-    // B420-YYYYMMDD-XXXX
     return 'B420-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(2)));
 }
 
@@ -243,12 +219,9 @@ function customer_confirm_email(array $order): bool {
     return @mail($to, $subject, $body, implode("\r\n", $headers));
 }
 
-// ---------- routing ----------
-
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'POST') {
-    // ---- create new order ----
     $raw = file_get_contents('php://input');
     $data = json_decode($raw ?: '', true);
     if (!is_array($data)) bad_request('Invalid JSON body.');
@@ -270,7 +243,6 @@ if ($method === 'POST') {
     $discount_code = strtoupper(sanitize_string($data['discount_code'] ?? '', 32));
     $discount_percent = isset(DISCOUNT_CODES[$discount_code]) ? DISCOUNT_CODES[$discount_code] : 0.0;
 
-    // ---- validate ----
     $missing = [];
     if ($name === '')     $missing[] = 'name';
     if ($email === '')    $missing[] = 'email';
@@ -282,7 +254,6 @@ if ($method === 'POST') {
     if (empty($items_in)) bad_request('Cart is empty.');
     if (!empty($missing)) bad_request('Missing required fields: ' . implode(', ', $missing));
 
-    // ---- normalize items ----
     $items = [];
     $recomputed_total = 0.0;
     foreach ($items_in as $it) {
@@ -316,7 +287,7 @@ if ($method === 'POST') {
     $order = [
         'id' => new_order_id(),
         'created_at' => gmdate('c'),
-        'status' => 'received',     // received | paid | shipped
+        'status' => 'received',
         'paid_at' => null,
         'shipped_at' => null,
         'tracking' => '',
@@ -353,7 +324,6 @@ if ($method === 'POST') {
         'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
     ];
 
-    // Recompute loyalty/referral/shipping against the server ledger (source of truth).
     b420_on_order_created($order);
     $order['discount_amount'] = $discount_amount;
 
@@ -384,7 +354,6 @@ if ($method === 'GET') {
     if (!check_admin_key()) respond(401, ['ok' => false, 'error' => 'Bad admin key.']);
 
     $orders = read_orders();
-    // newest first
     usort($orders, fn($a, $b) => strcmp($b['created_at'] ?? '', $a['created_at'] ?? ''));
 
     if (!empty($_GET['id'])) {
@@ -449,7 +418,6 @@ if ($method === 'PATCH') {
     if (!$found) respond(404, ['ok' => false, 'error' => 'Order not found.']);
     if (!write_orders($orders)) respond(500, ['ok' => false, 'error' => 'Could not save.']);
 
-    // If we just marked as shipped, email the customer with tracking.
     if (($updated['status'] ?? '') === 'shipped' && !empty($updated['tracking'])) {
         $to = $updated['email'];
         $subject = 'Your Belgium420 order ' . $updated['id'] . ' has shipped';

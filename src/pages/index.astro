@@ -1,6 +1,4 @@
 ---
-// Belgium420 — European Heritage × Street Culture × Lab-Backed
-// Visual system driven by brand flag artwork (grunge Belgian flag)
 import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
 import { SHIPPING_FEE } from '../lib/rewards.js';
 import { savePercents } from '../lib/tier-savings.js';
@@ -26,9 +24,7 @@ const categoryDefs = [
   { id: 'prerolls',     label: 'Pre-Rolls',    mark: 'PR' },
 ];
 
-// tone: black | yellow | red — category color fields matching the flag bands
 const products = [
-  // ===== POUNDS =====
   {
     name: 'The Judge',
     type: 'CBD Flower · 1lb (Bulk)',
@@ -180,7 +176,6 @@ const products = [
     img: '/inventory/pounds/sherbanger-1000.jpeg',
   },
 
-  // ===== GG4 (pound only; small sizes sold out) =====
   {
     name: 'GG4 · Pound',
     type: 'Small Batch · 454g (1 lb)',
@@ -202,7 +197,6 @@ const products = [
     img: '/inventory/flower/snake-eyes.jpg',
   },
 
-  // ===== MUSHROOMS =====
   {
     name: 'Blue Meanie',
     type: 'Dried Mushrooms · 1lb',
@@ -224,7 +218,6 @@ const products = [
     img: '/inventory/mushrooms/iceberg-albino-850.jpg',
   },
 
-  // ===== EDIBLES =====
   {
     name: 'Magic Kingdom Gummies',
     type: 'Psilocybin Gummies · 10ct',
@@ -246,7 +239,6 @@ const products = [
     img: '/inventory/edibles/magic-kingdom-chocolate-40.jpg',
   },
 
-  // ===== LIVE INVENTORY · CARTS =====
   {
     name: 'Whole Melts Cart',
     type: 'Live Resin Cart · 2g',
@@ -338,7 +330,6 @@ const products = [
     img: '/inventory/carts/high-90s-2g-vape-20.jpeg',
   },
 
-  // ===== LIVE INVENTORY · CONCENTRATES =====
   {
     name: 'Peach Pie Live Rosin 90u',
     type: 'Live Rosin · 90u sieve',
@@ -360,7 +351,6 @@ const products = [
     img: '/inventory/concentrates/juug-hash-hole-20.jpeg',
   },
 
-  // ===== LIVE INVENTORY · EDIBLES =====
   {
     name: 'MIdKidz Gummies',
     type: 'Gummies · Multi-pack',
@@ -382,7 +372,6 @@ const products = [
     img: '/inventory/edibles/devour-sour-mango-gummies-25.jpeg',
   },
 
-  // ===== LIVE INVENTORY · POUNDS (NEW BATCH) =====
   {
     name: 'Hellcat Runtz · Pound',
     type: 'Premium Flower · 1lb',
@@ -584,7 +573,6 @@ const products = [
     img: '/inventory/pounds/maritianruntz-375-pound.jpeg',
   },
 
-  // ===== LIVE INVENTORY · POUNDS (NEWEST BATCH) =====
   {
     name: 'Blue Zushi · Pound',
     type: 'Premium Flower · 1lb',
@@ -646,7 +634,6 @@ const products = [
     img: '/inventory/pounds/pinkruntz-1000-pound.jpeg',
   },
 
-  // ===== LIVE INVENTORY · POUNDS (LATEST BATCH) =====
   {
     name: 'Black Dahlia · Pound',
     type: 'Premium Flower · 1lb',
@@ -698,7 +685,6 @@ const products = [
     img: '/inventory/pounds/cremebrute-600-pound.jpeg',
   },
 
-  // ===== LIVE INVENTORY · POUND ZIPS (NEW BATCH) =====
   {
     name: 'Lance · Zip',
     type: 'Flower Zip · 28g (1 oz)',
@@ -739,7 +725,6 @@ const products = [
     ],
   },
 
-  // ===== LIVE INVENTORY · CARTS (NEW BATCH) =====
   {
     name: 'Sherbinskis Cart',
     type: 'Live Resin Cart · 2g',
@@ -841,7 +826,6 @@ const products = [
     img: '/inventory/carts/favorites-2g-cart-25.jpeg',
   },
 
-  // ===== LIVE INVENTORY · CONCENTRATES (NEW BATCH) =====
   {
     name: 'Persy Snowcaps · Pound',
     type: 'Hash · 1lb',
@@ -903,7 +887,6 @@ const products = [
     img: '/inventory/concentrates/icebox-qp-concentrates-500.jpeg',
   },
 
-  // ===== LIVE INVENTORY · EDIBLES (NEW BATCH) =====
   {
     name: 'Misc Gummies 600mg',
     type: 'Gummies · 600mg total',
@@ -945,7 +928,6 @@ const products = [
     img: '/inventory/edibles/devour-500mg-nano-infused-live-rosin-20.jpeg',
   },
 
-  // ===== LIVE INVENTORY · PRE-ROLLS (NEW CATEGORY) =====
   {
     name: 'Fusion Extract Blunt',
     type: 'Pre-roll · Blunt',
@@ -977,7 +959,6 @@ const products = [
     img: '/inventory/prerolls/heady-head-1g-preroll-15.jpeg',
   },
 
-  // ===== HOUSE PARTY ONLY — INQUIRE FOR PRICING =====
   {
     name: 'Noboof BlackWidow',
     type: 'House Party Only · Premium',
@@ -1012,7 +993,6 @@ const products = [
     inquiryOnly: true,
   },
 
-  // ===== THIS WEEK'S DROPS (Sept 4) =====
   {
     name: 'Airheadz · Zip',
     type: 'Premium Flower · 28g (Zip)',
@@ -1087,7 +1067,6 @@ const products = [
     categories: ['flower', 'pounds'],
     img: '/inventory/pounds/warheadz-1875-pound.jpeg',
   },
-  // ===== NEW INVENTORY (Sep 2026 organize) =====
   {
     name: 'Astro Runtz · Pound',
     type: 'Premium Flower · 1lb',
@@ -1204,7 +1183,6 @@ const products = [
     categories: ['prerolls'],
     img: '/inventory/prerolls/juug-2g-glass-tip-preroll-25.jpg',
   },
-  // ===== LIVE INVENTORY · $700 POUNDS =====
   {
     name: 'Gummy Bears · Pound',
     type: 'Premium Flower · 1lb',
@@ -1407,17 +1385,15 @@ const typeCounts = [
       background-repeat: repeat;
     }
 
-    /* ============ SMOKEY SHADER BACKGROUND ============ */
     #smokeBg {
       position: fixed;
       inset: 0;
-      z-index: -1;            /* behind everything, above body bg */
+      z-index: -1;
       pointer-events: none;
       background: var(--belgian-black);
-      opacity: 0.92;          /* near-solid smoke; the grunge picture floats faintly over it */
+      opacity: 0.92;
     }
 
-    /* ============ AGE GATE ============ */
     .age-gate {
       position: fixed;
       inset: 0;
@@ -1528,7 +1504,6 @@ const typeCounts = [
       color: var(--concrete);
     }
 
-    /* ============ AUTH GATE (SuperTokens) ============ */
     .auth-gate {
       position: fixed;
       inset: 0;
@@ -1701,7 +1676,6 @@ const typeCounts = [
 
     }
 
-    /* ============ NAV ============ */
     nav {
       position: fixed;
       top: 0;
@@ -1729,7 +1703,6 @@ const typeCounts = [
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
     }
-    /* ============ BRAND LOGO (flag + white 420) ============ */
     .brand-logo {
       display: inline-flex;
       align-items: center;
@@ -1863,7 +1836,6 @@ const typeCounts = [
       margin-right: 0.5rem;
     }
 
-    /* ============ HERO ============ */
     .hero {
       position: relative;
       min-height: 100vh;
@@ -1885,8 +1857,8 @@ const typeCounts = [
         url('/brand/belgium-flag-grunge.jpg') center / cover no-repeat;
       transform-style: preserve-3d;
       transform: translateZ(-20px);
-      opacity: 0.32;          /* heavily softened so the smokey-shader shows through */
-      filter: blur(5px);      /* dissolve the grunge into the smoke */
+      opacity: 0.32;
+      filter: blur(5px);
     }
     @media (max-width: 560px) {
       .hero-bg { opacity: 0.22; filter: blur(3px); }
@@ -1979,7 +1951,6 @@ const typeCounts = [
       to { opacity: 1; transform: translateY(0); }
     }
     
-    /* ============ 3D FLOATING ELEMENTS ============ */
     .hero-3d {
       position: absolute;
       inset: 0;
@@ -2049,7 +2020,6 @@ const typeCounts = [
 
     }
 
-    /* ============ MARQUEE ============ */
     .marquee {
       background: var(--belgian-yellow);
       padding: 0.8rem 0;
@@ -2075,7 +2045,6 @@ const typeCounts = [
       100% { transform: translateX(-50%); }
     }
 
-    /* ============ TEXT PATH (sine-wave marquee, Originkit-style) ============ */
     .textpath-band {
       position: relative;
       background: var(--asphalt);
@@ -2099,7 +2068,6 @@ const typeCounts = [
       .textpath-text { font-size: 28px; }
     }
 
-    /* ============ TEXTMODE AUTOMATA BAND ============ */
     .automata-band {
       position: relative;
       background: var(--belgian-black);
@@ -2116,7 +2084,6 @@ const typeCounts = [
       #flagAutomata, #flagAutomata canvas { height: 160px; }
     }
 
-    /* ============ SECTIONS ============ */
     section {
       padding: 5rem 2rem;
       max-width: 1200px;
@@ -2146,7 +2113,6 @@ const typeCounts = [
       font-size: 0.95rem;
     }
 
-    /* ============ COLLECTIONS ============ */
     .collections {
       position: relative;
       isolation: isolate;
@@ -2512,7 +2478,6 @@ const typeCounts = [
     }
     .product-card-price:has(+ *) { /* fall-through for inquiry cards layout */ }
 
-    /* ============ CART NAV BUTTON ============ */
     .nav-cart-btn {
       position: relative;
       z-index: 102;
@@ -2561,7 +2526,6 @@ const typeCounts = [
       transform-origin: center;
       will-change: transform, opacity, filter;
     }
-    /* Transitions.dev — Notification badge. Diagonal slide + spring pop. */
     @keyframes b420-badge-slide {
       from { transform: translate(-8.2px, 12.4px); }
       to { transform: translate(0, 0); }
@@ -2925,7 +2889,6 @@ const typeCounts = [
     }
 
     }
-    /* Transitions.dev — Tabs sliding. Width + transform are written inline. */
     .chip-pill {
       position: absolute;
       top: 0;
@@ -2985,7 +2948,6 @@ const typeCounts = [
       padding: 3rem 0;
     }
 
-    /* ============ LAB ============ */
     .lab {
       position: relative;
       background: var(--belgian-red);
@@ -3067,7 +3029,6 @@ const typeCounts = [
     }
     .coa-table .pass { color: #7dff9a; }
 
-    /* ============ SHIPPING ============ */
     .shipping {
       background: var(--belgian-black);
       max-width: none;
@@ -3101,7 +3062,6 @@ const typeCounts = [
     }
     .shipping-card strong { color: var(--chalk); }
 
-    /* ============ REWARDS ============ */
     .rewards {
       background: var(--asphalt);
       max-width: none;
@@ -3192,7 +3152,6 @@ const typeCounts = [
       transform: translateX(-50%);
       pointer-events: none;
     }
-    /* Transitions.dev — Toast open / close. Rise, fade, blur, slight scale. */
     .rewards-toast {
       padding: 0.8rem 1rem;
       background: var(--ink);
@@ -3212,7 +3171,6 @@ const typeCounts = [
       filter: blur(0);
     }
 
-    /* ============ ABOUT ============ */
     .about {
       background: var(--asphalt);
       max-width: none;
@@ -3230,7 +3188,6 @@ const typeCounts = [
       line-height: 1.75;
     }
 
-    /* ============ FOOTER ============ */
     footer {
       background: var(--belgian-black);
       border-top: 3px solid transparent;
@@ -3281,7 +3238,6 @@ const typeCounts = [
 
     }
 
-    /* ============ SCROLL RAIL (Rare UI) ============ */
     .scroll-rail {
       position: fixed;
       inset: 0 0 auto 0;
@@ -3409,7 +3365,6 @@ const typeCounts = [
       pointer-events: none;
     }
 
-    /* ============ SHOP MID-GRID FILTERS ============ */
     .shop-cat-dock {
       position: fixed;
       left: 0;
@@ -3548,7 +3503,6 @@ const typeCounts = [
       font-size: 0.68rem;
     }
 
-    /* ============ RESPONSIVE ============ */
     @media (max-width: 1100px) {
       .nav-links { gap: 1.1rem; }
       .nav-links a { font-size: 0.7rem; letter-spacing: 0.06em; }
@@ -3938,10 +3892,8 @@ const typeCounts = [
 <body>
   <a class="skip-link" href="#productGrid">Skip to shop</a>
 
-  <!-- Smokey Shader: full-bleed Belgian smoke background layer -->
   <div id="smokeBg" aria-hidden="true"></div>
 
-  <!-- Age Gate -->
   <div class="age-gate" id="ageGate">
     <div class="age-gate-bg" aria-hidden="true"></div>
     <div class="age-gate-inner">
@@ -3966,7 +3918,6 @@ const typeCounts = [
 
   {AUTH_ENABLED && (
     <>
-      <!-- Auth Gate (SuperTokens email/password + invite) -->
       <div class="auth-gate hidden" id="authGate" aria-live="polite">
         <div class="auth-gate-bg" aria-hidden="true"></div>
         <div class="auth-gate-inner">
@@ -4016,7 +3967,6 @@ const typeCounts = [
     </>
   )}
 
-  <!-- Nav -->
   <header>
   <nav id="siteNav">
     <a href="/" class="nav-logo brand-logo" aria-label="Belgium420">
@@ -4055,7 +4005,6 @@ const typeCounts = [
   </header>
 
   <main>
-  <!-- Hero -->
   <section class="hero" id="top" aria-label="Belgium420">
     <div class="hero-bg" role="img" aria-label="Belgian flag grunge artwork with Brussels skyline and cannabinoid structures"></div>
     <div class="hero-content">
@@ -4075,7 +4024,6 @@ const typeCounts = [
       </div>
     </div>
     
-    <!-- 3D Floating Elements -->
     <div class="hero-3d" aria-hidden="true">
       <div class="hero-3d-element hero-3d-circle-1"></div>
       <div class="hero-3d-element hero-3d-circle-2"></div>
@@ -4083,7 +4031,6 @@ const typeCounts = [
     </div>
   </section>
 
-  <!-- Marquee -->
   <div class="marquee">
     <div class="marquee-inner">
       <span>Flat ${SHIPPING_FEE} Shipping</span>
@@ -4117,7 +4064,6 @@ const typeCounts = [
     </div>
   </div>
 
-  <!-- Collections -->
   <section class="collections" id="shop">
     <div class="section-header">
       <div class="section-tag">Shop</div>
@@ -4306,7 +4252,6 @@ const typeCounts = [
     <p class="cat-empty" id="catEmpty" hidden>No products match these filters.</p>
   </section>
 
-  <!-- Text Path: sine-wave marquee -->
   <div class="textpath-band" aria-hidden="true">
     <svg viewBox="0 0 1600 150" preserveAspectRatio="none" role="presentation" focusable="false">
       <defs>
@@ -4344,12 +4289,10 @@ const typeCounts = [
     </svg>
   </div>
 
-  <!-- Textmode Automata: Belgian color cellular machine -->
   <div class="automata-band" aria-hidden="true">
     <div id="flagAutomata"></div>
   </div>
 
-  <!-- Lab Section -->
   <section class="lab" id="lab">
     <div class="lab-molecules" aria-hidden="true">
       <svg class="m1" viewBox="0 0 120 120">
@@ -4452,7 +4395,6 @@ const typeCounts = [
     </div>
   </section>
 
-  <!-- Shipping -->
   <section class="shipping" id="shipping">
     <div class="section-header">
       <div class="section-tag">Shipping</div>
@@ -4475,7 +4417,6 @@ const typeCounts = [
     </div>
   </section>
 
-  <!-- Rewards -->
   <section class="rewards" id="rewards">
     <div class="section-header">
       <div class="section-tag">Rewards</div>
@@ -4511,7 +4452,6 @@ const typeCounts = [
     </div>
   </section>
 
-  <!-- About -->
   <section class="about" id="about">
     <div class="about-inner">
       <div class="section-header">
@@ -4525,7 +4465,6 @@ const typeCounts = [
   </section>
   </main>
 
-  <!-- Footer -->
   <footer>
     <div class="footer-inner">
       <div class="footer-disclaimers">
@@ -4661,13 +4600,6 @@ const typeCounts = [
     </button>
   </div>
 
-  <!--
-    Auth-gate script is always loaded. It self-disables at runtime via
-    `__AUTH_ENABLED__` (inlined by vite.define from the AUTH_ENABLED env var) —
-    when false, the SuperTokens SDK is never imported and no listeners fire.
-    The visible auth UI (login overlay + nav logout) is gated separately in
-    this file's frontmatter above.
-  -->
   <script>
     import "../scripts/auth-gate.ts";
   </script>
@@ -5101,7 +5033,6 @@ const typeCounts = [
       }
     })();
 
-    // Age gate (works whether or not the auth gate is enabled).
     (function () {
       var ageGate = document.getElementById('ageGate');
       if (!ageGate) return;
@@ -5207,15 +5138,15 @@ precision mediump float;
 
 uniform vec2 iResolution;
 uniform float iTime;
-uniform vec2 iMouse;        // pointer in buffer px, y-up
+uniform vec2 iMouse;
 uniform vec3 u_colors[8];
 uniform int u_colorCount;
 uniform float u_speed;
 uniform float u_scale;
-uniform float u_hover;      // pointer push strength; 0 = off
-uniform float u_pointer;    // eased pointer presence, 0..1
-uniform float u_reach;      // influence radius in UV units (half short side = 1)
-uniform float u_glowEdge;   // density where the glow ramp starts
+uniform float u_hover;
+uniform float u_pointer;
+uniform float u_reach;
+uniform float u_glowEdge;
 
 const int WARP_OCTAVES = 4;
 const int DETAIL_OCTAVES = 8;

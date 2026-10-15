@@ -1,6 +1,3 @@
-/* Self-hosted latin subsets. Space Grotesk 500 is unused, so it is not shipped.
-   Fallbacks are size-adjusted to Arial so headings do not jump while fonts swap. */
-
 @font-face {
   font-family: 'Anton';
   font-style: normal;

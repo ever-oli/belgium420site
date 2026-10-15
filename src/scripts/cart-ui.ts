@@ -1,6 +1,3 @@
-// Cart UI — badge in nav + slide-out drawer + add-to-cart wiring.
-// Listens for `cart:changed` events from cart.ts to re-render.
-
 import {
   getCart,
   addToCart,
@@ -23,8 +20,6 @@ import {
   shareUrlForCode,
 } from "../lib/rewards.js";
 
-// ---------- helpers ----------
-
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   attrs: Record<string, string> = {},
@@ -46,8 +41,6 @@ function el<K extends keyof HTMLElementTagNameMap>(
 function money(n: number) {
   return formatPrice(n);
 }
-
-// ---------- drawer ----------
 
 function buildDrawer(): {
   drawer: HTMLElement;
@@ -92,8 +85,6 @@ function closeDrawer() {
   d.setAttribute("aria-hidden", "true");
   document.body.classList.remove("cart-locked");
 }
-
-// ---------- render ----------
 
 let lastBadgeCount = -1;
 
@@ -199,8 +190,6 @@ function escapeAttr(s: string) {
   return escapeHtml(s);
 }
 
-// ---------- init ----------
-
 function categoriesFromButton(btn: HTMLButtonElement): string[] {
   const card = btn.closest(".product-card");
   const raw = btn.dataset.categories || card?.getAttribute("data-cats") || "";
@@ -238,17 +227,14 @@ export function initCart() {
     render(refs);
   });
 
-  // Re-render on any cart change.
   window.addEventListener("cart:changed", () => render(refs));
 
-  // Cart button in nav opens drawer.
   document.getElementById("cartToggle")?.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
     openDrawer(refs);
   });
 
-  // Wire size/variant pickers (e.g. Belgium420 flower 3.5g / 7g / 28g).
   document.querySelectorAll<HTMLElement>(".product-card").forEach((card) => {
     const btn = card.querySelector<HTMLButtonElement>(".add-to-cart");
     const chips = card.querySelectorAll<HTMLButtonElement>(".product-variant");
@@ -288,8 +274,6 @@ export function initCart() {
     });
   });
 
-  // Wire Add-to-cart buttons on every product card.
-  // The button is a child of .product-card; data-* attrs carry product info.
   document.querySelectorAll<HTMLButtonElement>(".product-card .add-to-cart").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();

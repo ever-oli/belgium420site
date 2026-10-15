@@ -1,6 +1,4 @@
 #!/bin/bash
-# deploy.sh — Clean build + deploy to Hostinger, with verification.
-# Usage: ./deploy.sh
 set -euo pipefail
 
 ROOT="/Users/ever/belgium420-site"
@@ -19,8 +17,6 @@ cd "$ROOT"
 echo "Archive size: $(du -h deploy.zip | cut -f1)"
 
 echo "=== [3/5] Deploy via hostinger MCP ==="
-# This block is meant to be run by the cloud Hermes agent with the MCP tool.
-# It will call: hosting_deployStaticWebsite domain=belgium420.com archivePath=$ROOT/deploy.zip removeArchive=true
 echo "Agent: call hosting_deployStaticWebsite with:"
 echo "  domain=belgium420.com"
 echo "  archivePath=$ROOT/deploy.zip"

@@ -1,9 +1,4 @@
 <?php
-/**
- * Shared storage + rewards ledger for Belgium420.
- * Included by orders.php and referrals.php. Direct HTTP access is refused.
- */
-
 declare(strict_types=1);
 
 if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
@@ -72,7 +67,6 @@ function b420_item_is_pound(array $item): bool {
     return !empty($item['isPound']) || !empty($item['is_pound']);
 }
 
-/** Pounds loyalty is capped; everything else uses the customer's full rate. */
 function b420_loyalty_amount(float $subtotal, float $poundsSubtotal, float $loyaltyPercent): float {
     $sub = max(0.0, b420_round_money($subtotal));
     $pounds = max(0.0, b420_round_money($poundsSubtotal));
@@ -292,10 +286,6 @@ function b420_is_self_referral(string $code, string $ownCode, string $buyerEmail
     return false;
 }
 
-/**
- * Apply loyalty + referral fields onto a new order and update the ledger.
- * Mutates $order in place.
- */
 function b420_on_order_created(array &$order): void {
     $ledger = b420_read_ledger();
 
@@ -360,7 +350,6 @@ function b420_on_order_created(array &$order): void {
                 'note' => 'ops: reject self-referrals (same code or buyer email = code owner).',
             ];
         }
-        // If the buyer claimed this code, remember owner email for later self-ref checks.
         if ($ownCode !== '' && $ownCode === $refCode) {
             $ledger['codes'][$refCode]['owner_email'] = $ledger['codes'][$refCode]['owner_email'] ?: $email;
         }
@@ -458,7 +447,7 @@ function b420_clear_pending_for_order(array &$ledger, string $code, string $orde
     if ($c === '' || !isset($ledger['codes'][$c])) return 0.0;
     foreach ($ledger['events'] as $e) {
         if (($e['type'] ?? '') === 'cleared' && ($e['code'] ?? '') === $c && ($e['order_id'] ?? '') === $orderId) {
-            return 0.0; // already cleared
+            return 0.0;
         }
     }
     $moved = 0.0;

@@ -1,8 +1,3 @@
-/**
- * Build-time product photos.
- * Reads the img paths in src/pages/index.astro and writes 400w/800w
- * WebP and AVIF derivatives under public/opt/. Sources stay put.
- */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-// Lowercase filenames under Inventory/{Carts,Concentrates,Edibles,Pounds,PreRolls}/
-// Skips Mushrooms, special packs, videos, _internal (we don't touch those).
 const fs = require("fs");
 const path = require("path");
 

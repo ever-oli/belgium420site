@@ -1,21 +1,16 @@
 #!/bin/bash
-# deploy-hostinger.sh — Deploy belgium420-site to Hostinger via MCP
 set -euo pipefail
 
 cd /Users/ever/belgium420-site
 
-# Build first (public site, no auth)
 echo "=== Building site ==="
 AUTH_ENABLED=false npx astro build 2>&1
 
-# Create deploy archive (contents of dist/ at root level)
 echo "=== Creating deploy archive ==="
 rm -f deploy.zip
 cd dist && zip -rq ../deploy.zip . && cd ..
 echo "Archive: $(ls -lh deploy.zip)"
 
-# Deploy via Hostinger MCP
-# You need HOSTINGER_API_TOKEN in your env
 echo "=== Deploying to Hostinger ==="
 export HOSTINGER_API_TOKEN="${HOSTINGER_API_TOKEN:-}"
 

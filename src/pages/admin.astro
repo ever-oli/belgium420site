@@ -1,7 +1,4 @@
 ---
-// /admin — CRM-style ops dashboard (Overview, Orders kanban, Rewards).
-// Auth: simple password gate stored in sessionStorage. The same password is the
-// admin key for the API. Shared-hosting-tier security — adequate for a small shop.
 import '../styles/brand.css';
 import '../styles/fonts.css';
 ---
@@ -28,7 +25,6 @@ import '../styles/fonts.css';
     button, input, select, textarea { font: inherit; }
     [hidden] { display: none !important; }
 
-    /* ============ LOGIN ============ */
     .login {
       display: flex;
       align-items: center;
@@ -94,7 +90,6 @@ import '../styles/fonts.css';
       min-height: 1.2em;
     }
 
-    /* ============ APP SHELL ============ */
     .app { min-height: 100vh; display: flex; flex-direction: column; }
     .app-bar {
       display: flex;
@@ -220,7 +215,6 @@ import '../styles/fonts.css';
       max-width: 42rem;
     }
 
-    /* ============ KPI ============ */
     .kpi-strip {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
@@ -357,7 +351,6 @@ import '../styles/fonts.css';
       margin-bottom: 1rem;
     }
 
-    /* ============ KANBAN ============ */
     .kanban {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -449,7 +442,6 @@ import '../styles/fonts.css';
     }
     .badges { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 
-    /* ============ CHIPS ============ */
     .chip {
       display: inline-flex;
       align-items: center;
@@ -470,7 +462,6 @@ import '../styles/fonts.css';
     .chip.shipped { color: var(--belgian-red); }
     .chip.loyalty { color: var(--belgian-red); }
 
-    /* ============ TABLES / TOOLBARS ============ */
     .toolbar {
       display: flex;
       gap: 0.5rem;
@@ -545,7 +536,6 @@ import '../styles/fonts.css';
     .file-btn { display: inline-flex; align-items: center; }
     .file-btn input { display: none; }
 
-    /* ============ MODALS ============ */
     .modal-bg {
       position: fixed; inset: 0; z-index: 9000;
       background: var(--ink-a78);

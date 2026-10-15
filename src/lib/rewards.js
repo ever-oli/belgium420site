@@ -1,10 +1,4 @@
-/**
- * Belgium420 loyalty + referral rewards (client).
- * Pure helpers are safe to import from node:test; storage helpers no-op without a window.
- */
-
 export const REFERRAL_CREDIT_GRANT = 25;
-/** Flat shipping on any order that still has merchandise after discounts. */
 export const SHIPPING_FEE = 75;
 export const ATTRIBUTION_DAYS = 30;
 export const LOYALTY_ID_DAYS = 400;
@@ -12,7 +6,6 @@ export const SHARE_ORIGIN = "https://belgium420.com";
 
 export const LOYALTY_DOLLARS_PER_PERCENT = 100;
 export const LOYALTY_PERCENT_CAP = 25;
-/** Pounds merchandise loyalty discount cannot exceed this percent. */
 export const LOYALTY_POUNDS_PERCENT_CAP = 10;
 export const POUNDS_CATEGORY = "pounds";
 
@@ -30,7 +23,6 @@ export const COOKIE_KEYS = {
   loyaltyId: "b420_loyalty_id",
 };
 
-/** @param {unknown} raw */
 export function normalizeReferralCode(raw) {
   if (raw == null) return "";
   const code = String(raw)
@@ -41,7 +33,6 @@ export function normalizeReferralCode(raw) {
   return code.length >= 2 ? code : "";
 }
 
-/** @param {string} name */
 export function codeFromName(name) {
   const base = normalizeReferralCode(String(name || "").replace(/\s+/g, ""));
   if (base.length >= 3) return base.slice(0, 16);
@@ -54,14 +45,12 @@ export function shareUrlForCode(code) {
   return c ? `${SHARE_ORIGIN}/?ref=${encodeURIComponent(c)}` : `${SHARE_ORIGIN}/?ref=YOURCODE`;
 }
 
-/** Integer percent: floor(lifetime merch $ / 100), capped at 25. */
 export function loyaltyPercentFromSpend(spendUsd) {
   const spend = Math.max(0, Number(spendUsd) || 0);
   const pct = Math.floor(spend / LOYALTY_DOLLARS_PER_PERCENT);
   return Math.min(LOYALTY_PERCENT_CAP, Math.max(0, pct));
 }
 
-/** Fraction 0–0.25 for money math. */
 export function loyaltyRateFromSpend(spendUsd) {
   return loyaltyPercentFromSpend(spendUsd) / 100;
 }
@@ -112,7 +101,6 @@ export function nextSpendMilestone(spendUsd) {
   };
 }
 
-/** True when a cart line is pounds merchandise (category id `pounds`). */
 export function lineIsPound(line) {
   if (!line || typeof line !== "object") return false;
   if (line.isPound === true || line.is_pound === true) return true;
@@ -126,7 +114,6 @@ export function lineIsPound(line) {
   return false;
 }
 
-/** Merchandise dollars that take the pounds loyalty cap. */
 export function poundsSubtotalFromLines(lines) {
   let pounds = 0;
   for (const line of lines || []) {
@@ -138,10 +125,6 @@ export function poundsSubtotalFromLines(lines) {
 }
 
 /**
- * Loyalty dollars off. Pounds are capped at LOYALTY_POUNDS_PERCENT_CAP;
- * the rest of the cart uses the customer's full loyalty rate.
- * @param {number} subtotal
- * @param {number} poundsSubtotal
  * @param {number} loyaltyPercent fraction (0.25 = 25%)
  */
 export function loyaltyDiscountForSubtotals(subtotal, poundsSubtotal, loyaltyPercent) {
@@ -263,7 +246,6 @@ function writeCookie(name, value, days) {
 }
 
 /**
- * Last-click wins. Accepts ?ref= and ?referral=.
  * @param {string | URLSearchParams} [search]
  * @param {Storage | null} [storage]
  */
@@ -294,7 +276,6 @@ export function captureReferralFromUrl(search, storage) {
   return record;
 }
 
-/** @param {Storage | null} [storage] */
 export function getReferralAttribution(storage) {
   const store = storage === undefined ? defaultStorage() : storage;
   const now = Date.now();
@@ -327,13 +308,11 @@ export function getReferralAttribution(storage) {
   return null;
 }
 
-/** @param {Storage | null} [storage] */
 export function getOwnReferralCode(storage) {
   const store = storage === undefined ? defaultStorage() : storage;
   return normalizeReferralCode(store?.getItem(STORAGE_KEYS.ownCode) || "");
 }
 
-/** @param {string} code @param {Storage | null} [storage] */
 export function setOwnReferralCode(code, storage) {
   const store = storage === undefined ? defaultStorage() : storage;
   const normalized = normalizeReferralCode(code);
@@ -356,7 +335,6 @@ export function newLoyaltyId() {
   return `B420-L-${hex}`.toUpperCase();
 }
 
-/** @param {Storage | null} [storage] */
 export function ensureLoyaltyId(storage) {
   const store = storage === undefined ? defaultStorage() : storage;
   let id = "";
@@ -378,14 +356,12 @@ export function ensureLoyaltyId(storage) {
   return id;
 }
 
-/** @param {Storage | null} [storage] */
 export function getLifetimeSpend(storage) {
   const store = storage === undefined ? defaultStorage() : storage;
   const n = Number(store?.getItem(STORAGE_KEYS.loyaltySpend) || 0);
   return Number.isFinite(n) && n > 0 ? roundMoney(n) : 0;
 }
 
-/** @param {number} n @param {Storage | null} [storage] */
 export function setLifetimeSpend(n, storage) {
   const store = storage === undefined ? defaultStorage() : storage;
   const v = roundMoney(Math.max(0, Number(n) || 0));
@@ -397,19 +373,16 @@ export function setLifetimeSpend(n, storage) {
   return v;
 }
 
-/** @param {number} merch @param {Storage | null} [storage] */
 export function addLifetimeSpend(merch, storage) {
   return setLifetimeSpend(getLifetimeSpend(storage) + roundMoney(merch), storage);
 }
 
-/** @param {Storage | null} [storage] */
 export function getLoyaltyPlacedCount(storage) {
   const store = storage === undefined ? defaultStorage() : storage;
   const n = Number(store?.getItem(STORAGE_KEYS.loyaltyPlaced) || 0);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
 }
 
-/** @param {number} n @param {Storage | null} [storage] */
 export function setLoyaltyPlacedCount(n, storage) {
   const store = storage === undefined ? defaultStorage() : storage;
   const v = Math.max(0, Math.floor(Number(n) || 0));
@@ -421,7 +394,6 @@ export function setLoyaltyPlacedCount(n, storage) {
   return v;
 }
 
-/** @param {Storage | null} [storage] */
 export function bumpLoyaltyPlacedCount(storage) {
   return setLoyaltyPlacedCount(getLoyaltyPlacedCount(storage) + 1, storage);
 }

@@ -1,5 +1,4 @@
 #!/bin/bash
-# Build with auth gate OFF (public site). Run from project root.
 export AUTH_ENABLED=false
 cd "$(dirname "$0")"
 rm -rf dist .astro
