@@ -1107,7 +1107,10 @@ import '../styles/fonts.css';
           const card = document.createElement("div");
           card.className = "order-card";
           card.dataset.id = o.id;
-          const items = (o.items || []).map((i: any) => `${escapeHtml(i.name)} (${money(i.price)})`).join(" · ");
+          const items = (o.items || []).map((i: any) => {
+            const q = Math.max(1, Math.round(Number(i.qty) || 1));
+            return `${q > 1 ? q + "× " : ""}${escapeHtml(i.name)} (${money(q * Number(i.price))})`;
+          }).join(" · ");
           const creditStatus = o.referrer_credit_status || (o.referrer_credit_pending ? "pending" : "");
           card.innerHTML = `
             <div class="card-top">
@@ -1204,12 +1207,16 @@ import '../styles/fonts.css';
     }
 
     function openModal(o: any) {
-      const itemsHtml = (o.items || []).map((i: any) => `
+      const itemsHtml = (o.items || []).map((i: any) => {
+        const q = Math.max(1, Math.round(Number(i.qty) || 1));
+        const label = q > 1 ? `${q}× ` : "";
+        return `
         <li>
-          <span>${escapeHtml(i.name)} <small style="color:var(--concrete)">· Batch ${escapeHtml(i.batch || "")}</small></span>
-          <span style="font-family:'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;color:var(--belgian-yellow)">${money(i.price)}</span>
+          <span>${label}${escapeHtml(i.name)} <small style="color:var(--concrete)">· Batch ${escapeHtml(i.batch || "")}</small></span>
+          <span style="font-family:'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;color:var(--belgian-yellow)">${money(q * Number(i.price))}</span>
         </li>
-      `).join("");
+      `;
+      }).join("");
       const pays = (o.payments || []).join(", ") || "(none selected)";
       const tracking = o.tracking || "";
       const status = o.status || "received";

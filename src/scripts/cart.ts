@@ -18,9 +18,22 @@ export type CartItem = {
   img: string | null;
   categories?: string[];
   isPound?: boolean;
+  qty?: number;
 };
 
 const STORAGE_KEY = "b420_cart_v1";
+const MAX_QTY = 999;
+
+/** Integer quantity between 1 and MAX_QTY. Missing/invalid → 1. */
+export function normalizeQty(raw: unknown): number {
+  const n = Math.round(Number(raw));
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return Math.min(MAX_QTY, n);
+}
+
+export function itemQty(it: CartItem): number {
+  return normalizeQty(it.qty);
+}
 
 // Drop corrupt lines left by the old multi-price flower card ($30/$60/$200 → millions).
 function isSaneItem(i: unknown): i is CartItem {
@@ -59,6 +72,7 @@ function sanitizeItem(item: CartItem): CartItem {
     price: item.price,
     tone: item.tone,
     img: item.img ?? null,
+    qty: normalizeQty(item.qty),
   };
   if (categories) next.categories = categories;
   if (item.isPound === true) next.isPound = true;
@@ -71,15 +85,23 @@ function read(): CartItem[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    const sane = parsed.filter(isSaneItem);
-    const clean = sane.map(sanitizeItem);
+    const sane = parsed.filter(isSaneItem).map(sanitizeItem);
+    // Merge duplicate batches (legacy carts stored one line per add).
+    const merged: CartItem[] = [];
+    for (const it of sane) {
+      const existing = merged.find((m) => m.batch === it.batch);
+      if (existing) existing.qty = normalizeQty((existing.qty ?? 1) + (it.qty ?? 1));
+      else merged.push(it);
+    }
+    const clean = merged;
     const categoriesChanged = clean.some((it, i) => {
       const prev = sane[i].categories;
       const next = it.categories;
       if (!prev && !next && sane[i].isPound === it.isPound) return false;
       return JSON.stringify(prev ?? null) !== JSON.stringify(next ?? null) || Boolean(sane[i].isPound) !== Boolean(it.isPound);
     });
-    if (clean.length !== parsed.length || categoriesChanged) write(clean);
+    const shrank = clean.length !== sane.length;
+    if (shrank || categoriesChanged) write(clean);
     return clean;
   } catch {
     return [];
@@ -101,10 +123,33 @@ export function getCart(): CartItem[] {
 
 export function addToCart(item: CartItem) {
   const items = read();
-  // No qty stacking in v1 — each add is a separate line. Simplifies admin view.
-  // If a customer wants 2 of the same thing, they add twice.
-  items.push(sanitizeItem(item));
+  const incoming = sanitizeItem(item);
+  const existing = items.find((i) => i.batch === incoming.batch);
+  if (existing) existing.qty = normalizeQty(itemQty(existing) + itemQty(incoming));
+  else items.push(incoming);
   write(items);
+}
+
+/** Set an exact quantity for a line; qty < 1 removes the line. */
+export function setQty(batch: string, qty: number) {
+  const items = read();
+  const it = items.find((i) => i.batch === batch);
+  if (!it) return;
+  if (!Number.isFinite(qty) || qty < 1) {
+    write(items.filter((i) => i.batch !== batch));
+    return;
+  }
+  const next = normalizeQty(qty);
+  if (next === itemQty(it)) return;
+  it.qty = next;
+  write(items);
+}
+
+export function stepQty(batch: string, delta: number) {
+  const items = read();
+  const it = items.find((i) => i.batch === batch);
+  if (!it) return;
+  setQty(batch, itemQty(it) + delta);
 }
 
 /** Fill categories on lines saved before pounds were tracked. No-op when already set. */
@@ -130,11 +175,15 @@ export function clearCart() {
 }
 
 export function cartCount(): number {
-  return read().length;
+  return read().reduce((n, i) => n + itemQty(i), 0);
 }
 
 export function cartTotal(): number {
-  return read().reduce((sum, i) => sum + i.price, 0);
+  return read().reduce((sum, i) => sum + i.price * itemQty(i), 0);
+}
+
+export function itemLineTotal(i: CartItem): number {
+  return i.price * itemQty(i);
 }
 
 const DISCOUNTS: Record<string, number> = {
@@ -178,7 +227,7 @@ export type RewardsQuote = {
 
 export function cartBreakdown(opts: RewardsQuote = {}) {
   const items = read();
-  const subtotal = items.reduce((sum, i) => sum + i.price, 0);
+  const subtotal = items.reduce((sum, i) => sum + i.price * itemQty(i), 0);
   const promoCode = (opts.promoCode || "").trim();
   const promoPercent = promoCode && isValidDiscount(promoCode) ? getDiscountPercent(promoCode) : 0;
   const lifetimeSpend = opts.lifetimeSpend ?? getLifetimeSpend();

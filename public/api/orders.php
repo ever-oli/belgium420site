@@ -108,9 +108,11 @@ function owner_notify_email(array $order): bool {
     $subject = 'New Belgium420 order ' . $order['id'];
     $items_lines = '';
     foreach ($order['items'] as $it) {
+        $qty = max(1, (int)($it['qty'] ?? 1));
+        $qty_label = $qty > 1 ? $qty . '× ' : '';
         $items_lines .= sprintf(
-            "  - %s  (%s)  $%.2f  [batch %s]\n",
-            $it['name'], $it['type'], (float)$it['price'], $it['batch']
+            "  - %s%s  (%s)  $%.2f  [batch %s]\n",
+            $qty_label, $it['name'], $it['type'], ($qty * (float)$it['price']), $it['batch']
         );
     }
     $pays = !empty($order['payments']) ? implode(', ', $order['payments']) : '(no payment method selected)';
@@ -210,7 +212,7 @@ function customer_confirm_email(array $order): bool {
         $order['id'],
         (float)$order['total'],
         $discount_line,
-        count($order['items'])
+        array_sum(array_map(fn($it) => max(1, (int)($it['qty'] ?? 1)), $order['items']))
     );
     $headers = [];
     $headers[] = 'From: ' . FROM_NAME . ' <' . FROM_EMAIL . '>';
@@ -264,6 +266,9 @@ if ($method === 'POST') {
         $iprice = (float)($it['price'] ?? 0);
         $itone = sanitize_string($it['tone'] ?? 'black', 16);
         $iimg = sanitize_string($it['img'] ?? '', 500);
+        $iqty = isset($it['qty']) ? (int)$it['qty'] : 1;
+        if ($iqty < 1) $iqty = 1;
+        if ($iqty > 999) $iqty = 999;
         if ($iname === '' || $iprice <= 0) continue;
         $item = [
             'name' => $iname,
@@ -272,12 +277,13 @@ if ($method === 'POST') {
             'price' => round($iprice, 2),
             'tone' => $itone,
             'img' => $iimg,
+            'qty' => $iqty,
         ];
         $icats = b420_item_categories(is_array($it) ? $it : []);
         if ($icats) $item['categories'] = $icats;
         if (!empty($it['isPound']) || !empty($it['is_pound'])) $item['isPound'] = true;
         $items[] = $item;
-        $recomputed_total += $iprice;
+        $recomputed_total += $iprice * $iqty;
     }
     if (empty($items)) bad_request('No valid items in cart.');
 

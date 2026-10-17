@@ -119,7 +119,9 @@ export function poundsSubtotalFromLines(lines) {
   for (const line of lines || []) {
     const price = Number(line?.price);
     if (!Number.isFinite(price) || price <= 0) continue;
-    if (lineIsPound(line)) pounds += price;
+    const qtyRaw = Math.round(Number(line?.qty));
+    const qty = Number.isFinite(qtyRaw) && qtyRaw > 1 ? Math.min(qtyRaw, 999) : 1;
+    if (lineIsPound(line)) pounds += price * qty;
   }
   return roundMoney(pounds);
 }

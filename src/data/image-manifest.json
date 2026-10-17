@@ -1,4 +1,12 @@
 {
+  "/inventory/pounds/the-judge-1700-pound.jpeg": {
+    "src": "/opt/inventory/pounds/the-judge-1700-pound-400.webp",
+    "width": 400,
+    "height": 533,
+    "srcset": "/opt/inventory/pounds/the-judge-1700-pound-400.webp 400w",
+    "avif": "/opt/inventory/pounds/the-judge-1700-pound-400.avif 400w",
+    "thumb": "/opt/inventory/pounds/the-judge-1700-pound-400.webp"
+  },
   "/inventory/pounds/sharpiez-1900.jpeg": {
     "src": "/opt/inventory/pounds/sharpiez-1900-400.webp",
     "width": 400,
@@ -79,13 +87,13 @@
     "avif": "/opt/inventory/pounds/percz-1500-400.avif 400w",
     "thumb": "/opt/inventory/pounds/percz-1500-400.webp"
   },
-  "/inventory/pounds/blue-tomyz-1450.jpeg": {
-    "src": "/opt/inventory/pounds/blue-tomyz-1450-400.webp",
+  "/inventory/pounds/blue-tomyz-1550-pound.jpeg": {
+    "src": "/opt/inventory/pounds/blue-tomyz-1550-pound-400.webp",
     "width": 400,
-    "height": 325,
-    "srcset": "/opt/inventory/pounds/blue-tomyz-1450-400.webp 400w",
-    "avif": "/opt/inventory/pounds/blue-tomyz-1450-400.avif 400w",
-    "thumb": "/opt/inventory/pounds/blue-tomyz-1450-400.webp"
+    "height": 533,
+    "srcset": "/opt/inventory/pounds/blue-tomyz-1550-pound-400.webp 400w",
+    "avif": "/opt/inventory/pounds/blue-tomyz-1550-pound-400.avif 400w",
+    "thumb": "/opt/inventory/pounds/blue-tomyz-1550-pound-400.webp"
   },
   "/inventory/pounds/frenchlaundry-1350-pound.png": {
     "src": "/opt/inventory/pounds/frenchlaundry-1350-pound-400.webp",
@@ -118,6 +126,14 @@
     "srcset": "/opt/inventory/flower/gg4-360.webp 360w",
     "avif": "/opt/inventory/flower/gg4-360.avif 360w",
     "thumb": "/opt/inventory/flower/gg4-360.webp"
+  },
+  "/inventory/flower/snake-eyes.jpg": {
+    "src": "/opt/inventory/flower/snake-eyes-360.webp",
+    "width": 360,
+    "height": 640,
+    "srcset": "/opt/inventory/flower/snake-eyes-360.webp 360w",
+    "avif": "/opt/inventory/flower/snake-eyes-360.avif 360w",
+    "thumb": "/opt/inventory/flower/snake-eyes-360.webp"
   },
   "/inventory/mushrooms/blue-meanie-775.jpg": {
     "src": "/opt/inventory/mushrooms/blue-meanie-775-400.webp",

@@ -2696,6 +2696,39 @@ const typeCounts = [
       color: var(--concrete);
       margin-top: 0.15rem;
     }
+    :global(.cart-row-qty) {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-top: 0.4rem;
+    }
+    :global(.cart-row-qty-btn) {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--chalk-a25);
+      background: transparent;
+      color: var(--chalk);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (hover: hover) and (pointer: fine) {
+
+    :global(.cart-row-qty-btn:hover) { border-color: var(--belgian-yellow); color: var(--belgian-yellow); }
+
+    }
+    :global(.cart-row-qty-num) {
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
+      font-size: 0.75rem;
+      min-width: 2ch;
+      text-align: center;
+      color: var(--chalk);
+    }
     :global(.cart-row-price) {
       font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.85rem;

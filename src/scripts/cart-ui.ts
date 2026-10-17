@@ -2,9 +2,12 @@ import {
   getCart,
   addToCart,
   removeFromCart,
+  stepQty,
   formatPrice,
   cartBreakdown,
   backfillCategories,
+  itemLineTotal,
+  itemQty,
   SHIPPING_FEE,
   type CartItem,
 } from "./cart";
@@ -105,7 +108,8 @@ function paintCartBadge(countEl: HTMLElement, count: number) {
 
 function render(refs: ReturnType<typeof buildDrawer>) {
   const items = getCart();
-  paintCartBadge(refs.countEl, items.length);
+  const unitCount = items.reduce((n, i) => n + itemQty(i), 0);
+  paintCartBadge(refs.countEl, unitCount);
 
   if (items.length === 0) {
     refs.body.innerHTML = `
@@ -124,6 +128,7 @@ function render(refs: ReturnType<typeof buildDrawer>) {
 
   refs.body.innerHTML = "";
   for (const it of items) {
+    const qty = itemQty(it);
     const row = el("div", { class: "cart-row" });
     row.innerHTML = `
       <div class="cart-row-img" data-tone="${it.tone}" ${it.img ? `style="background-image:url('${encodeURI(it.img)}');"` : ""}>
@@ -133,8 +138,13 @@ function render(refs: ReturnType<typeof buildDrawer>) {
         <div class="cart-row-name">${escapeHtml(it.name)}</div>
         <div class="cart-row-type">${escapeHtml(it.type)}</div>
         <div class="cart-row-batch">Batch ${escapeHtml(it.batch)}</div>
+        <div class="cart-row-qty" data-qty="${escapeAttr(it.batch)}">
+          <button type="button" class="cart-row-qty-btn" data-step="${escapeAttr(it.batch)}" data-delta="-1" aria-label="Remove one ${escapeAttr(it.name)}">−</button>
+          <span class="cart-row-qty-num" aria-label="Quantity">${qty}</span>
+          <button type="button" class="cart-row-qty-btn" data-step="${escapeAttr(it.batch)}" data-delta="1" aria-label="Add one ${escapeAttr(it.name)}">+</button>
+        </div>
       </div>
-      <div class="cart-row-price">${money(it.price)}</div>
+      <div class="cart-row-price">${money(itemLineTotal(it))}</div>
       <button type="button" class="cart-row-remove" data-remove="${escapeAttr(it.batch)}" aria-label="Remove ${escapeAttr(it.name)}">&times;</button>
     `;
     refs.body.appendChild(row);
@@ -144,6 +154,14 @@ function render(refs: ReturnType<typeof buildDrawer>) {
     btn.addEventListener("click", () => {
       const batch = btn.getAttribute("data-remove")!;
       removeFromCart(batch);
+    });
+  });
+
+  refs.body.querySelectorAll<HTMLButtonElement>("[data-step]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const batch = btn.getAttribute("data-step")!;
+      const delta = Number(btn.getAttribute("data-delta") || "1");
+      stepQty(batch, delta);
     });
   });
 

@@ -263,6 +263,13 @@ const year = new Date().getFullYear();
       color: var(--concrete);
       margin-top: 0.15rem;
     }
+    .summary-qty {
+      font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
+      font-size: 0.7rem;
+      color: var(--belgian-yellow);
+      text-transform: none;
+      letter-spacing: 0.02em;
+    }
     .summary-price {
       font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.85rem;
@@ -701,17 +708,20 @@ const year = new Date().getFullYear();
         return;
       }
       wrap.innerHTML = items
-        .map(
-          (it) => `
+        .map((it) => {
+          const qty = Math.max(1, Math.round(Number(it.qty) || 1));
+          const unit = it.price;
+          const line = Math.round(unit * qty * 100) / 100;
+          return `
             <div class="summary-row">
               <div>
-                <div class="summary-name">${escapeHtml(it.name)}</div>
+                <div class="summary-name">${escapeHtml(it.name)}${qty > 1 ? ` <span class="summary-qty">× ${qty}</span>` : ""}</div>
                 <div class="summary-meta">${escapeHtml(it.type)} · Batch ${escapeHtml(it.batch)}</div>
               </div>
-              <div class="summary-price">${formatPrice(it.price)}</div>
+              <div class="summary-price">${formatPrice(line)}</div>
             </div>
-          `,
-        )
+          `;
+        })
         .join("");
       refreshTotals();
     }
