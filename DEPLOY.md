@@ -16,22 +16,24 @@ Validated workflow for building and deploying the Astro static site at `/Users/e
 
 ```bash
 # 1. Build (auth OFF — public live site)
-cd /Users/ever/belgium420-site
 AUTH_ENABLED=false npm run build
 
 # 2. Archive dist/ CONTENTS (root-level, NOT dist/ itself)
 cd dist && rm -f ../deploy.zip && zip -rq ../deploy.zip . && cd ..
 
-# 3. Deploy via MCP tool: hosting_deployStaticWebsite
-#    domain=belgium420.com
-#    archivePath=/Users/ever/belgium420-site/deploy.zip
-#    removeArchive=true
+# 3. Deploy (one command; needs a Hostinger API token in the env)
+export HOSTINGER_API_TOKEN="hp_..."   # hPanel → Account information → API
+node deploy-node.mjs                  # → hosting_deploy-static-website via the Hostinger MCP gateway
 
 # 4. Verify (wait 15s first for async propagation)
 sleep 15
 curl -sI "https://belgium420.com/index.html" | grep -iE "HTTP/|last-modified"
 curl -s https://belgium420.com/index.html | grep -c "<your-change-marker>"
 ```
+
+The archive path and domain can be overridden: `node deploy-node.mjs [archivePath] [domain]`.
+The MCP server exposes a `search` + `execute` gateway, so the operation name is resolved at
+runtime (`hosting_deploy-static-website`); if Hostinger renames it, set `DEPLOY_OPERATION`.
 
 ### Deploy with auth ON (rare — when gate is toggled on)
 
