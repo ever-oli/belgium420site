@@ -1,15 +1,26 @@
 #!/usr/bin/env node
+// Deploy dist/ as a static website to belgium420.com via the Hostinger API MCP server.
+// Prereqs: 1) npm run build  2) cd dist && zip -rq ../deploy.zip .
+// Token: export HOSTINGER_API_TOKEN="hp_..." (get it in hPanel → API → Generate token)
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 
-const TOKEN = process.env.HOSTINGER_API_TOKEN || "5C4GcGnSd2BNdF8VVNikUFGCMyyHzTcgzsfXDeWo30c28a1e";
-const ARCHIVE = "/Users/ever/belgium420-site/deploy.zip";
-const DOMAIN = "belgium420.com";
+const TOKEN = process.env.HOSTINGER_API_TOKEN;
+if (!TOKEN) {
+  console.error("Missing HOSTINGER_API_TOKEN env var (hPanel → API → Generate new token, starts with hp_)");
+  process.exit(1);
+}
+const root = path.dirname(fileURLToPath(import.meta.url));
+const ARCHIVE = process.env.DEPLOY_ARCHIVE || path.join(root, "deploy.zip");
+const DOMAIN = process.env.DEPLOY_DOMAIN || "belgium420.com";
 
 const transport = new StdioClientTransport({
-  command: "hostinger-api-mcp",
-  env: { HOSTINGER_API_TOKEN: TOKEN },
-  cwd: "/Users/ever/belgium420-site"
+  command: "npx",
+  args: ["-y", "hostinger-api-mcp"],
+  env: { ...process.env, HOSTINGER_API_TOKEN: TOKEN },
+  cwd: root,
 });
 
 const client = new Client({ name: "deploy", version: "1.0" });
