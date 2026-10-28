@@ -3,6 +3,7 @@ import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
 import { SHIPPING_FEE } from '../lib/rewards.js';
 import { savePercents } from '../lib/tier-savings.js';
 import imageManifest from '../data/image-manifest.json';
+import { SECTIONS, NAV_SECTIONS, SCROLL_OFFSET, CATEGORY_ALIASES } from '../config/sections.mjs';
 import '../styles/brand.css';
 import '../styles/fonts.css';
 
@@ -1527,6 +1528,8 @@ const typeCounts = [
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-padding-top: 72px; }
+    main > section[id], body > section[id] { scroll-margin-top: 72px; }
+    #navLinks a.is-current { color: var(--belgian-yellow); }
     .skip-link {
       position: absolute;
       width: 1px;
@@ -4245,11 +4248,9 @@ const typeCounts = [
     </button>
   </nav>
   <ul class="nav-links" id="navLinks">
-      <li><a href="#shop">Shop</a></li>
-      <li><a href="#lab">Lab Results</a></li>
-      <li><a href="#shipping">Shipping</a></li>
-      <li><a href="#rewards">Rewards</a></li>
-      <li><a href="#about">About</a></li>
+      {NAV_SECTIONS.map((sec) => (
+        <li><a href={`#${sec.id}`} data-section={sec.id}>{sec.navLabel || sec.label}</a></li>
+      ))}
       {AUTH_ENABLED && (
         <li><button type="button" class="nav-logout" id="logoutBtn" hidden>Log out</button></li>
       )}
@@ -4751,12 +4752,9 @@ const typeCounts = [
   <div class="scroll-rail" aria-hidden="true"><div class="scroll-rail-bar" id="scrollRailBar"></div></div>
   <div class="scroll-pill" id="scrollPill">
     <div class="scroll-pill-list" id="scrollPillList" role="navigation" aria-label="Page sections">
-      <a href="#top">Home</a>
-      <a href="#shop">Shop</a>
-      <a href="#lab">Lab</a>
-      <a href="#shipping">Shipping</a>
-      <a href="#rewards">Rewards</a>
-      <a href="#about">About</a>
+      {SECTIONS.map((sec) => (
+        <a href={`#${sec.id}`} data-section={sec.id}>{sec.label}</a>
+      ))}
     </div>
     <button type="button" class="scroll-pill-btn" id="scrollPillBtn" aria-expanded="false" aria-controls="scrollPillList">
       <svg class="scroll-ring" viewBox="0 0 24 24" aria-hidden="true">
@@ -4947,6 +4945,9 @@ const typeCounts = [
       const capturedNote = banner.textContent || "";
       whenAgeClear(() => showRewardsToast(capturedNote));
     }
+  </script>
+  <script is:inline define:vars={{ b420Sections: { list: SECTIONS.map((x) => ({ id: x.id, label: x.label, aliases: x.aliases || [] })), offset: SCROLL_OFFSET, catAliases: CATEGORY_ALIASES, catIds: categoryDefs.map((c) => c.id) } }}>
+    window.B420_SECTIONS = b420Sections;
   </script>
   <script is:inline>
     (function () {
@@ -5212,7 +5213,8 @@ const typeCounts = [
       }
 
       function navHeight() {
-        return window.innerWidth > 900 ? 64 : 60;
+        var o = (window.B420_SECTIONS && window.B420_SECTIONS.offset) || { desktop: 64, mobile: 60, breakpoint: 900 };
+        return window.innerWidth > o.breakpoint ? o.desktop : o.mobile;
       }
 
       function updateShopChrome() {
@@ -5314,14 +5316,8 @@ const typeCounts = [
     })();
 
     (function () {
-      var sections = [
-        { id: 'top', label: 'Home' },
-        { id: 'shop', label: 'Shop' },
-        { id: 'lab', label: 'Lab' },
-        { id: 'shipping', label: 'Shipping' },
-        { id: 'rewards', label: 'Rewards' },
-        { id: 'about', label: 'About' }
-      ];
+      var sections = (window.B420_SECTIONS && window.B420_SECTIONS.list) || [];
+      if (!sections.length) return;
       var bar = document.getElementById('scrollRailBar');
       var ring = document.getElementById('scrollRingArc');
       var label = document.getElementById('scrollPillLabel');
@@ -5358,6 +5354,11 @@ const typeCounts = [
           var href = links[i].getAttribute('href') || '';
           links[i].classList.toggle('is-current', href === '#' + cur.id);
         }
+        document.querySelectorAll('#navLinks a[data-section]').forEach(function (a) {
+          var on = a.getAttribute('data-section') === cur.id;
+          a.classList.toggle('is-current', on);
+          if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
+        });
       }
 
       function setOpen(open) {
