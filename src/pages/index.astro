@@ -3,6 +3,7 @@ import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
 import { SHIPPING_FEE } from '../lib/rewards.js';
 import { savePercents } from '../lib/tier-savings.js';
 import imageManifest from '../data/image-manifest.json';
+import { WEIGHT_PILLS, weightPillsFor } from '../config/type-pills.mjs';
 import { SECTIONS, NAV_SECTIONS, SCROLL_OFFSET, CATEGORY_ALIASES } from '../config/sections.mjs';
 import '../styles/brand.css';
 import '../styles/fonts.css';
@@ -4364,6 +4365,16 @@ const typeCounts = [
         </div>
       </div>
       <div class="filter-row">
+        <div class="filter-label">Size</div>
+        <div class="type-bar size-bar" role="tablist" aria-label="Filter by size">
+          <span class="chip-pill" aria-hidden="true"></span>
+          <button type="button" class="type-chip size-chip is-active" data-size="all" role="tab" aria-selected="true"><span>All</span><span class="type-chip-count"></span></button>
+          {WEIGHT_PILLS.map((w) => (
+            <button type="button" class="type-chip size-chip" data-size={w.id} role="tab" aria-selected="false"><span>{w.label}</span><span class="type-chip-count"></span></button>
+          ))}
+        </div>
+      </div>
+      <div class="filter-row">
         <div class="filter-label">Shop</div>
         <div class="cat-bar" role="tablist" aria-label="Filter by category">
           <span class="chip-pill" aria-hidden="true"></span>
@@ -4417,7 +4428,7 @@ const typeCounts = [
         const effects = inferEffects(p);
         const strainType = inferType(p);
         return (
-          <div class="product-card" data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''} data-price={priceNum}>
+          <div class="product-card" data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''} data-sizes={weightPillsFor(p).join(' ')} data-price={priceNum}>
             <div class="product-card-coa">COA ✓</div>
             {p.categories.filter((c) => !['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)).slice(0, 2).map((c) => {
               const meta = categoryDefs.find((d) => d.id === c);
@@ -4825,6 +4836,16 @@ const typeCounts = [
         </div>
       </div>
       <div class="shop-filter-group">
+        <div class="shop-filter-heading">Size</div>
+        <div class="shop-filter-row" role="tablist" aria-label="Filter by size">
+          <span class="chip-pill" aria-hidden="true"></span>
+          <button type="button" class="type-chip size-chip is-active" data-size="all" role="tab" aria-selected="true"><span>All</span><span class="type-chip-count"></span></button>
+          {WEIGHT_PILLS.map((w) => (
+            <button type="button" class="type-chip size-chip" data-size={w.id} role="tab" aria-selected="false"><span>{w.label}</span><span class="type-chip-count"></span></button>
+          ))}
+        </div>
+      </div>
+      <div class="shop-filter-group">
         <div class="shop-filter-heading">Shop</div>
         <div class="shop-filter-row" role="tablist" aria-label="Filter by category">
           <span class="chip-pill" aria-hidden="true"></span>
@@ -5011,24 +5032,28 @@ const typeCounts = [
           tags: (card.getAttribute('data-cats') || '').split(/\s+/).filter(Boolean),
           vibes: (card.getAttribute('data-vibes') || '').split(/\s+/).filter(Boolean),
           strainType: card.getAttribute('data-type') || '',
+          sizes: (card.getAttribute('data-sizes') || '').split(/\s+/).filter(Boolean),
         };
       });
       var activeCat = 'all';
       var activeEffect = 'all';
       var activeType = 'all';
+      var activeSize = 'all';
       var activeSort = 'featured';
 
-      function matchesMeta(meta, cat, effect, type) {
+      function matchesMeta(meta, cat, effect, type, size) {
+        if (size === undefined) size = activeSize;
         var catOk = cat === 'all' || meta.tags.indexOf(cat) !== -1;
         var effectOk = effect === 'all' || meta.vibes.indexOf(effect) !== -1;
         var typeOk = type === 'all' || meta.strainType === type;
-        return catOk && effectOk && typeOk;
+        var sizeOk = size === 'all' || meta.sizes.indexOf(size) !== -1;
+        return catOk && effectOk && typeOk && sizeOk;
       }
 
-      function countCards(cat, effect, type) {
+      function countCards(cat, effect, type, size) {
         var n = 0;
         for (var i = 0; i < cardMeta.length; i++) {
-          if (matchesMeta(cardMeta[i], cat, effect, type)) n++;
+          if (matchesMeta(cardMeta[i], cat, effect, type, size)) n++;
         }
         return n;
       }
@@ -5123,6 +5148,7 @@ const typeCounts = [
       }
 
       function pillTone(chip) {
+        if (chip.classList.contains('size-chip')) return 'yellow';
         if (chip.classList.contains('type-chip') && chip.getAttribute('data-type') === 'branded') return 'yellow';
         if (chip.classList.contains('effect-chip') || chip.classList.contains('type-chip')) return 'red';
         return 'yellow';
@@ -5171,16 +5197,21 @@ const typeCounts = [
           var n = countCards(activeCat, id, activeType);
           setChipVisible(chip, id === 'all' || n > 0, n);
         });
-        document.querySelectorAll('.type-chip').forEach(function (chip) {
+        document.querySelectorAll('.type-chip:not(.size-chip)').forEach(function (chip) {
           var id = chip.getAttribute('data-type') || 'all';
           var n = countCards(activeCat, activeEffect, id);
+          setChipVisible(chip, id === 'all' || n > 0, n);
+        });
+        document.querySelectorAll('.size-chip').forEach(function (chip) {
+          var id = chip.getAttribute('data-size') || 'all';
+          var n = countCards(activeCat, activeEffect, activeType, id);
           setChipVisible(chip, id === 'all' || n > 0, n);
         });
       }
 
       function updateFilterBadge() {
         if (!filterBadge) return;
-        var n = (activeCat !== 'all' ? 1 : 0) + (activeEffect !== 'all' ? 1 : 0) + (activeType !== 'all' ? 1 : 0);
+        var n = (activeCat !== 'all' ? 1 : 0) + (activeEffect !== 'all' ? 1 : 0) + (activeType !== 'all' ? 1 : 0) + (activeSize !== 'all' ? 1 : 0);
         filterBadge.textContent = String(n);
         filterBadge.hidden = n === 0;
       }
@@ -5189,9 +5220,11 @@ const typeCounts = [
         if (dim === 'cat') activeCat = id || 'all';
         if (dim === 'effect') activeEffect = id || 'all';
         if (dim === 'type') activeType = id || 'all';
+        if (dim === 'size') activeSize = id || 'all';
         if (dim === 'cat') syncChips('.cat-chip', 'data-cat', activeCat);
         if (dim === 'effect') syncChips('.effect-chip', 'data-effect', activeEffect);
-        if (dim === 'type') syncChips('.type-chip', 'data-type', activeType);
+        if (dim === 'type') syncChips('.type-chip:not(.size-chip)', 'data-type', activeType);
+        if (dim === 'size') syncChips('.size-chip', 'data-size', activeSize);
         applyFilter();
         updateChipAvailability();
         updateFilterBadge();
@@ -5244,10 +5277,16 @@ const typeCounts = [
           setFilter('effect', chip.getAttribute('data-effect') || 'all');
         });
       });
-      document.querySelectorAll('.type-chip').forEach(function (chip) {
+      document.querySelectorAll('.type-chip:not(.size-chip)').forEach(function (chip) {
         chip.addEventListener('click', function () {
           if (chip.hidden) return;
           setFilter('type', chip.getAttribute('data-type') || 'all');
+        });
+      });
+      document.querySelectorAll('.size-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          if (chip.hidden) return;
+          setFilter('size', chip.getAttribute('data-size') || 'all');
         });
       });
       document.querySelectorAll('.sort-chip').forEach(function (chip) {
