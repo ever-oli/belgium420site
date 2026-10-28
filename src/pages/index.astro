@@ -5383,9 +5383,22 @@ const typeCounts = [
         var el = document.getElementById(hit.section);
         if (!el) return false;
         var o = cfg.offset;
-        var navH = window.innerWidth > o.breakpoint ? o.desktop : o.mobile;
-        var y = el.getBoundingClientRect().top + window.scrollY - navH - (o.gap || 0);
-        window.scrollTo({ top: Math.max(0, y), behavior: smooth ? 'smooth' : 'auto' });
+        function target() {
+          var navH = window.innerWidth > o.breakpoint ? o.desktop : o.mobile;
+          return Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY - navH - (o.gap || 0)));
+        }
+        window.scrollTo({ top: target(), behavior: smooth ? 'smooth' : 'instant' });
+        if (!smooth) {
+          // Photos above the section can still shift layout; re-align unless the visitor scrolled.
+          var landed = window.scrollY;
+          [250, 800, 1600].forEach(function (ms) {
+            setTimeout(function () {
+              if (Math.abs(window.scrollY - landed) > 2) return;
+              window.scrollTo({ top: target(), behavior: 'instant' });
+              landed = window.scrollY;
+            }, ms);
+          });
+        }
         return true;
       }
       window.B420_goToAnchor = goTo;
