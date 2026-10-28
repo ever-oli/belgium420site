@@ -3,6 +3,10 @@ import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
 import { SHIPPING_FEE } from '../lib/rewards.js';
 import { savePercents } from '../lib/tier-savings.js';
 import { isSoldOut, defaultVariantOf } from '../lib/stock.js';
+import pkg from '../../package.json';
+
+// Header version tag. Bump package.json "version" on each customer-facing release.
+const SITE_VERSION = `v${pkg.version.split('.').slice(0, 2).join('.')}`;
 import imageManifest from '../data/image-manifest.json';
 import { WEIGHT_PILLS, weightPillsFor } from '../config/type-pills.mjs';
 import { SECTIONS, NAV_SECTIONS, SCROLL_OFFSET, CATEGORY_ALIASES } from '../config/sections.mjs';
@@ -1947,6 +1951,7 @@ const typeCounts = [
       letter-spacing: 0.06em;
       line-height: 1;
     }
+    .version-tag { align-self: center; margin-left: 0.45rem; padding: 0.16rem 0.4rem; border: 1px solid var(--belgian-yellow); color: var(--belgian-yellow); background: var(--ink); font: 700 0.58rem/1 'Space Grotesk', 'Space Grotesk Fallback', sans-serif; letter-spacing: 0.12em; text-transform: uppercase; border-radius: 3px; white-space: nowrap; }
     .nav-logo {
       text-decoration: none;
       position: relative;
@@ -4239,6 +4244,7 @@ const typeCounts = [
         <span class="brand-logo-420">420</span>
       </span>
       <span class="brand-logo-word">Belgium 420</span>
+      <span class="version-tag" title={`Belgium420 ${SITE_VERSION}`}>{SITE_VERSION}</span>
     </a>
     <a href="#shop" class="nav-cta-mobile">Shop</a>
     <button type="button" class="nav-cart-btn" id="cartToggle" aria-label="Open cart">

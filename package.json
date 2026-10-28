@@ -1,7 +1,7 @@
 {
   "name": "belgium420",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "scripts": {
     "dev": "concurrently -k -n astro,auth -c yellow,cyan \"astro dev --port 4321\" \"node --env-file=.env server/index.mjs\"",
     "dev:site": "astro dev --port 4321",
