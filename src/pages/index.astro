@@ -2,6 +2,7 @@
 import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
 import { SHIPPING_FEE } from '../lib/rewards.js';
 import { savePercents } from '../lib/tier-savings.js';
+import { isSoldOut, defaultVariantOf } from '../lib/stock.js';
 import imageManifest from '../data/image-manifest.json';
 import { WEIGHT_PILLS, weightPillsFor } from '../config/type-pills.mjs';
 import { SECTIONS, NAV_SECTIONS, SCROLL_OFFSET, CATEGORY_ALIASES } from '../config/sections.mjs';
@@ -2646,6 +2647,10 @@ const typeCounts = [
       text-transform: uppercase;
       color: var(--concrete);
     }
+    .product-card.is-sold-out .product-card-img { filter: grayscale(0.85) brightness(0.7); }
+    .product-card-soldout { position: absolute; top: 2.75rem; right: 1rem; z-index: 3; padding: 0.25rem 0.55rem; background: var(--belgian-red); color: #fff; font: 700 0.62rem/1 'Space Grotesk', 'Space Grotesk Fallback', sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+    .add-to-cart:disabled { background: #1a1a1a; color: rgba(255,255,255,0.45); cursor: not-allowed; transform: none; }
+    .product-variant.is-out { opacity: 0.45; text-decoration: line-through; }
     .add-to-cart {
       display: block;
       width: 100%;
@@ -4410,7 +4415,8 @@ const typeCounts = [
         const primaryCat = p.categories.find((c) => ['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)) || p.categories[0];
         const mark = categoryDefs.find((d) => d.id === primaryCat)?.mark || '✦';
         const variants = 'variants' in p && Array.isArray(p.variants) ? p.variants : [];
-        const defaultVariant = variants[0];
+        const defaultVariant = defaultVariantOf(p);
+        const soldOut = isSoldOut(p);
         const firstAmt = (p.price || '$0').match(/[\d,]+(?:\.\d+)?/);
         const priceNum = defaultVariant
           ? defaultVariant.price
@@ -4428,8 +4434,9 @@ const typeCounts = [
         const effects = inferEffects(p);
         const strainType = inferType(p);
         return (
-          <div class="product-card" data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''} data-sizes={weightPillsFor(p).join(' ')} data-price={priceNum}>
+          <div class={`product-card${soldOut ? ' is-sold-out' : ''}`} data-sold-out={soldOut ? 'true' : undefined} data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''} data-sizes={weightPillsFor(p).join(' ')} data-price={priceNum}>
             <div class="product-card-coa">COA ✓</div>
+            {soldOut && <div class="product-card-soldout" aria-hidden="true">Sold out</div>}
             {p.categories.filter((c) => !['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)).slice(0, 2).map((c) => {
               const meta = categoryDefs.find((d) => d.id === c);
               return meta ? (
@@ -4477,12 +4484,14 @@ const typeCounts = [
                     {variants.map((v, i) => (
                       <button
                         type="button"
-                        class={`product-variant${i === 0 ? ' is-selected' : ''}`}
+                        class={`product-variant${v === defaultVariant ? ' is-selected' : ''}${v.soldOut ? ' is-out' : ''}`}
+                        data-sold-out={v.soldOut ? 'true' : undefined}
+                        title={v.soldOut ? `${v.label} sold out` : undefined}
                         data-variant-id={v.id}
                         data-variant-label={v.label}
                         data-variant-type={v.type}
                         data-variant-price={v.price}
-                        aria-pressed={i === 0 ? 'true' : 'false'}
+                        aria-pressed={v === defaultVariant ? 'true' : 'false'}
                       >
                         {v.label}
                         <span class="product-variant-price">${v.price}</span>
@@ -4511,8 +4520,10 @@ const typeCounts = [
                   data-categories={p.categories.join(' ')}
                   data-base-batch={p.batch}
                   data-base-name={p.name}
-                  aria-label={`Add ${cartName} to cart`}
-                >Add to cart</button>
+                  aria-label={soldOut ? `${p.name} is sold out` : `Add ${cartName} to cart`}
+                  data-sold-out={soldOut ? 'true' : undefined}
+                  disabled={soldOut}
+                >{soldOut ? 'Sold out' : 'Add to cart'}</button>
               )}
               {p.inquiryOnly && (
                 <div class="product-card-inquiry-note">House party only — request pricing</div>

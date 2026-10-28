@@ -281,6 +281,12 @@ export function initCart() {
       btn.setAttribute("aria-label", `Add ${name} to cart`);
       if (priceEl) priceEl.textContent = money(price);
       if (typeEl && type) typeEl.textContent = type;
+      // Sold-out rule (src/lib/stock.js): an out-of-stock size can't be added.
+      const out = card.dataset.soldOut === "true" || chip.dataset.soldOut === "true";
+      btn.disabled = out;
+      btn.dataset.soldOut = out ? "true" : "";
+      btn.textContent = out ? "Sold out" : "Add to cart";
+      if (out) btn.setAttribute("aria-label", `${name} is sold out`);
     };
 
     chips.forEach((chip) => {
@@ -296,6 +302,7 @@ export function initCart() {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
+      if (btn.disabled || btn.dataset.soldOut === "true" || btn.closest(".product-card")?.getAttribute("data-sold-out") === "true") return;
       const categories = categoriesFromButton(btn);
       const item: CartItem = {
         batch: btn.dataset.batch || "",
