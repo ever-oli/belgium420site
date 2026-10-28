@@ -5302,13 +5302,61 @@ const typeCounts = [
       if (!ageGate) return;
       var yes = document.querySelector('.age-btn-yes');
       var no = document.querySelector('.age-btn-no');
+      var cfg = window.B420_SECTIONS || { list: [], catAliases: {}, catIds: [], offset: { desktop: 64, mobile: 60, breakpoint: 900, gap: 8 } };
+      var HASH_KEY = 'b420ReturnHash';
+      // '#coa' -> lab, '#pounds' -> shop + Pounds chip. Mirrors resolveAnchor() in src/config/sections.mjs.
+      function resolve(hash) {
+        var h = '';
+        try { h = decodeURIComponent(String(hash || '')).replace(/^#/, '').trim().toLowerCase(); } catch (e) { return null; }
+        if (!h) return null;
+        for (var i = 0; i < cfg.list.length; i++) {
+          var sec = cfg.list[i];
+          if (sec.id === h || (sec.aliases || []).indexOf(h) !== -1) return { section: sec.id };
+        }
+        var cat = cfg.catIds.indexOf(h) !== -1 ? h : cfg.catAliases[h];
+        if (cat && cat !== 'all' && cfg.catIds.indexOf(cat) !== -1) return { section: 'shop', cat: cat };
+        return null;
+      }
+      function goTo(hash, smooth) {
+        var hit = resolve(hash);
+        if (!hit) return false;
+        if (hit.cat) {
+          var chip = document.querySelector('#shopFilters .cat-chip[data-cat="' + hit.cat + '"]');
+          if (chip) chip.click();
+        }
+        var el = document.getElementById(hit.section);
+        if (!el) return false;
+        var o = cfg.offset;
+        var navH = window.innerWidth > o.breakpoint ? o.desktop : o.mobile;
+        var y = el.getBoundingClientRect().top + window.scrollY - navH - (o.gap || 0);
+        window.scrollTo({ top: Math.max(0, y), behavior: smooth ? 'smooth' : 'auto' });
+        return true;
+      }
+      window.B420_goToAnchor = goTo;
+      function gateOpen() { return !ageGate.classList.contains('hidden'); }
+      // Keep the deep-link hash while the 21+ gate is up so unlocking returns you to it.
+      if (location.hash && gateOpen()) {
+        try { sessionStorage.setItem(HASH_KEY, location.hash); } catch (e) {}
+      }
       function hide() {
         ageGate.classList.add('hidden');
         try { sessionStorage.setItem('ageVerified', 'true'); } catch (e) {}
+        var back = location.hash;
+        try { back = back || sessionStorage.getItem(HASH_KEY) || ''; sessionStorage.removeItem(HASH_KEY); } catch (e) {}
+        if (back) {
+          if (location.hash !== back) history.replaceState(null, '', back);
+          requestAnimationFrame(function () { goTo(back, false); });
+        }
       }
       try {
         if (sessionStorage.getItem('ageVerified') === 'true') hide();
       } catch (e) {}
+      window.addEventListener('hashchange', function () {
+        if (!gateOpen()) goTo(location.hash, true);
+      });
+      window.addEventListener('load', function () {
+        if (!gateOpen() && location.hash) goTo(location.hash, false);
+      });
       if (yes) yes.addEventListener('click', hide);
       if (no) no.addEventListener('click', function () {
         window.location.href = 'https://www.google.com';
