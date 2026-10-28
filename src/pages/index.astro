@@ -2,7 +2,14 @@
 import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
 import { SHIPPING_FEE } from '../lib/rewards.js';
 import { savePercents } from '../lib/tier-savings.js';
+import { isSoldOut, defaultVariantOf } from '../lib/stock.js';
+import pkg from '../../package.json';
+
+// Header version tag. Bump package.json "version" on each customer-facing release.
+const SITE_VERSION = `v${pkg.version.split('.').slice(0, 2).join('.')}`;
 import imageManifest from '../data/image-manifest.json';
+import { WEIGHT_PILLS, weightPillsFor } from '../config/type-pills.mjs';
+import { SECTIONS, NAV_SECTIONS, SCROLL_OFFSET, CATEGORY_ALIASES } from '../config/sections.mjs';
 import '../styles/brand.css';
 import '../styles/fonts.css';
 
@@ -1527,6 +1534,8 @@ const typeCounts = [
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-padding-top: 72px; }
+    main > section[id], body > section[id] { scroll-margin-top: 72px; }
+    #navLinks a.is-current { color: var(--belgian-yellow); }
     .skip-link {
       position: absolute;
       width: 1px;
@@ -1942,6 +1951,7 @@ const typeCounts = [
       letter-spacing: 0.06em;
       line-height: 1;
     }
+    .version-tag { align-self: center; margin-left: 0.45rem; padding: 0.16rem 0.4rem; border: 1px solid var(--belgian-yellow); color: var(--belgian-yellow); background: var(--ink); font: 700 0.58rem/1 'Space Grotesk', 'Space Grotesk Fallback', sans-serif; letter-spacing: 0.12em; text-transform: uppercase; border-radius: 3px; white-space: nowrap; }
     .nav-logo {
       text-decoration: none;
       position: relative;
@@ -2642,6 +2652,10 @@ const typeCounts = [
       text-transform: uppercase;
       color: var(--concrete);
     }
+    .product-card.is-sold-out .product-card-img { filter: grayscale(0.85) brightness(0.7); }
+    .product-card-soldout { position: absolute; top: 2.75rem; right: 1rem; z-index: 3; padding: 0.25rem 0.55rem; background: var(--belgian-red); color: #fff; font: 700 0.62rem/1 'Space Grotesk', 'Space Grotesk Fallback', sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+    .add-to-cart:disabled { background: #1a1a1a; color: rgba(255,255,255,0.45); cursor: not-allowed; transform: none; }
+    .product-variant.is-out { opacity: 0.45; text-decoration: line-through; }
     .add-to-cart {
       display: block;
       width: 100%;
@@ -4230,6 +4244,7 @@ const typeCounts = [
         <span class="brand-logo-420">420</span>
       </span>
       <span class="brand-logo-word">Belgium 420</span>
+      <span class="version-tag" title={`Belgium420 ${SITE_VERSION}`}>{SITE_VERSION}</span>
     </a>
     <a href="#shop" class="nav-cta-mobile">Shop</a>
     <button type="button" class="nav-cart-btn" id="cartToggle" aria-label="Open cart">
@@ -4245,11 +4260,9 @@ const typeCounts = [
     </button>
   </nav>
   <ul class="nav-links" id="navLinks">
-      <li><a href="#shop">Shop</a></li>
-      <li><a href="#lab">Lab Results</a></li>
-      <li><a href="#shipping">Shipping</a></li>
-      <li><a href="#rewards">Rewards</a></li>
-      <li><a href="#about">About</a></li>
+      {NAV_SECTIONS.map((sec) => (
+        <li><a href={`#${sec.id}`} data-section={sec.id}>{sec.navLabel || sec.label}</a></li>
+      ))}
       {AUTH_ENABLED && (
         <li><button type="button" class="nav-logout" id="logoutBtn" hidden>Log out</button></li>
       )}
@@ -4363,6 +4376,16 @@ const typeCounts = [
         </div>
       </div>
       <div class="filter-row">
+        <div class="filter-label">Size</div>
+        <div class="type-bar size-bar" role="tablist" aria-label="Filter by size">
+          <span class="chip-pill" aria-hidden="true"></span>
+          <button type="button" class="type-chip size-chip is-active" data-size="all" role="tab" aria-selected="true"><span>All</span><span class="type-chip-count"></span></button>
+          {WEIGHT_PILLS.map((w) => (
+            <button type="button" class="type-chip size-chip" data-size={w.id} role="tab" aria-selected="false"><span>{w.label}</span><span class="type-chip-count"></span></button>
+          ))}
+        </div>
+      </div>
+      <div class="filter-row">
         <div class="filter-label">Shop</div>
         <div class="cat-bar" role="tablist" aria-label="Filter by category">
           <span class="chip-pill" aria-hidden="true"></span>
@@ -4398,7 +4421,8 @@ const typeCounts = [
         const primaryCat = p.categories.find((c) => ['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)) || p.categories[0];
         const mark = categoryDefs.find((d) => d.id === primaryCat)?.mark || '✦';
         const variants = 'variants' in p && Array.isArray(p.variants) ? p.variants : [];
-        const defaultVariant = variants[0];
+        const defaultVariant = defaultVariantOf(p);
+        const soldOut = isSoldOut(p);
         const firstAmt = (p.price || '$0').match(/[\d,]+(?:\.\d+)?/);
         const priceNum = defaultVariant
           ? defaultVariant.price
@@ -4416,8 +4440,9 @@ const typeCounts = [
         const effects = inferEffects(p);
         const strainType = inferType(p);
         return (
-          <div class="product-card" data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''} data-price={priceNum}>
+          <div class={`product-card${soldOut ? ' is-sold-out' : ''}`} data-sold-out={soldOut ? 'true' : undefined} data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''} data-sizes={weightPillsFor(p).join(' ')} data-price={priceNum}>
             <div class="product-card-coa">COA ✓</div>
+            {soldOut && <div class="product-card-soldout" aria-hidden="true">Sold out</div>}
             {p.categories.filter((c) => !['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)).slice(0, 2).map((c) => {
               const meta = categoryDefs.find((d) => d.id === c);
               return meta ? (
@@ -4465,12 +4490,14 @@ const typeCounts = [
                     {variants.map((v, i) => (
                       <button
                         type="button"
-                        class={`product-variant${i === 0 ? ' is-selected' : ''}`}
+                        class={`product-variant${v === defaultVariant ? ' is-selected' : ''}${v.soldOut ? ' is-out' : ''}`}
+                        data-sold-out={v.soldOut ? 'true' : undefined}
+                        title={v.soldOut ? `${v.label} sold out` : undefined}
                         data-variant-id={v.id}
                         data-variant-label={v.label}
                         data-variant-type={v.type}
                         data-variant-price={v.price}
-                        aria-pressed={i === 0 ? 'true' : 'false'}
+                        aria-pressed={v === defaultVariant ? 'true' : 'false'}
                       >
                         {v.label}
                         <span class="product-variant-price">${v.price}</span>
@@ -4499,8 +4526,10 @@ const typeCounts = [
                   data-categories={p.categories.join(' ')}
                   data-base-batch={p.batch}
                   data-base-name={p.name}
-                  aria-label={`Add ${cartName} to cart`}
-                >Add to cart</button>
+                  aria-label={soldOut ? `${p.name} is sold out` : `Add ${cartName} to cart`}
+                  data-sold-out={soldOut ? 'true' : undefined}
+                  disabled={soldOut}
+                >{soldOut ? 'Sold out' : 'Add to cart'}</button>
               )}
               {p.inquiryOnly && (
                 <div class="product-card-inquiry-note">House party only — request pricing</div>
@@ -4751,12 +4780,9 @@ const typeCounts = [
   <div class="scroll-rail" aria-hidden="true"><div class="scroll-rail-bar" id="scrollRailBar"></div></div>
   <div class="scroll-pill" id="scrollPill">
     <div class="scroll-pill-list" id="scrollPillList" role="navigation" aria-label="Page sections">
-      <a href="#top">Home</a>
-      <a href="#shop">Shop</a>
-      <a href="#lab">Lab</a>
-      <a href="#shipping">Shipping</a>
-      <a href="#rewards">Rewards</a>
-      <a href="#about">About</a>
+      {SECTIONS.map((sec) => (
+        <a href={`#${sec.id}`} data-section={sec.id}>{sec.label}</a>
+      ))}
     </div>
     <button type="button" class="scroll-pill-btn" id="scrollPillBtn" aria-expanded="false" aria-controls="scrollPillList">
       <svg class="scroll-ring" viewBox="0 0 24 24" aria-hidden="true">
@@ -4823,6 +4849,16 @@ const typeCounts = [
               <span>{t.label}</span>
               <span class="type-chip-count">{t.count}</span>
             </button>
+          ))}
+        </div>
+      </div>
+      <div class="shop-filter-group">
+        <div class="shop-filter-heading">Size</div>
+        <div class="shop-filter-row" role="tablist" aria-label="Filter by size">
+          <span class="chip-pill" aria-hidden="true"></span>
+          <button type="button" class="type-chip size-chip is-active" data-size="all" role="tab" aria-selected="true"><span>All</span><span class="type-chip-count"></span></button>
+          {WEIGHT_PILLS.map((w) => (
+            <button type="button" class="type-chip size-chip" data-size={w.id} role="tab" aria-selected="false"><span>{w.label}</span><span class="type-chip-count"></span></button>
           ))}
         </div>
       </div>
@@ -4948,6 +4984,9 @@ const typeCounts = [
       whenAgeClear(() => showRewardsToast(capturedNote));
     }
   </script>
+  <script is:inline define:vars={{ b420Sections: { list: SECTIONS.map((x) => ({ id: x.id, label: x.label, aliases: x.aliases || [] })), offset: SCROLL_OFFSET, catAliases: CATEGORY_ALIASES, catIds: categoryDefs.map((c) => c.id) } }}>
+    window.B420_SECTIONS = b420Sections;
+  </script>
   <script is:inline>
     (function () {
       var nav = document.getElementById('siteNav');
@@ -5010,24 +5049,28 @@ const typeCounts = [
           tags: (card.getAttribute('data-cats') || '').split(/\s+/).filter(Boolean),
           vibes: (card.getAttribute('data-vibes') || '').split(/\s+/).filter(Boolean),
           strainType: card.getAttribute('data-type') || '',
+          sizes: (card.getAttribute('data-sizes') || '').split(/\s+/).filter(Boolean),
         };
       });
       var activeCat = 'all';
       var activeEffect = 'all';
       var activeType = 'all';
+      var activeSize = 'all';
       var activeSort = 'featured';
 
-      function matchesMeta(meta, cat, effect, type) {
+      function matchesMeta(meta, cat, effect, type, size) {
+        if (size === undefined) size = activeSize;
         var catOk = cat === 'all' || meta.tags.indexOf(cat) !== -1;
         var effectOk = effect === 'all' || meta.vibes.indexOf(effect) !== -1;
         var typeOk = type === 'all' || meta.strainType === type;
-        return catOk && effectOk && typeOk;
+        var sizeOk = size === 'all' || meta.sizes.indexOf(size) !== -1;
+        return catOk && effectOk && typeOk && sizeOk;
       }
 
-      function countCards(cat, effect, type) {
+      function countCards(cat, effect, type, size) {
         var n = 0;
         for (var i = 0; i < cardMeta.length; i++) {
-          if (matchesMeta(cardMeta[i], cat, effect, type)) n++;
+          if (matchesMeta(cardMeta[i], cat, effect, type, size)) n++;
         }
         return n;
       }
@@ -5122,6 +5165,7 @@ const typeCounts = [
       }
 
       function pillTone(chip) {
+        if (chip.classList.contains('size-chip')) return 'yellow';
         if (chip.classList.contains('type-chip') && chip.getAttribute('data-type') === 'branded') return 'yellow';
         if (chip.classList.contains('effect-chip') || chip.classList.contains('type-chip')) return 'red';
         return 'yellow';
@@ -5170,16 +5214,21 @@ const typeCounts = [
           var n = countCards(activeCat, id, activeType);
           setChipVisible(chip, id === 'all' || n > 0, n);
         });
-        document.querySelectorAll('.type-chip').forEach(function (chip) {
+        document.querySelectorAll('.type-chip:not(.size-chip)').forEach(function (chip) {
           var id = chip.getAttribute('data-type') || 'all';
           var n = countCards(activeCat, activeEffect, id);
+          setChipVisible(chip, id === 'all' || n > 0, n);
+        });
+        document.querySelectorAll('.size-chip').forEach(function (chip) {
+          var id = chip.getAttribute('data-size') || 'all';
+          var n = countCards(activeCat, activeEffect, activeType, id);
           setChipVisible(chip, id === 'all' || n > 0, n);
         });
       }
 
       function updateFilterBadge() {
         if (!filterBadge) return;
-        var n = (activeCat !== 'all' ? 1 : 0) + (activeEffect !== 'all' ? 1 : 0) + (activeType !== 'all' ? 1 : 0);
+        var n = (activeCat !== 'all' ? 1 : 0) + (activeEffect !== 'all' ? 1 : 0) + (activeType !== 'all' ? 1 : 0) + (activeSize !== 'all' ? 1 : 0);
         filterBadge.textContent = String(n);
         filterBadge.hidden = n === 0;
       }
@@ -5188,9 +5237,11 @@ const typeCounts = [
         if (dim === 'cat') activeCat = id || 'all';
         if (dim === 'effect') activeEffect = id || 'all';
         if (dim === 'type') activeType = id || 'all';
+        if (dim === 'size') activeSize = id || 'all';
         if (dim === 'cat') syncChips('.cat-chip', 'data-cat', activeCat);
         if (dim === 'effect') syncChips('.effect-chip', 'data-effect', activeEffect);
-        if (dim === 'type') syncChips('.type-chip', 'data-type', activeType);
+        if (dim === 'type') syncChips('.type-chip:not(.size-chip)', 'data-type', activeType);
+        if (dim === 'size') syncChips('.size-chip', 'data-size', activeSize);
         applyFilter();
         updateChipAvailability();
         updateFilterBadge();
@@ -5212,7 +5263,8 @@ const typeCounts = [
       }
 
       function navHeight() {
-        return window.innerWidth > 900 ? 64 : 60;
+        var o = (window.B420_SECTIONS && window.B420_SECTIONS.offset) || { desktop: 64, mobile: 60, breakpoint: 900 };
+        return window.innerWidth > o.breakpoint ? o.desktop : o.mobile;
       }
 
       function updateShopChrome() {
@@ -5242,10 +5294,16 @@ const typeCounts = [
           setFilter('effect', chip.getAttribute('data-effect') || 'all');
         });
       });
-      document.querySelectorAll('.type-chip').forEach(function (chip) {
+      document.querySelectorAll('.type-chip:not(.size-chip)').forEach(function (chip) {
         chip.addEventListener('click', function () {
           if (chip.hidden) return;
           setFilter('type', chip.getAttribute('data-type') || 'all');
+        });
+      });
+      document.querySelectorAll('.size-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          if (chip.hidden) return;
+          setFilter('size', chip.getAttribute('data-size') || 'all');
         });
       });
       document.querySelectorAll('.sort-chip').forEach(function (chip) {
@@ -5300,13 +5358,74 @@ const typeCounts = [
       if (!ageGate) return;
       var yes = document.querySelector('.age-btn-yes');
       var no = document.querySelector('.age-btn-no');
+      var cfg = window.B420_SECTIONS || { list: [], catAliases: {}, catIds: [], offset: { desktop: 64, mobile: 60, breakpoint: 900, gap: 8 } };
+      var HASH_KEY = 'b420ReturnHash';
+      // '#coa' -> lab, '#pounds' -> shop + Pounds chip. Mirrors resolveAnchor() in src/config/sections.mjs.
+      function resolve(hash) {
+        var h = '';
+        try { h = decodeURIComponent(String(hash || '')).replace(/^#/, '').trim().toLowerCase(); } catch (e) { return null; }
+        if (!h) return null;
+        for (var i = 0; i < cfg.list.length; i++) {
+          var sec = cfg.list[i];
+          if (sec.id === h || (sec.aliases || []).indexOf(h) !== -1) return { section: sec.id };
+        }
+        var cat = cfg.catIds.indexOf(h) !== -1 ? h : cfg.catAliases[h];
+        if (cat && cat !== 'all' && cfg.catIds.indexOf(cat) !== -1) return { section: 'shop', cat: cat };
+        return null;
+      }
+      function goTo(hash, smooth) {
+        var hit = resolve(hash);
+        if (!hit) return false;
+        if (hit.cat) {
+          var chip = document.querySelector('#shopFilters .cat-chip[data-cat="' + hit.cat + '"]');
+          if (chip) chip.click();
+        }
+        var el = document.getElementById(hit.section);
+        if (!el) return false;
+        var o = cfg.offset;
+        function target() {
+          var navH = window.innerWidth > o.breakpoint ? o.desktop : o.mobile;
+          return Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY - navH - (o.gap || 0)));
+        }
+        window.scrollTo({ top: target(), behavior: smooth ? 'smooth' : 'instant' });
+        if (!smooth) {
+          // Photos above the section can still shift layout; re-align unless the visitor scrolled.
+          var landed = window.scrollY;
+          [250, 800, 1600].forEach(function (ms) {
+            setTimeout(function () {
+              if (Math.abs(window.scrollY - landed) > 2) return;
+              window.scrollTo({ top: target(), behavior: 'instant' });
+              landed = window.scrollY;
+            }, ms);
+          });
+        }
+        return true;
+      }
+      window.B420_goToAnchor = goTo;
+      function gateOpen() { return !ageGate.classList.contains('hidden'); }
+      // Keep the deep-link hash while the 21+ gate is up so unlocking returns you to it.
+      if (location.hash && gateOpen()) {
+        try { sessionStorage.setItem(HASH_KEY, location.hash); } catch (e) {}
+      }
       function hide() {
         ageGate.classList.add('hidden');
         try { sessionStorage.setItem('ageVerified', 'true'); } catch (e) {}
+        var back = location.hash;
+        try { back = back || sessionStorage.getItem(HASH_KEY) || ''; sessionStorage.removeItem(HASH_KEY); } catch (e) {}
+        if (back) {
+          if (location.hash !== back) history.replaceState(null, '', back);
+          requestAnimationFrame(function () { goTo(back, false); });
+        }
       }
       try {
         if (sessionStorage.getItem('ageVerified') === 'true') hide();
       } catch (e) {}
+      window.addEventListener('hashchange', function () {
+        if (!gateOpen()) goTo(location.hash, true);
+      });
+      window.addEventListener('load', function () {
+        if (!gateOpen() && location.hash) goTo(location.hash, false);
+      });
       if (yes) yes.addEventListener('click', hide);
       if (no) no.addEventListener('click', function () {
         window.location.href = 'https://www.google.com';
@@ -5314,14 +5433,8 @@ const typeCounts = [
     })();
 
     (function () {
-      var sections = [
-        { id: 'top', label: 'Home' },
-        { id: 'shop', label: 'Shop' },
-        { id: 'lab', label: 'Lab' },
-        { id: 'shipping', label: 'Shipping' },
-        { id: 'rewards', label: 'Rewards' },
-        { id: 'about', label: 'About' }
-      ];
+      var sections = (window.B420_SECTIONS && window.B420_SECTIONS.list) || [];
+      if (!sections.length) return;
       var bar = document.getElementById('scrollRailBar');
       var ring = document.getElementById('scrollRingArc');
       var label = document.getElementById('scrollPillLabel');
@@ -5358,6 +5471,11 @@ const typeCounts = [
           var href = links[i].getAttribute('href') || '';
           links[i].classList.toggle('is-current', href === '#' + cur.id);
         }
+        document.querySelectorAll('#navLinks a[data-section]').forEach(function (a) {
+          var on = a.getAttribute('data-section') === cur.id;
+          a.classList.toggle('is-current', on);
+          if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
+        });
       }
 
       function setOpen(open) {

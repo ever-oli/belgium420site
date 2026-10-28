@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Per-file size guard. Enabled by `npm install` (prepare script sets core.hooksPath=.githooks).
+set -euo pipefail
+node scripts/check-file-sizes.mjs

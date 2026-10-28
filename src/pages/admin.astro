@@ -1,6 +1,7 @@
 ---
 import '../styles/brand.css';
 import '../styles/fonts.css';
+import { SECTIONS } from '../config/sections.mjs';
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -712,6 +713,8 @@ import '../styles/fonts.css';
     .modal-btn:active:not(:disabled) {
       transform: scale(0.97);
     }
+    .site-jump select { background: #050505; color: #F5C400; border: 1px solid rgba(245,196,0,.4); border-radius: 6px; padding: .3rem .5rem; font: inherit; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   </style>
 </head>
 <body>
@@ -736,6 +739,13 @@ import '../styles/fonts.css';
         <button type="button" class="app-tab" data-tab="rewards" id="tabRewards">Rewards</button>
       </nav>
       <div class="app-actions">
+        <label class="app-meta site-jump">
+          <span class="sr-only">Open site section</span>
+          <select id="siteSectionJump" aria-label="Open site section" onchange="if(this.value){window.open('/#'+this.value,'_blank','noopener');this.value='';}">
+            <option value="">Open site section…</option>
+            {SECTIONS.map((sec) => <option value={sec.id}>{sec.label} (#{sec.id})</option>)}
+          </select>
+        </label>
         <span class="app-meta" id="kanbanStats"></span>
         <button type="button" class="btn" id="refreshBtn">Refresh</button>
         <button type="button" class="btn danger" id="logoutBtn">Sign out</button>
