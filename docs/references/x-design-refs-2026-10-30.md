@@ -74,3 +74,16 @@ Takeaway: Motion's prompt-per-section library is the most useful for scroll/moti
 - greensock/gsap-skills @aed9cfd (8 skills)
 - Appllama/appllama-skills @dd5caae (2 skills)
 - baked.design html-in-canvas.md
+
+## Added 2026-10-30: links missing from this doc
+
+| Resource | URL | Notes |
+| --- | --- | --- |
+| Brytonzoz | https://brytonzoz.com | Scroll/merch reference for Mmemberville |
+| Micro | https://micro.dev | Loaded with no readable content |
+
+Portfolios [hiteshxdev] as links: https://kushbothra.com, https://manixh.vercel.app, https://ozgurguler.tech, https://mukundkapoor.com, https://sahilcodex.vercel.app, https://rahulgg.in, https://nurlab.xyz, https://ashishgogula.in, https://devchauhan.in, https://anjil.ink, https://priyanshu.me, https://nikhilwho.in, https://srbh.site, https://royalbeck.design
+
+Note: prettyfolio.com now serves a gambling spam page. Dead links on 2026-10-30: appmotion.design (404), webinteractions.gallery (404), godly.website (500), viewport-ui.design (500). Blocked for bots: landing.love, saaspo.com, uiverse.io, pinui.xyz.
+
+Per-site lessons for all 111 resources: see resource-learnings-2026-10-30.md.
