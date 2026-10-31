@@ -149,3 +149,11 @@ Total: 111 sites checked. Loaded: 103. Failed: 8 (Cloudflare/Vercel blocks, 404,
 | Nikhil Rajpurohit | https://nikhilwho.in | 200 loaded | Google Sans Flex, compact copy: short confident copy reads less AI than long hype. |
 | Saurabh Sharma | https://srbh.site | 200 loaded | Instrument Serif accents: serif italics are now a common AI-site trend, avoid copying. |
 | Roy Albeck | https://royalbeck.design | 200 loaded | 'Under construction, one pixel at a time' with a pixel twin: honesty about the state of the site is charming. |
+
+## Added from @BardhylBytyqi post (curl, 2026-10-30)
+
+| Name | URL | Status | Lesson |
+|---|---|---|---|
+| Fontinlogo | https://fontinlogo.com | 200 loaded | Shows the exact fonts behind famous logos (Nike, Adidas, NYT): pick the wordmark font from a real brand reference instead of a default. |
+| On Design | https://on.design | 200 loaded | Invite-only community of independent designers: a place to find a real designer for the wordmark or patch. |
+| Footer Design | https://footer.design | 200 loaded | A gallery only of footers: treat the footer as a real section (contact, shipping, socials, sign-off), not a single line. |

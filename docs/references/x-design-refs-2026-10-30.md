@@ -65,6 +65,11 @@ Takeaway: a skill that critiques and fixes generic AI-looking UI.
 3. Landdding — https://landdding.com/ — daily community-upvoted landing page design inspiration.
 4. Wonderlist — https://wonderlist.design/ — 127 premium Figma website templates (SaaS, agency, portfolio).
 5. Iconly — https://iconly.design/ — curated library of 2,400+ app, game and web icons, filterable by style/color.
+6. Fontinlogo — https://fontinlogo.com/ — find the fonts behind famous logos.
+7. On Design — https://on.design/ — design community.
+8. Godly — https://godly.website/ — award-winning website inspiration.
+9. 60fps — https://60fps.design/ — mobile UI animation inspiration.
+10. Footer Design — https://footer.design/ — footer inspiration.
 Takeaway: Motion's prompt-per-section library is the most useful for scroll/motion cues; Landdding + Iconly for inspiration.
 
 ## Fetched skills (commit)
