@@ -1,7 +1,7 @@
 # Mmemberville resource learnings (scraped 2026-10-30, headless Chromium)
 
 
-Total: 111 sites checked. Loaded: 103. Failed: 8 (Cloudflare/Vercel blocks, 404, 500). Prettyfolio loads but is a hijacked spam domain; micro.dev and Mobbin animations loaded with no useful content.
+Total: 114 sites checked. Loaded: 106. Failed: 8 (Cloudflare/Vercel blocks, 404, 500). Prettyfolio loads but is a hijacked spam domain; micro.dev and Mobbin animations loaded with no useful content.
 
 
 ## Component & section libraries
