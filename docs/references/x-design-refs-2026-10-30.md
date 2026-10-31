@@ -58,6 +58,15 @@ Takeaway: one command to clone an animation from a site/video/gif (useful for ma
 - Quoted demo: https://x.com/heydamir/status/2115063463063998736
 Takeaway: a skill that critiques and fixes generic AI-looking UI.
 
+## 9. @BardhylBytyqi — https://x.com/BardhylBytyqi/status/2116289761400819905
+"If you use AI, this is it" (author builds @modulify; post has a 12s demo video, no thread or quotes).
+1. Modulify — https://modulify.ai/ — AI website/web-app builder (layouts, copy, CMS, DB, hosting); pitched as "Lovable 60% cheaper".
+2. Motion — https://motionin.design/ — premium physics-based, cursor-responsive web sections, each with a copy-paste AI prompt.
+3. Landdding — https://landdding.com/ — daily community-upvoted landing page design inspiration.
+4. Wonderlist — https://wonderlist.design/ — 127 premium Figma website templates (SaaS, agency, portfolio).
+5. Iconly — https://iconly.design/ — curated library of 2,400+ app, game and web icons, filterable by style/color.
+Takeaway: Motion's prompt-per-section library is the most useful for scroll/motion cues; Landdding + Iconly for inspiration.
+
 ## Fetched skills (commit)
 - heydamir/unslop @4652254
 - pbakaus/impeccable @df3a4ab
