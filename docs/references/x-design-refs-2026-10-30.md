@@ -72,6 +72,12 @@ Takeaway: a skill that critiques and fixes generic AI-looking UI.
 10. Footer Design — https://footer.design/ — footer inspiration.
 Takeaway: Motion's prompt-per-section library is the most useful for scroll/motion cues; Landdding + Iconly for inspiration.
 
+## 10. @nikosolenne (shared 2026-10-30)
+New:
+1. Refero Styles — https://styles.refero.design/ — styles pulled from real products, with AI-readable DESIGN.md files (colors, type, spacing).
+2. Supahero — https://supahero.io/ — library of website hero sections.
+Already listed elsewhere (extra source: @nikosolenne): scrolltide.co, navbar.gallery, footer.design, cta.gallery, 3dicons.co, glass.samasante.com.
+
 ## Fetched skills (commit)
 - heydamir/unslop @4652254
 - pbakaus/impeccable @df3a4ab

@@ -1,7 +1,7 @@
 # Mmemberville resource learnings (scraped 2026-10-30, headless Chromium)
 
 
-Total: 114 sites checked. Loaded: 106. Failed: 8 (Cloudflare/Vercel blocks, 404, 500). Prettyfolio loads but is a hijacked spam domain; micro.dev and Mobbin animations loaded with no useful content.
+Total: 116 sites checked. Loaded: 108. Failed: 8 (Cloudflare/Vercel blocks, 404, 500). Prettyfolio loads but is a hijacked spam domain; micro.dev and Mobbin animations loaded with no useful content.
 
 
 ## Component & section libraries
@@ -157,3 +157,6 @@ Total: 114 sites checked. Loaded: 106. Failed: 8 (Cloudflare/Vercel blocks, 404,
 | Fontinlogo | https://fontinlogo.com | 200 loaded | Shows the exact fonts behind famous logos (Nike, Adidas, NYT): pick the wordmark font from a real brand reference instead of a default. |
 | On Design | https://on.design | 200 loaded | Invite-only community of independent designers: a place to find a real designer for the wordmark or patch. |
 | Footer Design | https://footer.design | 200 loaded | A gallery only of footers: treat the footer as a real section (contact, shipping, socials, sign-off), not a single line. |
+| Refero Styles | https://styles.refero.design | 200 loaded | Each real site's style is broken into colors, type and spacing as a DESIGN.md: pull one real streetwear/supply brand's style file and use its exact type scale and spacing instead of invented values. |
+| Supahero | https://supahero.io | 200 loaded | A library of hero sections only: compare real heroes and make ours lead with one product photo, one line and one buy button. |
+| Godly (retry) | https://godly.website | 500 did not load | Retried with curl at 21:39 CST, still HTTP 500. |
