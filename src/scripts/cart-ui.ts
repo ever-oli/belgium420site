@@ -8,9 +8,11 @@ import {
   backfillCategories,
   itemLineTotal,
   itemQty,
+  FREE_SHIPPING_OVER,
   SHIPPING_FEE,
   type CartItem,
 } from "./cart";
+import { initTierCards } from "./tier-ui";
 import {
   captureReferralFromUrl,
   ensureLoyaltyId,
@@ -188,7 +190,7 @@ function render(refs: ReturnType<typeof buildDrawer>) {
       <span>Total</span>
       <strong>${money(quote.total)}</strong>
     </div>
-    <p class="cart-foot-note">No order minimum. Flat $${SHIPPING_FEE} shipping on every order. Tax confirmed by email. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsPolicy}).</p>
+    <p class="cart-foot-note">No order minimum. Flat $${SHIPPING_FEE} shipping. Free when the subtotal after discounts is over $${FREE_SHIPPING_OVER}. Tax confirmed by email. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsPolicy}).</p>
     ${refNote}
     <a href="/checkout/" class="cart-checkout-btn">Checkout</a>
     <button type="button" class="cart-clear-btn" data-cart-clear>Clear cart</button>
@@ -209,7 +211,7 @@ function escapeAttr(s: string) {
 }
 
 function categoriesFromButton(btn: HTMLButtonElement): string[] {
-  const card = btn.closest(".product-card");
+  const card = btn.closest(".product-card, .drop-card");
   const raw = btn.dataset.categories || card?.getAttribute("data-cats") || "";
   return raw.split(/\s+/).map((c) => c.trim()).filter(Boolean);
 }
@@ -218,7 +220,7 @@ export function initCart() {
   captureReferralFromUrl();
   const loyaltyId = ensureLoyaltyId();
   backfillCategories((it) => {
-    const buttons = document.querySelectorAll<HTMLButtonElement>(".product-card .add-to-cart");
+    const buttons = document.querySelectorAll<HTMLButtonElement>(".product-card .add-to-cart, .drop-card .add-to-cart");
     for (const btn of buttons) {
       const batch = btn.dataset.batch || "";
       const base = btn.dataset.baseBatch || "";
@@ -253,7 +255,9 @@ export function initCart() {
     openDrawer(refs);
   });
 
-  document.querySelectorAll<HTMLElement>(".product-card").forEach((card) => {
+  initTierCards();
+
+  document.querySelectorAll<HTMLElement>(".product-card, .drop-card").forEach((card) => {
     const btn = card.querySelector<HTMLButtonElement>(".add-to-cart");
     const chips = card.querySelectorAll<HTMLButtonElement>(".product-variant");
     if (!btn || chips.length === 0) return;
@@ -292,11 +296,12 @@ export function initCart() {
     });
   });
 
-  document.querySelectorAll<HTMLButtonElement>(".product-card .add-to-cart").forEach((btn) => {
+  document.querySelectorAll<HTMLButtonElement>(".product-card .add-to-cart, .drop-card .add-to-cart").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       const categories = categoriesFromButton(btn);
+      const qty = Math.max(1, Math.round(Number(btn.dataset.qty) || 1));
       const item: CartItem = {
         batch: btn.dataset.batch || "",
         name: btn.dataset.name || "",
@@ -304,6 +309,8 @@ export function initCart() {
         price: parseFloat(btn.dataset.price || "0"),
         tone: btn.dataset.tone || "black",
         img: btn.dataset.img || null,
+        qty,
+        ...(btn.dataset.baseBatch ? { baseBatch: btn.dataset.baseBatch } : {}),
         ...(categories.length ? { categories } : {}),
       };
       if (!item.batch || !item.name) return;

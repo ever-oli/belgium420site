@@ -156,13 +156,17 @@ function owner_notify_email(array $order): bool {
     if (!empty($order['admin_note'])) {
         $rewards_line .= 'Ops note: ' . $order['admin_note'] . "\n";
     }
+    $ship_amt = (float)($order['shipping'] ?? 0);
+    $ship_line = $ship_amt <= 0
+        ? "Shipping: FREE\n"
+        : sprintf("Shipping: \$%.2f\n", $ship_amt);
     $body = sprintf(
         "New order received: %s\n\n" .
         "Name:     %s\nEmail:    %s\nPhone:    %s\n\n" .
         "Ship to:\n  %s\n  %s\n  %s, %s %s\n\n" .
         "Payment preferences: %s\n\n" .
         "Items:\n%s\n" .
-        "Subtotal: $%.2f\n%s%s\n" .
+        "Subtotal: $%.2f\n%s%s%s\n" .
         "Note: %s\n\n" .
         "Manage: https://belgium420.com/admin/?key=%s\n",
         $order['id'],
@@ -172,6 +176,7 @@ function owner_notify_email(array $order): bool {
         $pays,
         $items_lines,
         (float)$order['total'],
+        $ship_line,
         $discount_line,
         $rewards_line,
         $order['note'] ?: '(none)',
@@ -192,26 +197,31 @@ function customer_confirm_email(array $order): bool {
     $discount_line = '';
     if (!empty($order['discount_percent']) && (float)$order['discount_percent'] > 0) {
         $discount_line = sprintf(
-            "  Discount: %s (%.0f%% off, -$%.2f)\n  Final total: $%.2f\n",
+            "  Discount: %s (%.0f%% off, -$%.2f)\n",
             $order['discount_code'],
             (float)$order['discount_percent'] * 100,
-            (float)$order['discount_amount'],
-            (float)$order['final_total']
+            (float)$order['discount_amount']
         );
     }
+    $ship_amt = (float)($order['shipping'] ?? 0);
+    $ship_line = $ship_amt <= 0
+        ? "  Shipping: FREE\n"
+        : sprintf("  Shipping: \$%.2f\n", $ship_amt);
     $body = sprintf(
         "Hey %s,\n\n" .
         "We received your order %s. Here's what happens next:\n\n" .
         "  1. We'll email you within 24h with payment instructions (Zelle, CashApp, or crypto).\n" .
         "  2. Once payment clears, your order ships within 1–2 business days.\n" .
         "  3. You'll get a tracking number by email the moment it's dropped off.\n\n" .
-        "Order summary:\n  Subtotal: $%.2f\n%s  Items: %d\n\n" .
+        "Order summary:\n  Subtotal: $%.2f\n%s%s  Final total: $%.2f\n  Items: %d\n\n" .
         "If anything looks wrong, just reply to this email.\n\n" .
         "— Belgium420\n",
         explode(' ', $order['name'])[0],
         $order['id'],
         (float)$order['total'],
         $discount_line,
+        $ship_line,
+        (float)($order['final_total'] ?? 0),
         array_sum(array_map(fn($it) => max(1, (int)($it['qty'] ?? 1)), $order['items']))
     );
     $headers = [];

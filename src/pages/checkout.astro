@@ -1,6 +1,6 @@
 ---
 
-import { SHIPPING_FEE } from '../lib/rewards.js';
+import { FREE_SHIPPING_OVER, SHIPPING_FEE } from '../lib/rewards.js';
 import '../styles/brand.css';
 import '../styles/fonts.css';
 
@@ -25,7 +25,10 @@ const year = new Date().getFullYear();
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Space Grotesk', 'Space Grotesk Fallback', system-ui, sans-serif;
-      background: var(--belgian-black);
+      background:
+        radial-gradient(ellipse 90% 55% at 8% -8%, rgba(56,189,248,.18), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 95% 5%, rgba(61,231,255,.1), transparent 50%),
+        var(--belgian-black);
       color: var(--chalk);
       line-height: 1.6;
       min-height: 100vh;
@@ -69,7 +72,7 @@ const year = new Date().getFullYear();
       text-transform: uppercase; letter-spacing: 0.08em;
       cursor: pointer; border: none;
     }
-    .age-btn-yes { background: var(--belgian-yellow); color: var(--ink); }
+    .age-btn-yes { background: var(--accent); color: var(--ink); }
     @media (hover: hover) and (pointer: fine) {
 
     .age-btn-yes:hover { background: var(--chalk); }
@@ -97,7 +100,7 @@ const year = new Date().getFullYear();
     }
     @media (hover: hover) and (pointer: fine) {
 
-    .checkout-nav-back:hover { color: var(--belgian-yellow); }
+    .checkout-nav-back:hover { color: var(--accent); }
 
     }
 
@@ -132,7 +135,7 @@ const year = new Date().getFullYear();
       font-size: 1.05rem;
       text-transform: uppercase; letter-spacing: 0.06em;
       padding: 0 0.5rem;
-      color: var(--belgian-yellow);
+      color: var(--accent);
     }
     .checkout-form label {
       display: block;
@@ -162,7 +165,7 @@ const year = new Date().getFullYear();
     }
     .checkout-form input:focus,
     .checkout-form textarea:focus {
-      border-color: var(--belgian-yellow);
+      border-color: var(--accent);
     }
     .checkout-form input:disabled { opacity: 0.5; }
     .form-row {
@@ -199,7 +202,7 @@ const year = new Date().getFullYear();
     .checkout-submit {
       width: 100%;
       padding: 1rem;
-      background: var(--belgian-yellow);
+      background: var(--accent);
       color: var(--ink);
       font-family: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
       font-weight: 700;
@@ -212,17 +215,19 @@ const year = new Date().getFullYear();
     }
     @media (hover: hover) and (pointer: fine) {
 
-    .checkout-submit:hover:not(:disabled) { background: var(--chalk); }
+    .checkout-submit:hover:not(:disabled) { background: var(--accent-hover); color: #fff; }
+    .age-btn-yes:hover { background: var(--accent-hover); color: #fff; }
+    .checkout-submit, .age-btn-yes { border-radius: 999px; box-shadow: 0 0 28px #38bdf866; }
 
     }
     .checkout-submit:disabled { opacity: 0.55; cursor: not-allowed; }
     .checkout-age-confirm {
       display: flex; gap: 0.6rem; align-items: flex-start;
       margin: 0.9rem 0 0.4rem; padding: 0.75rem 0.85rem;
-      border: 1px solid var(--belgian-yellow); border-radius: 10px;
+      border: 1px solid var(--accent); border-radius: 10px;
       font-size: 0.9rem; color: var(--chalk); cursor: pointer; min-height: 44px;
     }
-    .checkout-age-confirm input { accent-color: var(--belgian-yellow); width: 18px; height: 18px; margin-top: 2px; flex: none; }
+    .checkout-age-confirm input { accent-color: var(--accent); width: 18px; height: 18px; margin-top: 2px; flex: none; }
     .checkout-fineprint {
       font-size: 0.75rem;
       color: var(--concrete);
@@ -241,7 +246,7 @@ const year = new Date().getFullYear();
       font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 1.05rem;
       text-transform: uppercase; letter-spacing: 0.06em;
-      color: var(--belgian-yellow);
+      color: var(--accent);
       margin-bottom: 1rem;
     }
     .summary-row {
@@ -266,7 +271,7 @@ const year = new Date().getFullYear();
     .summary-qty {
       font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.7rem;
-      color: var(--belgian-yellow);
+      color: var(--accent);
       text-transform: none;
       letter-spacing: 0.02em;
     }
@@ -274,7 +279,7 @@ const year = new Date().getFullYear();
       font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
       font-size: 0.85rem;
       font-weight: 700;
-      color: var(--belgian-yellow);
+      color: var(--accent);
       white-space: nowrap;
     }
     .checkout-total-row {
@@ -286,7 +291,7 @@ const year = new Date().getFullYear();
       border-top: 1px solid var(--chalk-a15);
       font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
     }
-    .checkout-total-row strong { color: var(--belgian-yellow); font-size: 1.2rem; }
+    .checkout-total-row strong { color: var(--accent); font-size: 1.2rem; }
     .checkout-summary-note {
       font-size: 0.75rem;
       color: var(--concrete);
@@ -308,34 +313,34 @@ const year = new Date().getFullYear();
     }
     @media (hover: hover) and (pointer: fine) {
 
-    .checkout-edit:hover { color: var(--belgian-yellow); border-color: var(--belgian-yellow); }
+    .checkout-edit:hover { color: var(--accent); border-color: var(--accent); }
 
     }
     .summary-empty { color: var(--concrete); padding: 1rem 0; }
-    .summary-empty a { color: var(--belgian-yellow); }
+    .summary-empty a { color: var(--accent); }
 
     .checkout-ok {
       max-width: 540px;
       margin: 4rem auto;
       padding: 2.5rem 2rem;
       background: var(--asphalt);
-      border: 1px solid var(--belgian-yellow);
+      border: 1px solid var(--accent);
       text-align: center;
     }
     .checkout-ok h1 {
       font-family: 'Anton', 'Anton Fallback', sans-serif;
       font-size: 2.2rem;
       text-transform: uppercase; letter-spacing: 0.04em;
-      color: var(--belgian-yellow);
+      color: var(--accent);
       margin-bottom: 1rem;
     }
     .checkout-ok p { margin-bottom: 0.75rem; line-height: 1.5; }
-    .checkout-ok strong { color: var(--belgian-yellow); }
+    .checkout-ok strong { color: var(--accent); }
     .checkout-back {
       display: inline-block;
       margin-top: 1.5rem;
       padding: 0.7rem 1.5rem;
-      background: var(--belgian-yellow);
+      background: var(--accent);
       color: var(--ink);
       font-weight: 700; font-size: 0.85rem;
       text-transform: uppercase; letter-spacing: 0.1em;
@@ -507,7 +512,7 @@ const year = new Date().getFullYear();
           <strong id="checkoutFinalTotal">$0.00</strong>
         </div>
         <label class="checkout-age-confirm"><input type="checkbox" name="age_confirm" id="ageConfirm" form="checkoutForm" required /><span>I confirm I am 21+ years old. *</span></label>
-        <p class="checkout-summary-note" id="checkoutSummaryNote">No order minimum. Flat ${SHIPPING_FEE} shipping on every order. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
+        <p class="checkout-summary-note" id="checkoutSummaryNote">No order minimum. Flat ${SHIPPING_FEE} shipping. Free when the subtotal after discounts is over ${FREE_SHIPPING_OVER}. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
         <a href="/" class="checkout-edit">Edit cart</a>
       </aside>
     </div>
@@ -527,6 +532,7 @@ const year = new Date().getFullYear();
       isValidDiscount,
       getDiscountPercent,
       cartBreakdown,
+      FREE_SHIPPING_OVER,
       SHIPPING_FEE,
     } from "../scripts/cart.ts";
     import {
@@ -573,7 +579,7 @@ const year = new Date().getFullYear();
     if (refAttrMsg) {
       if (attr?.code) {
         refAttrMsg.textContent = `Referred by ${attr.code}. They earn $25 off their next order once this order is marked paid (credit is pending until payment clears). Ops reject self-referrals.`;
-        refAttrMsg.style.color = "var(--belgian-yellow)";
+        refAttrMsg.style.color = "var(--accent)";
       }
     }
 
@@ -614,7 +620,7 @@ const year = new Date().getFullYear();
         discountAmountEl.textContent = `-${formatPrice(quote.promoAmount)}`;
         if (discountMsg) {
           discountMsg.textContent = `✓ ${code.toUpperCase()} applied — ${Math.round(quote.promoPercent * 100)}% off.`;
-          discountMsg.style.color = "var(--belgian-yellow)";
+          discountMsg.style.color = "var(--accent)";
         }
       } else {
         discountRow.hidden = true;
@@ -646,7 +652,7 @@ const year = new Date().getFullYear();
           creditAmountEl.textContent = `-${formatPrice(quote.referralCreditAmount)}`;
           if (creditMsg) {
             creditMsg.textContent = `✓ ${formatPrice(quote.referralCreditAmount)} referral credit applied.`;
-            creditMsg.style.color = "var(--belgian-yellow)";
+            creditMsg.style.color = "var(--accent)";
           }
         } else {
           creditRow.hidden = true;
@@ -670,7 +676,7 @@ const year = new Date().getFullYear();
       const summaryNote = document.getElementById("checkoutSummaryNote");
       if (summaryNote) {
         const poundsBit = quote.poundsSubtotal > 0 ? `; pounds max ${LOYALTY_POUNDS_PERCENT_CAP}%` : "";
-        summaryNote.textContent = `No order minimum. Flat $${SHIPPING_FEE} shipping on every order. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsBit}). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.`;
+        summaryNote.textContent = `No order minimum. Flat $${SHIPPING_FEE} shipping. Free when the subtotal after discounts is over $${FREE_SHIPPING_OVER}. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsBit}). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.`;
       }
     }
 

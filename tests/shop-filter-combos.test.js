@@ -10,6 +10,7 @@ import {
   isMushroomOnly,
   typeDefs,
 } from '../src/lib/strain-types.js';
+import { newDropProducts } from '../src/data/new-drop.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ASTRO = path.join(ROOT, 'src/pages/index.astro');
@@ -31,7 +32,8 @@ function extractConstArray(src, name) {
     else if (src[i] === ']') {
       depth--;
       if (depth === 0) {
-        const code = src.slice(src.indexOf('[', start), i + 1);
+        const code = src.slice(src.indexOf('[', start), i + 1)
+          .replace(/\.\.\.newDropProducts\s*,/, '');
         return Function(`return ${code}`)();
       }
     }
@@ -58,7 +60,7 @@ function extraEffectsFromWeb(p, web) {
 
 function loadCatalog() {
   const src = loadAstro();
-  const products = extractConstArray(src, 'products');
+  const products = [...newDropProducts, ...extractConstArray(src, 'products')];
   const categoryDefs = extractConstArray(src, 'categoryDefs');
   const effectDefs = extractConstArray(src, 'effectDefs');
   const web = loadWebMatches();
@@ -328,9 +330,9 @@ describe('shop filter combinations', () => {
     assert.ok(byName['Crème Brûlée · Pound'].shopEffects.includes('sleep'));
     assert.ok(byName['Peach Pie Live Rosin 90u'].shopEffects.includes('chill'));
     assert.ok(byName['Icebox · Quarter Pound'].shopEffects.includes('euphoric'));
-    assert.ok(byName['41 Cherries · Zip'].shopEffects.includes('sleep'));
-    assert.ok(byName['Noboof OSRS11'].shopEffects.includes('chill'));
-    assert.deepEqual(byName['Nectar Berry'].shopEffects, ['chill', 'sleep']);
+    assert.equal(byName['Noboof OSRS11'], undefined);
+    assert.equal(byName['41 Cherries · Zip'], undefined);
+    assert.equal(byName['Nectar Berry'], undefined);
     assert.deepEqual(byName['Kleenek'].shopEffects, ['chill', 'sleep']);
     assert.deepEqual(byName['Hood Candy'].shopEffects, ['chill', 'sleep']);
     const leftover = blanks.filter((b) => b.code === 'effects_in_web_matches_not_on_shop');

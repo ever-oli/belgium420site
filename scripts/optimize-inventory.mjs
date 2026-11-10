@@ -10,7 +10,11 @@ const outRoot = path.join(publicDir, 'opt');
 const manifestPath = path.join(root, 'src/data/image-manifest.json');
 const WIDTHS = [400, 800];
 
-const src = fs.readFileSync(astroPath, 'utf8');
+const extraPaths = ['src/data/new-drop.js'];
+const src = [astroPath, ...extraPaths.map((p) => path.join(root, p))]
+  .filter((p) => fs.existsSync(p))
+  .map((p) => fs.readFileSync(p, 'utf8'))
+  .join('\n');
 const imgs = [...src.matchAll(/img:\s*'([^']+)'/g)].map((m) => m[1]);
 const unique = [...new Set(imgs)];
 

@@ -21,6 +21,7 @@ import {
   STORAGE_KEYS,
   REFERRAL_CREDIT_GRANT,
   SHIPPING_FEE,
+  shippingForMerch,
   LOYALTY_PERCENT_CAP,
   LOYALTY_POUNDS_PERCENT_CAP,
 } from '../src/lib/rewards.js';
@@ -95,11 +96,11 @@ describe('computeBreakdown', () => {
       loyaltyPercent: loyaltyRateFromSpend(250),
       lifetimeSpend: 250,
     });
-    assert.equal(SHIPPING_FEE, 75);
+    assert.equal(SHIPPING_FEE, 25);
     assert.equal(b.loyaltyAmount, 2);
     assert.equal(b.merch, 98);
     assert.equal(b.shipping, SHIPPING_FEE);
-    assert.equal(b.total, 173);
+    assert.equal(b.total, 123);
     assert.match(b.loyaltyLabel, /2% off/);
   });
 
@@ -129,7 +130,7 @@ describe('computeBreakdown', () => {
     assert.equal(b.referralCreditAmount, 25);
     assert.equal(b.merch, 19);
     assert.equal(b.shipping, SHIPPING_FEE);
-    assert.equal(b.total, 94);
+    assert.equal(b.total, 44);
   });
 
   test('credit cannot exceed merch after percents', () => {
@@ -156,8 +157,8 @@ describe('computeBreakdown', () => {
     assert.equal(b.otherSubtotal, 0);
     assert.equal(b.loyaltyAmount, 100);
     assert.equal(b.merch, 900);
-    assert.equal(b.shipping, SHIPPING_FEE);
-    assert.equal(b.total, 975);
+    assert.equal(b.shipping, 0);
+    assert.equal(b.total, 900);
     assert.match(b.loyaltyLabel, /25% off/);
     assert.match(b.loyaltyLabel, /pounds max 10%/);
   });
@@ -227,7 +228,44 @@ describe('computeBreakdown', () => {
     assert.equal(b.referralCreditAmount, 25);
     assert.equal(b.merch, 55);
     assert.equal(b.shipping, SHIPPING_FEE);
-    assert.equal(b.total, 130);
+    assert.equal(b.total, 80);
+  });
+
+  test('shipping is $25 at $149.99 and $150, free over $150', () => {
+    assert.equal(shippingForMerch(149.99), 25);
+    assert.equal(shippingForMerch(150), 25);
+    assert.equal(shippingForMerch(150.01), 0);
+    assert.equal(shippingForMerch(151), 0);
+    const under = computeBreakdown({ subtotal: 149.99 });
+    const exact = computeBreakdown({ subtotal: 150 });
+    const over = computeBreakdown({ subtotal: 151 });
+    assert.equal(under.merch, 149.99);
+    assert.equal(under.shipping, 25);
+    assert.equal(under.total, 174.99);
+    assert.equal(exact.merch, 150);
+    assert.equal(exact.shipping, 25);
+    assert.equal(exact.total, 175);
+    assert.equal(over.merch, 151);
+    assert.equal(over.shipping, 0);
+    assert.equal(over.total, 151);
+  });
+
+  test('free shipping uses the subtotal after discounts', () => {
+    const stillPays = computeBreakdown({
+      subtotal: 160,
+      promoPercent: 0.1,
+      promoCode: 'BELGIUM10',
+    });
+    assert.equal(stillPays.merch, 144);
+    assert.equal(stillPays.shipping, 25);
+    const clears = computeBreakdown({
+      subtotal: 200,
+      promoPercent: 0.1,
+      promoCode: 'BELGIUM10',
+    });
+    assert.equal(clears.merch, 180);
+    assert.equal(clears.shipping, 0);
+    assert.equal(clears.total, 180);
   });
 
   test('pounds subtotal cannot exceed the cart subtotal', () => {
