@@ -1,0 +1,69 @@
+---
+import '../styles/brand.css';
+import '../styles/fonts.css';
+
+const { title, description } = Astro.props;
+const year = new Date().getFullYear();
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <title>{title} — Belgium420</title>
+  <meta name="description" content={description} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Space Grotesk', 'Space Grotesk Fallback', system-ui, sans-serif;
+      color: var(--chalk);
+      background:
+        radial-gradient(ellipse 90% 55% at 8% -8%, rgba(56,189,248,.22), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 95% 5%, rgba(61,231,255,.12), transparent 50%),
+        #060607;
+      line-height: 1.6;
+    }
+    a { color: var(--cyan); }
+    .flag-stripe { height: 4px; display: grid; grid-template-columns: 1fr 1fr 1fr; }
+    .flag-stripe i:nth-child(1) { background: #050505; }
+    .flag-stripe i:nth-child(2) { background: #F5C400; }
+    .flag-stripe i:nth-child(3) { background: #E31C23; }
+    header, footer { padding: 1rem 1.25rem; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    .brand { color: var(--chalk); text-decoration: none; font-family: 'Anton', 'Anton Fallback', sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+    nav { display: flex; flex-wrap: wrap; gap: .8rem 1rem; }
+    nav a { color: #8b8e99; text-decoration: none; font: 600 .78rem 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .04em; text-transform: uppercase; }
+    nav a:hover, nav a[aria-current="page"] { color: var(--accent); }
+    main { width: min(760px, calc(100% - 2.5rem)); margin: 0 auto; padding: 2.5rem 0 4rem; }
+    h1 { margin: 0 0 .8rem; font: 400 clamp(2.2rem, 6vw, 3.4rem)/.95 'Anton', 'Anton Fallback', sans-serif; text-transform: uppercase; }
+    h1 span { color: var(--accent); }
+    .lead, p, li { color: #c8c6be; }
+    .lead { color: #8b8e99; }
+    h2 { margin: 1.6rem 0 .4rem; font-size: 1.05rem; }
+    footer { border-top: 1px solid #2a2c33; color: #8b8e99; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <div class="flag-stripe" aria-hidden="true"><i></i><i></i><i></i></div>
+  <header>
+    <a class="brand" href="/">Belgium 420</a>
+    <nav aria-label="Policies">
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/refund">Refunds</a>
+      <a href="/contact">Contact</a>
+      <a href="/#shop">Shop</a>
+    </nav>
+  </header>
+  <main>
+    <slot />
+  </main>
+  <footer>
+    <div>© {year} Belgium420. Lab-Backed Hemp. Belgian Roots.</div>
+  </footer>
+</body>
+</html>

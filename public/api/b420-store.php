@@ -10,7 +10,8 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
 
 const B420_ADMIN_KEY = '420Belgium';
 const B420_REFERRAL_GRANT = 25.0;
-const B420_SHIP_FEE = 75.0;
+const B420_SHIP_FEE = 25.0;
+const B420_FREE_SHIP_OVER = 150.0;
 const B420_LOYALTY_PERCENT_CAP = 25;
 const B420_LOYALTY_POUNDS_PERCENT_CAP = 10;
 
@@ -24,6 +25,14 @@ function b420_referrals_file(): string {
 
 function b420_round_money(float $n): float {
     return round($n, 2);
+}
+
+/** Flat fee. Free when merchandise after discounts is strictly over $150. */
+function b420_shipping_for_merch(float $merch): float {
+    $amount = max(0.0, b420_round_money($merch));
+    if ($amount <= 0.0) return 0.0;
+    if ($amount > B420_FREE_SHIP_OVER) return 0.0;
+    return B420_SHIP_FEE;
 }
 
 function b420_normalize_code(string $raw): string {
@@ -382,7 +391,7 @@ function b420_on_order_created(array &$order): void {
     }
 
     $merch = max(0.0, b420_round_money($subtotal - $promoAmount - $loyaltyAmount - $creditApplied));
-    $shipping = $merch > 0 ? B420_SHIP_FEE : 0.0;
+    $shipping = b420_shipping_for_merch($merch);
     $final = b420_round_money($merch + $shipping);
 
     $opsNote = '';

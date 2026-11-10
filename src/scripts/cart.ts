@@ -4,10 +4,13 @@ import {
   getReferralAttribution,
   loyaltyRateFromSpend,
   poundsSubtotalFromLines,
+  FREE_SHIPPING_OVER,
   SHIPPING_FEE,
+  shippingForMerch,
 } from "../lib/rewards.js";
+import { applyTierPrices } from "../lib/tier-pricing.js";
 
-export { SHIPPING_FEE };
+export { FREE_SHIPPING_OVER, SHIPPING_FEE, shippingForMerch };
 
 export type CartItem = {
   batch: string;
@@ -19,6 +22,7 @@ export type CartItem = {
   categories?: string[];
   isPound?: boolean;
   qty?: number;
+  baseBatch?: string;
 };
 
 const STORAGE_KEY = "b420_cart_v1";
@@ -76,6 +80,9 @@ function sanitizeItem(item: CartItem): CartItem {
   };
   if (categories) next.categories = categories;
   if (item.isPound === true) next.isPound = true;
+  if (typeof item.baseBatch === "string" && item.baseBatch.trim()) {
+    next.baseBatch = item.baseBatch.trim().slice(0, 80);
+  }
   return next;
 }
 
@@ -101,20 +108,26 @@ function read(): CartItem[] {
       return JSON.stringify(prev ?? null) !== JSON.stringify(next ?? null) || Boolean(sane[i].isPound) !== Boolean(it.isPound);
     });
     const shrank = clean.length !== sane.length;
-    if (shrank || categoriesChanged) write(clean);
+    const pricedChanged = applyTierPrices(clean);
+    if (shrank || categoriesChanged || pricedChanged) persist(clean, false);
     return clean;
   } catch {
     return [];
   }
 }
 
-function write(items: CartItem[]) {
+function persist(items: CartItem[], notify: boolean) {
+  applyTierPrices(items);
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   } catch {
     /* quota or disabled — silent */
   }
-  window.dispatchEvent(new CustomEvent("cart:changed"));
+  if (notify) window.dispatchEvent(new CustomEvent("cart:changed"));
+}
+
+function write(items: CartItem[]) {
+  persist(items, true);
 }
 
 export function getCart(): CartItem[] {
@@ -214,8 +227,7 @@ export function discountAmount(code: string): number {
 
 
 export function shippingCost(merchandiseTotal: number): number {
-  if (!Number.isFinite(merchandiseTotal) || merchandiseTotal <= 0) return 0;
-  return SHIPPING_FEE;
+  return shippingForMerch(merchandiseTotal);
 }
 
 export type RewardsQuote = {

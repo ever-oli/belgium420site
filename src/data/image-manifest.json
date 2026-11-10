@@ -7,14 +7,6 @@
     "avif": "/opt/inventory/pounds/kleenek-1800-pound-400.avif 400w",
     "thumb": "/opt/inventory/pounds/kleenek-1800-pound-400.webp"
   },
-  "/inventory/pounds/black-dahlia-1850-pound.jpg": {
-    "src": "/opt/inventory/pounds/black-dahlia-1850-pound-400.webp",
-    "width": 400,
-    "height": 414,
-    "srcset": "/opt/inventory/pounds/black-dahlia-1850-pound-400.webp 400w",
-    "avif": "/opt/inventory/pounds/black-dahlia-1850-pound-400.avif 400w",
-    "thumb": "/opt/inventory/pounds/black-dahlia-1850-pound-400.webp"
-  },
   "/inventory/pounds/sharpies-1650-pound.jpg": {
     "src": "/opt/inventory/pounds/sharpies-1650-pound-400.webp",
     "width": 400,
@@ -38,14 +30,6 @@
     "srcset": "/opt/inventory/pounds/super-sauced-1650-pound-400.webp 400w",
     "avif": "/opt/inventory/pounds/super-sauced-1650-pound-400.avif 400w",
     "thumb": "/opt/inventory/pounds/super-sauced-1650-pound-400.webp"
-  },
-  "/inventory/pounds/percz-1600-pound.jpg": {
-    "src": "/opt/inventory/pounds/percz-1600-pound-400.webp",
-    "width": 400,
-    "height": 424,
-    "srcset": "/opt/inventory/pounds/percz-1600-pound-400.webp 400w",
-    "avif": "/opt/inventory/pounds/percz-1600-pound-400.avif 400w",
-    "thumb": "/opt/inventory/pounds/percz-1600-pound-400.webp"
   },
   "/inventory/pounds/hood-candiez-1600-pound.jpg": {
     "src": "/opt/inventory/pounds/hood-candiez-1600-pound-400.webp",
@@ -78,14 +62,6 @@
     "srcset": "/opt/inventory/pounds/blue-benji-1600-pound-400.webp 400w",
     "avif": "/opt/inventory/pounds/blue-benji-1600-pound-400.avif 400w",
     "thumb": "/opt/inventory/pounds/blue-benji-1600-pound-400.webp"
-  },
-  "/inventory/pounds/runtz-dmc-1400-pound.jpg": {
-    "src": "/opt/inventory/pounds/runtz-dmc-1400-pound-400.webp",
-    "width": 400,
-    "height": 533,
-    "srcset": "/opt/inventory/pounds/runtz-dmc-1400-pound-400.webp 400w",
-    "avif": "/opt/inventory/pounds/runtz-dmc-1400-pound-400.avif 400w",
-    "thumb": "/opt/inventory/pounds/runtz-dmc-1400-pound-400.webp"
   },
   "/inventory/pounds/whole-melt-vending-1250-pound.jpg": {
     "src": "/opt/inventory/pounds/whole-melt-vending-1250-pound-400.webp",
@@ -399,14 +375,6 @@
     "avif": "/opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-400.avif 400w, /opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-800.avif 800w",
     "thumb": "/opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-400.webp"
   },
-  "/inventory/concentrates/juug-hash-hole-20.jpeg": {
-    "src": "/opt/inventory/concentrates/juug-hash-hole-20-400.webp",
-    "width": 400,
-    "height": 533,
-    "srcset": "/opt/inventory/concentrates/juug-hash-hole-20-400.webp 400w",
-    "avif": "/opt/inventory/concentrates/juug-hash-hole-20-400.avif 400w",
-    "thumb": "/opt/inventory/concentrates/juug-hash-hole-20-400.webp"
-  },
   "/inventory/edibles/midkidz-gummies-1.jpg": {
     "src": "/opt/inventory/edibles/midkidz-gummies-1-800.webp",
     "width": 800,
@@ -438,14 +406,6 @@
     "srcset": "/opt/inventory/pounds/apricotruntz-975-pound-400.webp 400w",
     "avif": "/opt/inventory/pounds/apricotruntz-975-pound-400.avif 400w",
     "thumb": "/opt/inventory/pounds/apricotruntz-975-pound-400.webp"
-  },
-  "/inventory/pounds/sherbanger-950-pound.jpeg": {
-    "src": "/opt/inventory/pounds/sherbanger-950-pound-400.webp",
-    "width": 400,
-    "height": 474,
-    "srcset": "/opt/inventory/pounds/sherbanger-950-pound-400.webp 400w",
-    "avif": "/opt/inventory/pounds/sherbanger-950-pound-400.avif 400w",
-    "thumb": "/opt/inventory/pounds/sherbanger-950-pound-400.webp"
   },
   "/inventory/pounds/candyfumes-950-pound.jpeg": {
     "src": "/opt/inventory/pounds/candyfumes-950-pound-400.webp",
@@ -775,14 +735,6 @@
     "avif": "/opt/inventory/carts/favorites-2g-cart-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/favorites-2g-cart-25-400.webp"
   },
-  "/inventory/concentrates/persy-snowcaps-pound-concentrates-1300.jpeg": {
-    "src": "/opt/inventory/concentrates/persy-snowcaps-pound-concentrates-1300-400.webp",
-    "width": 400,
-    "height": 857,
-    "srcset": "/opt/inventory/concentrates/persy-snowcaps-pound-concentrates-1300-400.webp 400w",
-    "avif": "/opt/inventory/concentrates/persy-snowcaps-pound-concentrates-1300-400.avif 400w",
-    "thumb": "/opt/inventory/concentrates/persy-snowcaps-pound-concentrates-1300-400.webp"
-  },
   "/inventory/concentrates/wm-extracts-live-resin-sugar-pound-concentrates-1300.jpeg": {
     "src": "/opt/inventory/concentrates/wm-extracts-live-resin-sugar-pound-concentrates-1300-400.webp",
     "width": 400,
@@ -878,30 +830,6 @@
     "srcset": "/opt/inventory/prerolls/heady-head-1g-preroll-15-400.webp 400w",
     "avif": "/opt/inventory/prerolls/heady-head-1g-preroll-15-400.avif 400w",
     "thumb": "/opt/inventory/prerolls/heady-head-1g-preroll-15-400.webp"
-  },
-  "/inventory/_internal/noboof-blackwidow-hp-p-only.jpg": {
-    "src": "/opt/inventory/_internal/noboof-blackwidow-hp-p-only-800.webp",
-    "width": 800,
-    "height": 1422,
-    "srcset": "/opt/inventory/_internal/noboof-blackwidow-hp-p-only-400.webp 400w, /opt/inventory/_internal/noboof-blackwidow-hp-p-only-800.webp 800w",
-    "avif": "/opt/inventory/_internal/noboof-blackwidow-hp-p-only-400.avif 400w, /opt/inventory/_internal/noboof-blackwidow-hp-p-only-800.avif 800w",
-    "thumb": "/opt/inventory/_internal/noboof-blackwidow-hp-p-only-400.webp"
-  },
-  "/inventory/_internal/noboof-osrs11-hp-p-p-only.jpg": {
-    "src": "/opt/inventory/_internal/noboof-osrs11-hp-p-p-only-800.webp",
-    "width": 800,
-    "height": 1422,
-    "srcset": "/opt/inventory/_internal/noboof-osrs11-hp-p-p-only-400.webp 400w, /opt/inventory/_internal/noboof-osrs11-hp-p-p-only-800.webp 800w",
-    "avif": "/opt/inventory/_internal/noboof-osrs11-hp-p-p-only-400.avif 400w, /opt/inventory/_internal/noboof-osrs11-hp-p-p-only-800.avif 800w",
-    "thumb": "/opt/inventory/_internal/noboof-osrs11-hp-p-p-only-400.webp"
-  },
-  "/inventory/_internal/noboof-headband-hp-p-only.jpg": {
-    "src": "/opt/inventory/_internal/noboof-headband-hp-p-only-800.webp",
-    "width": 800,
-    "height": 1422,
-    "srcset": "/opt/inventory/_internal/noboof-headband-hp-p-only-400.webp 400w, /opt/inventory/_internal/noboof-headband-hp-p-only-800.webp 800w",
-    "avif": "/opt/inventory/_internal/noboof-headband-hp-p-only-400.avif 400w, /opt/inventory/_internal/noboof-headband-hp-p-only-800.avif 800w",
-    "thumb": "/opt/inventory/_internal/noboof-headband-hp-p-only-400.webp"
   },
   "/inventory/pounds/Airheadz-100-zip.jpeg": {
     "src": "/opt/inventory/pounds/Airheadz-100-zip-400.webp",
@@ -1102,5 +1030,93 @@
     "srcset": "/opt/inventory/pounds/diamond-gelato-700-pound-400.webp 400w",
     "avif": "/opt/inventory/pounds/diamond-gelato-700-pound-400.avif 400w",
     "thumb": "/opt/inventory/pounds/diamond-gelato-700-pound-400.webp"
+  },
+  "/inventory/new-drop/whole-melts-phase6-v2.jpg": {
+    "src": "/opt/inventory/new-drop/whole-melts-phase6-v2-800.webp",
+    "width": 800,
+    "height": 829,
+    "srcset": "/opt/inventory/new-drop/whole-melts-phase6-v2-400.webp 400w, /opt/inventory/new-drop/whole-melts-phase6-v2-800.webp 800w",
+    "avif": "/opt/inventory/new-drop/whole-melts-phase6-v2-400.avif 400w, /opt/inventory/new-drop/whole-melts-phase6-v2-800.avif 800w",
+    "thumb": "/opt/inventory/new-drop/whole-melts-phase6-v2-400.webp"
+  },
+  "/inventory/new-drop/hollow-tips-2g-disposable.jpg": {
+    "src": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.webp",
+    "width": 400,
+    "height": 300,
+    "srcset": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.webp"
+  },
+  "/inventory/new-drop/devour-1500mg-gummies.jpg": {
+    "src": "/opt/inventory/new-drop/devour-1500mg-gummies-400.webp",
+    "width": 400,
+    "height": 300,
+    "srcset": "/opt/inventory/new-drop/devour-1500mg-gummies-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/devour-1500mg-gummies-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/devour-1500mg-gummies-400.webp"
+  },
+  "/inventory/new-drop/devour-1500mg-sour-lassos.jpg": {
+    "src": "/opt/inventory/new-drop/devour-1500mg-sour-lassos-400.webp",
+    "width": 400,
+    "height": 253,
+    "srcset": "/opt/inventory/new-drop/devour-1500mg-sour-lassos-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/devour-1500mg-sour-lassos-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/devour-1500mg-sour-lassos-400.webp"
+  },
+  "/inventory/new-drop/devour-500mg-nano-gummies.jpg": {
+    "src": "/opt/inventory/new-drop/devour-500mg-nano-gummies-400.webp",
+    "width": 400,
+    "height": 176,
+    "srcset": "/opt/inventory/new-drop/devour-500mg-nano-gummies-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/devour-500mg-nano-gummies-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/devour-500mg-nano-gummies-400.webp"
+  },
+  "/inventory/new-drop/juug-2g-prerolls.jpg": {
+    "src": "/opt/inventory/new-drop/juug-2g-prerolls-400.webp",
+    "width": 400,
+    "height": 533,
+    "srcset": "/opt/inventory/new-drop/juug-2g-prerolls-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/juug-2g-prerolls-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/juug-2g-prerolls-400.webp"
+  },
+  "/inventory/new-drop/heady-heads-1g-preroll.jpg": {
+    "src": "/opt/inventory/new-drop/heady-heads-1g-preroll-400.webp",
+    "width": 400,
+    "height": 494,
+    "srcset": "/opt/inventory/new-drop/heady-heads-1g-preroll-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/heady-heads-1g-preroll-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/heady-heads-1g-preroll-400.webp"
+  },
+  "/inventory/new-drop/premium-sugar-lb.jpg": {
+    "src": "/opt/inventory/new-drop/premium-sugar-lb-800.webp",
+    "width": 800,
+    "height": 600,
+    "srcset": "/opt/inventory/new-drop/premium-sugar-lb-400.webp 400w, /opt/inventory/new-drop/premium-sugar-lb-800.webp 800w",
+    "avif": "/opt/inventory/new-drop/premium-sugar-lb-400.avif 400w, /opt/inventory/new-drop/premium-sugar-lb-800.avif 800w",
+    "thumb": "/opt/inventory/new-drop/premium-sugar-lb-400.webp"
+  },
+  "/inventory/new-drop/distillate-liter-3.jpg": {
+    "src": "/opt/inventory/new-drop/distillate-liter-3-800.webp",
+    "width": 800,
+    "height": 1067,
+    "srcset": "/opt/inventory/new-drop/distillate-liter-3-400.webp 400w, /opt/inventory/new-drop/distillate-liter-3-800.webp 800w",
+    "avif": "/opt/inventory/new-drop/distillate-liter-3-400.avif 400w, /opt/inventory/new-drop/distillate-liter-3-800.avif 800w",
+    "thumb": "/opt/inventory/new-drop/distillate-liter-3-400.webp"
+  },
+  "/inventory/new-drop/distillate-liter-1.jpg": {
+    "src": "/opt/inventory/new-drop/distillate-liter-1-800.webp",
+    "width": 800,
+    "height": 1067,
+    "srcset": "/opt/inventory/new-drop/distillate-liter-1-400.webp 400w, /opt/inventory/new-drop/distillate-liter-1-800.webp 800w",
+    "avif": "/opt/inventory/new-drop/distillate-liter-1-400.avif 400w, /opt/inventory/new-drop/distillate-liter-1-800.avif 800w",
+    "thumb": "/opt/inventory/new-drop/distillate-liter-1-400.webp"
+  },
+  "/inventory/new-drop/distillate-liter-2.jpg": {
+    "src": "/opt/inventory/new-drop/distillate-liter-2-800.webp",
+    "width": 800,
+    "height": 1067,
+    "srcset": "/opt/inventory/new-drop/distillate-liter-2-400.webp 400w, /opt/inventory/new-drop/distillate-liter-2-800.webp 800w",
+    "avif": "/opt/inventory/new-drop/distillate-liter-2-400.avif 400w, /opt/inventory/new-drop/distillate-liter-2-800.avif 800w",
+    "thumb": "/opt/inventory/new-drop/distillate-liter-2-400.webp"
   }
 }

@@ -6,6 +6,12 @@
   --belgian-black: var(--ink);
   --belgian-yellow: #F5C400;
   --belgian-red: #E31C23;
+  --accent: #38bdf8;
+  --accent-hover: #1d4ed8;
+  --accent-ink: #0b1727;
+  --cyan: #3de7ff;
+  --amber: #ffc14a;
+  --lime: #b8ff3d;
   --chalk: #F5F1E8;
   --concrete: #9A968C;
 
@@ -83,7 +89,7 @@
 }
 
 :focus-visible {
-  outline: 2px solid var(--belgian-yellow);
+  outline: 2px solid var(--amber);
   outline-offset: 3px;
 }
 

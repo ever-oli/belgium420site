@@ -1,6 +1,7 @@
 ---
 import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
-import { SHIPPING_FEE } from '../lib/rewards.js';
+import { FREE_SHIPPING_OVER, SHIPPING_FEE } from '../lib/rewards.js';
+import { newDropProducts } from '../data/new-drop.js';
 import { savePercents } from '../lib/tier-savings.js';
 import imageManifest from '../data/image-manifest.json';
 import '../styles/brand.css';
@@ -25,6 +26,7 @@ const categoryDefs = [
 ];
 
 const products = [
+  ...newDropProducts,
   {
     name: 'Kleenek',
     type: 'CBD Flower · 1lb (Bulk)',
@@ -34,16 +36,6 @@ const products = [
     batch: 'B420-2026-1135',
     categories: ['flower', 'pounds'],
     img: '/inventory/pounds/kleenek-1800-pound.jpg',
-  },
-  {
-    name: 'Black Dahlia',
-    type: 'CBD Flower · 1lb (Bulk)',
-    price: '$1,850.00',
-    thc: 'Lab results pending',
-    tone: 'red',
-    batch: 'B420-2026-1136',
-    categories: ['flower', 'pounds'],
-    img: '/inventory/pounds/black-dahlia-1850-pound.jpg',
   },
   {
     name: 'Sharpies',
@@ -74,16 +66,6 @@ const products = [
     batch: 'B420-2026-1133',
     categories: ['flower', 'pounds'],
     img: '/inventory/pounds/super-sauced-1650-pound.jpg',
-  },
-  {
-    name: 'Percz',
-    type: 'CBD Flower · 1lb (Bulk)',
-    price: '$1,600.00',
-    thc: 'Lab results pending',
-    tone: 'yellow',
-    batch: 'B420-2026-1130',
-    categories: ['flower', 'pounds'],
-    img: '/inventory/pounds/percz-1600-pound.jpg',
   },
   {
     name: 'Hood Candiez',
@@ -124,16 +106,6 @@ const products = [
     batch: 'B420-2026-1129',
     categories: ['flower', 'pounds'],
     img: '/inventory/pounds/blue-benji-1600-pound.jpg',
-  },
-  {
-    name: 'Runtz DMC',
-    type: 'CBD Flower · 1lb (Bulk)',
-    price: '$1,400.00',
-    thc: 'Lab results pending',
-    tone: 'yellow',
-    batch: 'B420-2026-1126',
-    categories: ['flower', 'pounds'],
-    img: '/inventory/pounds/runtz-dmc-1400-pound.jpg',
   },
   {
     name: 'Whole Melt Extracts · Vending Machine',
@@ -532,16 +504,6 @@ const products = [
     categories: ['concentrates'],
     img: '/inventory/concentrates/peach-pie-live-rosin-90u-1-325.jpg',
   },
-  {
-    name: 'JUUG Hash Hole',
-    type: 'Hash Hole · Premium',
-    price: '$20.00',
-    thc: 'Δ9-THC: <0.3% · Lab tested',
-    tone: 'black',
-    batch: 'B420-2026-1502',
-    categories: ['concentrates'],
-    img: '/inventory/concentrates/juug-hash-hole-20.jpeg',
-  },
 
   {
     name: 'MIdKidz Gummies',
@@ -583,16 +545,6 @@ const products = [
     batch: 'B420-2026-1802',
     categories: ['flower', 'pounds'],
     img: '/inventory/pounds/apricotruntz-975-pound.jpeg',
-  },
-  {
-    name: 'Sherbanger · Pound',
-    type: 'Premium Flower · 1lb',
-    price: '$950.00',
-    thc: 'Δ9-THC: <0.3% · Lab tested',
-    tone: 'yellow',
-    batch: 'B420-2026-1803',
-    categories: ['flower', 'pounds'],
-    img: '/inventory/pounds/sherbanger-950-pound.jpeg',
   },
   {
     name: 'Candy Fumes · Pound',
@@ -1019,16 +971,6 @@ const products = [
   },
 
   {
-    name: 'Persy Snowcaps · Pound',
-    type: 'Hash · 1lb',
-    price: '$1,300.00',
-    thc: 'Δ9-THC: <0.3% · Lab tested',
-    tone: 'yellow',
-    batch: 'B420-2026-2101',
-    categories: ['concentrates', 'pounds'],
-    img: '/inventory/concentrates/persy-snowcaps-pound-concentrates-1300.jpeg',
-  },
-  {
     name: 'WM Extracts Live Resin Sugar · Pound',
     type: 'Live Resin Sugar · 1lb',
     price: '$1,300.00',
@@ -1151,39 +1093,6 @@ const products = [
     img: '/inventory/prerolls/heady-head-1g-preroll-15.jpeg',
   },
 
-  {
-    name: 'Noboof BlackWidow',
-    type: 'House Party Only · Premium',
-    price: 'Inquire',
-    thc: 'Δ9-THC: <0.3% · Lab tested',
-    tone: 'black',
-    batch: 'B420-2026-HP01',
-    categories: ['flower', 'pounds'],
-    img: '/inventory/_internal/noboof-blackwidow-hp-p-only.jpg',
-    inquiryOnly: true,
-  },
-  {
-    name: 'Noboof OSRS11',
-    type: 'House Party Only · Premium',
-    price: 'Inquire',
-    thc: 'Δ9-THC: <0.3% · Lab tested',
-    tone: 'red',
-    batch: 'B420-2026-HP02',
-    categories: ['flower', 'pounds'],
-    img: '/inventory/_internal/noboof-osrs11-hp-p-p-only.jpg',
-    inquiryOnly: true,
-  },
-  {
-    name: 'Noboof Headband',
-    type: 'House Party Only · Premium',
-    price: 'Inquire',
-    thc: 'Δ9-THC: <0.3% · Lab tested',
-    tone: 'yellow',
-    batch: 'B420-2026-HP03',
-    categories: ['flower', 'pounds'],
-    img: '/inventory/_internal/noboof-headband-hp-p-only.jpg',
-    inquiryOnly: true,
-  },
 
   {
     name: 'Airheadz · Zip',
@@ -1461,6 +1370,19 @@ const effectDefs = [
   { id: 'social',    label: 'Social' },
 ];
 
+function moneyLabel(n) {
+  return Number(n).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+
+function tierBreakLabel(tier, i, tiers) {
+  const prevMax = i === 0 ? 0 : tiers[i - 1].max;
+  const lo = (prevMax ?? 0) + 1;
+  const price = moneyLabel(tier.price);
+  if (tier.max == null) return `${lo}+  ${price} ea`;
+  if (lo === tier.max) return `${lo}  ${price} ea`;
+  return `${lo}–${tier.max}  ${price} ea`;
+}
+
 function formatPriceLabel(p, variants) {
   if (variants.length >= 2) {
     const prices = variants.map((v) => v.price);
@@ -1503,7 +1425,7 @@ const typeCounts = [
   <title>Belgium420 — Lab-Backed Hemp. Belgian Roots.</title>
   <meta name="description" content="Belgium420 — 2018 Farm Bill compliant hemp products. Third-party lab tested. COA on every batch. Ships to 48 states." />
   <link rel="canonical" href="https://belgium420.com/" />
-  <meta name="theme-color" content="#050505" />
+  <meta name="theme-color" content="#060607" />
   <meta property="og:title" content="Belgium420 — Lab-Backed Hemp. Belgian Roots." />
   <meta property="og:description" content="Premium hemp-derived cannabinoids. Third-party tested. COA on every batch. Ships to 48 states." />
   <meta property="og:type" content="website" />
@@ -4154,6 +4076,149 @@ const typeCounts = [
     .sort-chip:active {
       transform: scale(0.97);
     }
+
+    /* Blue marketplace restyle — Cozy's Market look from the approved prototype. */
+    body {
+      background:
+        radial-gradient(ellipse 90% 55% at 8% -8%, rgba(56,189,248,.22), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 95% 5%, rgba(61,231,255,.14), transparent 50%),
+        radial-gradient(ellipse 55% 35% at 50% 110%, rgba(255,193,74,.08), transparent 55%),
+        linear-gradient(180deg, #060607, #0b0b0e 40%, #060607);
+    }
+    #smokeBg { display: none; }
+    .flag-stripe { height: 4px; display: grid; grid-template-columns: 1fr 1fr 1fr; position: sticky; top: 0; z-index: 60; }
+    .flag-stripe i { display: block; }
+    .flag-stripe i:nth-child(1) { background: #050505; }
+    .flag-stripe i:nth-child(2) { background: #F5C400; }
+    .flag-stripe i:nth-child(3) { background: #E31C23; }
+    header, body > header { position: sticky; top: 4px; z-index: 50; }
+    @media (min-width: 901px) {
+      nav { padding-right: 40rem; }
+      .nav-links { right: 1.5rem; gap: .85rem; }
+      .nav-links a { letter-spacing: .04em; }
+    }
+    #siteNav, header {
+      background: rgba(6,6,7,.78);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid #2a2c33;
+    }
+    .nav-links a:hover, .footer-links a:hover { color: var(--accent); }
+    .nav-cta, .nav-cta-mobile, .btn-primary, .add-to-cart, .age-btn-yes, .auth-submit {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border-radius: 999px;
+      box-shadow: 0 0 28px #38bdf866;
+      border: 0;
+    }
+    .nav-cta:hover, .nav-cta-mobile:hover, .btn-primary:hover, .add-to-cart:hover, .age-btn-yes:hover, .auth-submit:hover {
+      background: var(--accent-hover);
+      color: #fff;
+    }
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      padding: .7rem 1.35rem;
+      border-radius: 999px;
+      border: 1px solid #3a3d48;
+      background: transparent;
+      color: var(--chalk);
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .btn-ghost:hover { border-color: var(--cyan); color: #fff; }
+    .hero { min-height: min(calc(100svh - 76px), 52rem); display: grid; place-items: center; }
+    .hero-content { max-width: 900px; text-align: center; padding: 3.5rem 1.25rem 4rem; }
+    .hero-title {
+      font-size: clamp(3.1rem, 12vw, 7.2rem);
+      line-height: .9;
+      letter-spacing: .01em;
+      margin: .4rem 0 .8rem;
+    }
+    .hero-title span { color: var(--accent); text-shadow: 0 0 30px rgba(56,189,248,.5); }
+    .hero-desc { margin-left: auto; margin-right: auto; }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: .7rem; justify-content: center; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem; margin: 0 0 .9rem;
+      padding: .35rem .75rem; border: 1px solid #2a2c33; border-radius: 999px;
+      font: 600 .72rem 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .06em;
+      text-transform: uppercase; color: #8b8e99; background: #ffffff08;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px var(--lime); display: inline-block; }
+    .trust { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin: 2rem 0 0; padding: 0; list-style: none; }
+    .trust li {
+      padding: .35rem .7rem; border: 1px solid #2a2c33; border-radius: 999px;
+      font: 600 .68rem 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .05em;
+      text-transform: uppercase; color: #8b8e99; background: #ffffff08;
+    }
+    .marquee { background: #ffffff06; border-block: 1px solid #2a2c33; color: var(--chalk); }
+    .marquee-inner { color: var(--chalk); }
+    .section-title span { color: var(--accent); text-shadow: 0 0 24px rgba(56,189,248,.4); }
+    .collections { background: transparent; }
+    .collections::before, .collections::after { display: none; }
+    .product-card, .drop-card {
+      background: linear-gradient(160deg, #1a1b1feb, #0e0e11e6);
+      border: 1px solid #2a2c33;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px #0006;
+    }
+    .product-card:hover, .drop-card:hover {
+      border-color: #3a3d48;
+      box-shadow: 0 16px 40px #0008, 0 0 20px #38bdf826;
+    }
+    .product-card-img { aspect-ratio: 1; background: #101116; }
+    .product-photo, .drop-card-media img { width: 100%; height: 100%; object-fit: cover; }
+    .product-card-price, .card-price { color: var(--chalk); }
+    .product-card-new, .drop-tag {
+      position: absolute; top: .7rem; left: .7rem; z-index: 3;
+      padding: .22rem .55rem; border-radius: 999px; background: var(--accent); color: var(--accent-ink);
+      font: 700 .68rem 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase;
+    }
+    .product-card-coa { color: var(--lime); border-color: #b8ff3d55; border-radius: 999px; }
+    .cat-chip.is-active, .effect-chip.is-active, .type-chip.is-active, .sort-chip.is-active,
+    .product-variant.is-selected {
+      background: #38bdf814;
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .cat-chip, .effect-chip, .type-chip, .sort-chip, .product-variant { border-radius: 999px; }
+    .new-drop { padding-top: 3.5rem; }
+    .new-drop-grid { display: grid; gap: 1.1rem; grid-template-columns: 1fr; }
+    @media (min-width: 800px) { .new-drop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (min-width: 1100px) { .new-drop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .drop-card { display: flex; flex-direction: column; border-color: #3a3d48; box-shadow: 0 10px 30px #0006, 0 0 24px #38bdf81f; }
+    .drop-card-media { position: relative; aspect-ratio: 1; background: #101116; overflow: hidden; }
+    .drop-card-media img { display: block; }
+    .drop-card-body { padding: 1.05rem 1.1rem 1.15rem; display: flex; flex-direction: column; gap: .15rem; flex: 1; }
+    .card-name { margin: 0; font-weight: 700; font-size: 1.05rem; line-height: 1.25; }
+    .card-type, .card-lab, .card-note { margin: 0; color: #8b8e99; font-size: .8rem; }
+    .card-lab { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .72rem; }
+    .card-note { margin-top: .35rem; color: var(--amber); }
+    .card-cta { width: 100%; margin-top: auto; min-height: 46px; }
+    .drop-field { display: block; margin: .55rem 0 .2rem; color: #8b8e99; font: 600 .72rem 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; }
+    .drop-qty, .flavor-select {
+      width: 100%; min-height: 40px; margin-top: .25rem; padding: .4rem .6rem; border-radius: 10px;
+      border: 1px solid #3a3d48; background: #0d0e12; color: var(--chalk); font: 600 .88rem 'Space Grotesk', system-ui, sans-serif;
+    }
+    .tier-list { list-style: none; margin: .45rem 0 .2rem; padding: 0; display: grid; gap: .2rem; font: 600 .75rem 'JetBrains Mono', ui-monospace, monospace; color: #8b8e99; }
+    .drop-line-total { margin: .15rem 0 0; font: 600 .8rem 'JetBrains Mono', ui-monospace, monospace; }
+    .per { font: 600 .72rem 'JetBrains Mono', ui-monospace, monospace; color: #8b8e99; margin-left: .25rem; text-transform: uppercase; }
+    .card-thumbs { display: flex; gap: .4rem; padding: .5rem 1rem 0; }
+    .card-thumb { flex: 1; aspect-ratio: 1.3/1; border: 1px solid #2a2c33; border-radius: 8px; overflow: hidden; padding: 0; background: #101116; cursor: pointer; }
+    .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-thumb.is-active, .card-thumb:hover { border-color: var(--accent); }
+    .product-card.has-details .product-card-extras { max-height: none; opacity: 1; transform: none; }
+    :global(.cart-checkout-btn) {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border-radius: 999px;
+      box-shadow: 0 0 28px #38bdf866;
+    }
+    :global(.cart-row-price),
+    :global(.cart-foot-row strong) { color: var(--accent); }
+    :global(.cart-foot-row.is-off strong) { color: var(--lime); }
   </style>
 </head>
 <body>
@@ -4179,7 +4244,7 @@ const typeCounts = [
         <button type="button" class="age-btn age-btn-yes">I am 21+</button>
         <button type="button" class="age-btn age-btn-no">I am under 21</button>
       </div>
-      <p class="age-gate-legal">By entering, you agree to our Terms of Service and Privacy Policy.</p>
+      <p class="age-gate-legal">By entering, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.</p>
     </div>
   </div>
 
@@ -4234,6 +4299,7 @@ const typeCounts = [
     </>
   )}
 
+  <div class="flag-stripe" aria-hidden="true"><i></i><i></i><i></i></div>
   <header>
   <nav id="siteNav">
     <a href="/" class="nav-logo brand-logo" aria-label="Belgium420">
@@ -4260,6 +4326,7 @@ const typeCounts = [
   </nav>
   <ul class="nav-links" id="navLinks">
       <li><a href="#shop">Shop</a></li>
+      <li><a href="#new-drop">New Drop</a></li>
       <li><a href="#lab">Lab Results</a></li>
       <li><a href="#shipping">Shipping</a></li>
       <li><a href="#rewards">Rewards</a></li>
@@ -4275,20 +4342,21 @@ const typeCounts = [
   <section class="hero" id="top" aria-label="Belgium420">
     <div class="hero-bg" role="img" aria-label="Belgian flag grunge artwork with Brussels skyline and cannabinoid structures"></div>
     <div class="hero-content">
-      <div class="hero-brand brand-logo" aria-label="Belgium420">
-        <span class="brand-logo-flag" aria-hidden="true">
-          <span class="stripe stripe-black"></span>
-          <span class="stripe stripe-yellow"></span>
-          <span class="stripe stripe-red"></span>
-          <span class="brand-logo-420">420</span>
-        </span>
-        <span class="brand-logo-word">Belgium 420</span>
-      </div>
-      <h1 class="hero-title">Belgian roots. Lab-backed.</h1>
+      <p class="eyebrow"><span class="dot"></span>Lab-Backed Hemp. Belgian Roots.</p>
+      <h1 class="hero-title">Belgian roots.<br /><span>Lab-backed.</span></h1>
       <p class="hero-desc">Premium hemp-derived cannabinoids. Third-party tested. COA on every batch. Ships to 48 states.</p>
       <div class="hero-cta">
         <a href="#shop" class="btn btn-primary">Shop Collection</a>
+        <a href="#lab" class="btn btn-ghost">Lab Results</a>
       </div>
+      <ul class="trust">
+        <li>Lab Tested</li>
+        <li>COA on every batch</li>
+        <li>Ships to 48 States</li>
+        <li>Flat ${SHIPPING_FEE} shipping · free over ${FREE_SHIPPING_OVER}</li>
+        <li>No Δ9 &gt; 0.3%</li>
+        <li>2018 Farm Bill Compliant</li>
+      </ul>
     </div>
     
     <div class="hero-3d" aria-hidden="true">
@@ -4300,7 +4368,7 @@ const typeCounts = [
 
   <div class="marquee">
     <div class="marquee-inner">
-      <span>Flat ${SHIPPING_FEE} Shipping</span>
+      <span>Flat ${SHIPPING_FEE} shipping · free over ${FREE_SHIPPING_OVER}</span>
       <span>·</span>
       <span>Refer a friend — you get $25 off</span>
       <span>·</span>
@@ -4314,7 +4382,7 @@ const typeCounts = [
       <span>·</span>
       <span>2018 Farm Bill Compliant</span>
       <span>·</span>
-      <span>Flat ${SHIPPING_FEE} Shipping</span>
+      <span>Flat ${SHIPPING_FEE} shipping · free over ${FREE_SHIPPING_OVER}</span>
       <span>·</span>
       <span>Refer a friend — you get $25 off</span>
       <span>·</span>
@@ -4330,6 +4398,86 @@ const typeCounts = [
       <span>·</span>
     </div>
   </div>
+
+  <section class="new-drop" id="new-drop">
+    <div class="section-header">
+      <p class="eyebrow section-tag"><span class="dot"></span>New Drop</p>
+      <h2 class="section-title">Just <span>landed.</span></h2>
+      <p class="section-desc">Fresh additions below. Volume pricing is on each card — the unit price drops as you add more of the same product (all flavors combined). Lab results pending.</p>
+    </div>
+    <div class="new-drop-grid">
+      {newDropProducts.map((p) => {
+        const flavors = Array.isArray(p.flavors) ? p.flavors : [];
+        const tiers = Array.isArray(p.tiers) ? p.tiers : [];
+        const gallery = Array.isArray(p.gallery) ? p.gallery : [];
+        const picture = p.img ? imageManifest[p.img] : null;
+        const first = flavors[0];
+        const unit = tiers[0]?.price;
+        const priceNum = unit ?? (parseFloat(String(p.price).replace(/[^0-9.]/g, '')) || 0);
+        const cartName = first ? `${p.name} · ${first.label}` : p.name;
+        const cartBatch = first ? `${p.batch}-${first.id}` : p.batch;
+        const src = picture?.src || p.img;
+        return (
+          <article class="drop-card" data-tier-product={tiers.length ? p.batch : undefined} data-cats={p.categories.join(' ')}>
+            <div class="drop-card-media">
+              <span class="drop-tag">New Drop</span>
+              <img src={src} alt={p.name} data-gallery-main={gallery.length ? '' : undefined} width="800" height="800" loading="lazy" decoding="async" />
+            </div>
+            {gallery.length > 0 && (
+              <div class="card-thumbs" role="list">
+                {gallery.map((g, i) => (
+                  <button type="button" class={`card-thumb${i === 0 ? ' is-active' : ''}`} data-full={imageManifest[g.src]?.src || g.src} aria-label={g.alt}>
+                    <img src={imageManifest[g.src]?.thumb || g.src} alt="" width="160" height="120" loading="lazy" decoding="async" />
+                  </button>
+                ))}
+              </div>
+            )}
+            <div class="drop-card-body">
+              <h3 class="card-name">{p.name}</h3>
+              <p class="card-type">{p.type}</p>
+              {flavors.length > 0 && (
+                <label class="drop-field">Flavor
+                  <select class="flavor-select" aria-label={`Flavor for ${p.name}`}>
+                    {flavors.map((f, i) => <option value={f.id} selected={i === 0}>{f.label}</option>)}
+                  </select>
+                </label>
+              )}
+              {tiers.length > 0 && (
+                <>
+                  <label class="drop-field">Qty
+                    <input class="drop-qty" type="number" min="1" step="1" value="1" inputmode="numeric" aria-label={`Quantity for ${p.name}`} />
+                  </label>
+                  <p class="card-price drop-price">{moneyLabel(unit)} <span class="per">each</span></p>
+                  <p class="drop-line-total">{`1 × ${moneyLabel(unit)} = ${moneyLabel(unit)}`}</p>
+                  <ul class="tier-list" aria-label="Quantity price breaks">
+                    {tiers.map((t, i) => <li>{tierBreakLabel(t, i, tiers)}</li>)}
+                  </ul>
+                </>
+              )}
+              {tiers.length === 0 && <p class="card-price">{p.price}</p>}
+              <p class="card-lab">{p.thc}</p>
+              {p.note && <p class="card-note">{p.note}</p>}
+              <button
+                type="button"
+                class="btn btn-primary card-cta add-to-cart"
+                data-name={cartName}
+                data-base-name={p.name}
+                data-type={p.type}
+                data-price={priceNum}
+                data-qty={tiers.length ? '1' : undefined}
+                data-batch={cartBatch}
+                data-base-batch={p.batch}
+                data-img={src}
+                data-tone={p.tone}
+                data-categories={p.categories.join(' ')}
+                aria-label={`Add ${cartName} to cart`}
+              >Add to cart</button>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </section>
 
   <section class="collections" id="shop">
     <div class="section-header">
@@ -4399,8 +4547,8 @@ const typeCounts = [
         <div class="filter-label">Sort</div>
         <div class="sort-bar" role="tablist" aria-label="Sort products">
           <span class="chip-pill" aria-hidden="true"></span>
-          <button type="button" class="sort-chip is-active" data-sort="featured" role="tab" aria-selected="true">Featured</button>
-          <button type="button" class="sort-chip" data-sort="price-asc" role="tab" aria-selected="false">Price · low → high</button>
+          <button type="button" class="sort-chip" data-sort="featured" role="tab" aria-selected="false">Featured</button>
+          <button type="button" class="sort-chip is-active" data-sort="price-asc" role="tab" aria-selected="true">Price · low → high</button>
           <button type="button" class="sort-chip" data-sort="price-desc" role="tab" aria-selected="false">Price · high → low</button>
           <button type="button" class="sort-chip" data-sort="name-asc" role="tab" aria-selected="false">Name · A–Z</button>
         </div>
@@ -4412,16 +4560,26 @@ const typeCounts = [
         const primaryCat = p.categories.find((c) => ['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)) || p.categories[0];
         const mark = categoryDefs.find((d) => d.id === primaryCat)?.mark || '✦';
         const variants = 'variants' in p && Array.isArray(p.variants) ? p.variants : [];
+        const flavors = Array.isArray(p.flavors) ? p.flavors : [];
+        const tiers = Array.isArray(p.tiers) ? p.tiers : [];
+        const gallery = Array.isArray(p.gallery) ? p.gallery : [];
         const defaultVariant = variants[0];
+        const firstFlavor = flavors[0];
         const firstAmt = (p.price || '$0').match(/[\d,]+(?:\.\d+)?/);
-        const priceNum = defaultVariant
-          ? defaultVariant.price
-          : (firstAmt ? parseFloat(firstAmt[0].replace(/,/g, '')) || 0 : 0);
-        const cartName = defaultVariant ? `${p.name} · ${defaultVariant.label}` : p.name;
+        const priceNum = tiers.length
+          ? tiers[0].price
+          : defaultVariant
+            ? defaultVariant.price
+            : (firstAmt ? parseFloat(firstAmt[0].replace(/,/g, '')) || 0 : 0);
+        const cartName = firstFlavor
+          ? `${p.name} · ${firstFlavor.label}`
+          : defaultVariant ? `${p.name} · ${defaultVariant.label}` : p.name;
         const cartType = defaultVariant ? defaultVariant.type : p.type;
         const displayType = variants.length > 1 ? p.type : cartType;
-        const cartBatch = defaultVariant ? `${p.batch}-${defaultVariant.id}` : p.batch;
-        const cartPriceLabel = formatPriceLabel(p, variants);
+        const cartBatch = firstFlavor
+          ? `${p.batch}-${firstFlavor.id}`
+          : defaultVariant ? `${p.batch}-${defaultVariant.id}` : p.batch;
+        const cartPriceLabel = tiers.length ? moneyLabel(tiers[0].price) : formatPriceLabel(p, variants);
         const picture = p.img ? imageManifest[p.img] : null;
         const video = 'video' in p && typeof p.video === 'string' ? p.video : null;
         const videoPoster = video ? (('video_poster' in p && typeof p.video_poster === 'string') ? p.video_poster : (picture?.src || p.img || undefined)) : undefined;
@@ -4430,7 +4588,8 @@ const typeCounts = [
         const effects = inferEffects(p);
         const strainType = inferType(p);
         return (
-          <div class="product-card" data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''} data-price={priceNum}>
+          <div class:list={['product-card', p.newDrop && 'is-new', (tiers.length || flavors.length) && 'has-details']} data-cats={p.categories.join(' ')} data-tone={p.tone} data-vibes={effects.join(' ')} data-type={strainType || ''} data-price={priceNum} data-tier-product={tiers.length ? p.batch : undefined}>
+            {p.newDrop && <div class="product-card-new">New</div>}
             <div class="product-card-coa">COA ✓</div>
             {p.categories.filter((c) => !['flower', 'concentrates', 'carts', 'mushrooms', 'edibles', 'prerolls', 'small-sizes'].includes(c)).slice(0, 2).map((c) => {
               const meta = categoryDefs.find((d) => d.id === c);
@@ -4444,7 +4603,22 @@ const typeCounts = [
                   <video class="card-video" data-lazy-video={video} poster={videoPoster} muted loop playsinline preload="none" aria-label={`${p.name} video`} width="360" height="640"></video>
                 </button>
               )}
-              {!video && picture && (
+              {!video && picture && gallery.length > 0 && (
+                <img
+                  class="product-photo"
+                  data-gallery-main
+                  src={picture.src}
+                  alt={p.name}
+                  width={picture.width}
+                  height={picture.height}
+                  loading={eager ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              )}
+              {!video && !picture && p.img && (
+                <img class="product-photo" src={p.img} alt={p.name} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+              )}
+              {!video && picture && gallery.length === 0 && (
                 <button type="button" class="product-zoom" data-zoom aria-label={`Enlarge photo of ${p.name}`} aria-haspopup="dialog">
                 <picture>
                   <source type="image/avif" srcset={picture.avif} sizes={PHOTO_SIZES} />
@@ -4465,10 +4639,40 @@ const typeCounts = [
               )}
               <span class="product-card-mark">{mark}</span>
             </div>
+            {gallery.length > 0 && (
+              <div class="card-thumbs" role="list">
+                {gallery.map((g, i) => (
+                  <button type="button" class={`card-thumb${i === 0 ? ' is-active' : ''}`} data-full={imageManifest[g.src]?.src || g.src} aria-label={g.alt}>
+                    <img src={imageManifest[g.src]?.thumb || g.src} alt="" width="120" height="90" loading="lazy" decoding="async" />
+                  </button>
+                ))}
+              </div>
+            )}
             <div class="product-card-body">
               <div class="product-card-name">{p.name}</div>
               <div class="product-card-type">{displayType}</div>
-              <div class="product-card-price">{cartPriceLabel}</div>
+              <div class={tiers.length ? 'product-card-price card-price' : 'product-card-price'}>
+                {tiers.length ? <>{moneyLabel(tiers[0].price)} <span class="per">each</span></> : cartPriceLabel}
+              </div>
+              {flavors.length > 0 && (
+                <label class="drop-field">Flavor
+                  <select class="flavor-select" aria-label={`Flavor for ${p.name}`}>
+                    {flavors.map((f, i) => <option value={f.id} selected={i === 0}>{f.label}</option>)}
+                  </select>
+                </label>
+              )}
+              {tiers.length > 0 && (
+                <>
+                  <label class="drop-field">Qty
+                    <input class="drop-qty" type="number" min="1" step="1" value="1" inputmode="numeric" aria-label={`Quantity for ${p.name}`} />
+                  </label>
+                  <p class="drop-line-total">{`1 × ${moneyLabel(tiers[0].price)} = ${moneyLabel(tiers[0].price)}`}</p>
+                  <ul class="tier-list" aria-label="Quantity price breaks">
+                    {tiers.map((t, i) => <li>{tierBreakLabel(t, i, tiers)}</li>)}
+                  </ul>
+                </>
+              )}
+              {p.note && <p class="card-note">{p.note}</p>}
               {variants.length > 1 && (
                 <span class="product-card-sizes">{variants.length} sizes</span>
               )}
@@ -4508,6 +4712,7 @@ const typeCounts = [
                   data-name={cartName}
                   data-type={cartType}
                   data-price={priceNum}
+                  data-qty={tiers.length ? '1' : undefined}
                   data-tone={p.tone}
                   data-img={picture?.thumb || p.img || ''}
                   data-categories={p.categories.join(' ')}
@@ -4680,7 +4885,7 @@ const typeCounts = [
     <div class="shipping-grid">
       <div class="shipping-card">
         <h3>We Ship To</h3>
-        <p>Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware, Florida, Georgia, Illinois, Indiana, Kansas, Kentucky, Louisiana, Maine, Maryland, Massachusetts, Michigan, Minnesota, Mississippi, Missouri, Montana, Nebraska, Nevada, New Hampshire, New Jersey, New Mexico, New York, North Carolina, North Dakota, Ohio, Oklahoma, Pennsylvania, Rhode Island, South Carolina, South Dakota, Tennessee, Texas, Utah, Vermont, Virginia, Washington, West Virginia, Wisconsin, Wyoming</p>
+        <p>Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware, Florida, Georgia, Hawaii, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana, Maine, Maryland, Massachusetts, Michigan, Minnesota, Mississippi, Missouri, Montana, Nebraska, Nevada, New Hampshire, New Jersey, New Mexico, New York, North Carolina, North Dakota, Ohio, Oklahoma, Pennsylvania, Rhode Island, South Carolina, South Dakota, Tennessee, Texas, Utah, Vermont, Virginia, Washington, West Virginia, Wisconsin, Wyoming</p>
       </div>
       <div class="shipping-card">
         <h3>Cannot Ship To</h3>
@@ -4688,7 +4893,7 @@ const typeCounts = [
       </div>
       <div class="shipping-card">
         <h3>Shipping Details</h3>
-        <p>No order minimum. Flat ${SHIPPING_FEE} shipping on every order. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend for $25 off your next order after theirs clears. Ships within 24-48 hours via USPS Ground Advantage. All packages include a QR code linking to the batch COA. Discrete packaging — no product names or logos on the exterior.</p>
+        <p>No order minimum. Flat ${SHIPPING_FEE} shipping. Free when the subtotal after discounts is over ${FREE_SHIPPING_OVER}. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend for $25 off your next order after theirs clears. Ships within 24-48 hours via USPS Ground Advantage. Hawaii and Iowa are included. All packages include a QR code linking to the batch COA. Discrete packaging — no product names or logos on the exterior.</p>
       </div>
     </div>
   </section>
@@ -4753,10 +4958,10 @@ const typeCounts = [
       <div class="footer-bottom">
         <div class="footer-copy">&copy; {year} Belgium420. All rights reserved.</div>
         <ul class="footer-links">
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms of Service</a></li>
-          <li><a href="#">Refund Policy</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+          <li><a href="/refund">Refund Policy</a></li>
+          <li><a href="/contact">Contact</a></li>
         </ul>
       </div>
     </div>
@@ -4863,8 +5068,8 @@ const typeCounts = [
         <div class="shop-filter-heading">Sort</div>
         <div class="shop-filter-row" role="tablist" aria-label="Sort products">
           <span class="chip-pill" aria-hidden="true"></span>
-          <button type="button" class="sort-chip is-active" data-sort="featured" role="tab" aria-selected="true">Featured</button>
-          <button type="button" class="sort-chip" data-sort="price-asc" role="tab" aria-selected="false">Price · low → high</button>
+          <button type="button" class="sort-chip" data-sort="featured" role="tab" aria-selected="false">Featured</button>
+          <button type="button" class="sort-chip is-active" data-sort="price-asc" role="tab" aria-selected="true">Price · low → high</button>
           <button type="button" class="sort-chip" data-sort="price-desc" role="tab" aria-selected="false">Price · high → low</button>
           <button type="button" class="sort-chip" data-sort="name-asc" role="tab" aria-selected="false">Name · A–Z</button>
         </div>
@@ -5029,7 +5234,7 @@ const typeCounts = [
       var activeCat = 'all';
       var activeEffect = 'all';
       var activeType = 'all';
-      var activeSort = 'featured';
+      var activeSort = 'price-asc';
 
       function matchesMeta(meta, cat, effect, type) {
         var catOk = cat === 'all' || meta.tags.indexOf(cat) !== -1;
@@ -5268,6 +5473,7 @@ const typeCounts = [
         });
       });
 
+      setSort('price-asc');
       updateChipAvailability();
       layoutChipPills(false);
       if (document.fonts && document.fonts.ready) {
