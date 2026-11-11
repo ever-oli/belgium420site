@@ -173,6 +173,21 @@ describe('cart qty', () => {
     assert.equal(high, undefined);
   });
 
+  test('Sherb x Doja Live Resin Vape stays a flat $45', () => {
+    addToCart({
+      batch: 'B420-2026-SHERB-DOJA-zoap-sour-x-kalimotas',
+      baseBatch: 'B420-2026-SHERB-DOJA',
+      name: 'Sherb x Doja Live Resin Vape · Zoap Sour x Kalimotas',
+      type: 'Quattro quad-coil dual chamber · 2.0g',
+      price: 45,
+      tone: 'black',
+      img: null,
+      qty: 100,
+    });
+    assert.equal(getCart()[0].price, 45);
+    assert.equal(cartTotal(), 4500);
+  });
+
   test('a non-tier product keeps its unit price when quantity changes', () => {
     addToCart({ ...judge, qty: 100 });
     assert.equal(getCart()[0].price, 1700);

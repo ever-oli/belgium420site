@@ -386,6 +386,14 @@
     "confidence": "high",
     "notes": "Muha Meds flavor line spans indica, hybrid, and sativa. Do not assign one Type."
   },
+  "Sherb x Doja Live Resin Vape": {
+    "match": "brand-line",
+    "type": "branded",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "Sherb x Doja Quattro live resin vape. Flavor on the box is Zoap Sour x Kalimotas. Not assigned one species."
+  },
   "Muha Meds All-In-One": {
     "match": "brand-line",
     "type": "branded",

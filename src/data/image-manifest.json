@@ -327,14 +327,6 @@
     "avif": "/opt/inventory/carts/ace-ultra-cart-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/ace-ultra-cart-25-400.webp"
   },
-  "/inventory/carts/muha-meds-cart-25.jpg": {
-    "src": "/opt/inventory/carts/muha-meds-cart-25-400.webp",
-    "width": 400,
-    "height": 274,
-    "srcset": "/opt/inventory/carts/muha-meds-cart-25-400.webp 400w",
-    "avif": "/opt/inventory/carts/muha-meds-cart-25-400.avif 400w",
-    "thumb": "/opt/inventory/carts/muha-meds-cart-25-400.webp"
-  },
   "/inventory/carts/cizi-fuze-cart-25.jpg": {
     "src": "/opt/inventory/carts/cizi-fuze-cart-25-800.webp",
     "width": 800,
@@ -695,14 +687,6 @@
     "avif": "/opt/inventory/carts/smoothie-bar-carts-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/smoothie-bar-carts-25-400.webp"
   },
-  "/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50.jpeg": {
-    "src": "/opt/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50-400.webp",
-    "width": 400,
-    "height": 533,
-    "srcset": "/opt/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50-400.webp 400w",
-    "avif": "/opt/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50-400.avif 400w",
-    "thumb": "/opt/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50-400.webp"
-  },
   "/inventory/carts/favorites-2g-cart-25.jpeg": {
     "src": "/opt/inventory/carts/favorites-2g-cart-25-400.webp",
     "width": 400,
@@ -926,6 +910,14 @@
     "srcset": "/opt/inventory/pounds/diamond-gelato-700-pound-400.webp 400w",
     "avif": "/opt/inventory/pounds/diamond-gelato-700-pound-400.avif 400w",
     "thumb": "/opt/inventory/pounds/diamond-gelato-700-pound-400.webp"
+  },
+  "/inventory/new-drop/sherb-x-doja-live-resin-vape.jpg": {
+    "src": "/opt/inventory/new-drop/sherb-x-doja-live-resin-vape-400.webp",
+    "width": 400,
+    "height": 533,
+    "srcset": "/opt/inventory/new-drop/sherb-x-doja-live-resin-vape-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/sherb-x-doja-live-resin-vape-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/sherb-x-doja-live-resin-vape-400.webp"
   },
   "/inventory/new-drop/muha-meds-all-in-one.jpg": {
     "src": "/opt/inventory/new-drop/muha-meds-all-in-one-400.webp",

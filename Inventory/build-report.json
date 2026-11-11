@@ -1,16 +1,16 @@
 {
-  "skus": 135,
-  "withType": 131,
+  "skus": 134,
+  "withType": 130,
   "withEffects": 58,
   "typeGap": 4,
   "indica": 8,
   "hybrid": 44,
   "sativa": 3,
-  "branded": 76,
+  "branded": 75,
   "leaflyHits": 55,
   "siteMap": 9,
   "webSearch": 2,
-  "brandLine": 31,
+  "brandLine": 30,
   "na": 4,
   "unmatched": 34,
   "unmatchedNames": [
@@ -49,7 +49,7 @@
     "White Sunset · Pound",
     "Candy Rizz · Pound"
   ],
-  "photos": 179,
+  "photos": 178,
   "orphans": 44,
   "missing": 0,
   "xlsx": "/agent/repos/belgium420site/Inventory/belgium420-inventory.xlsx"

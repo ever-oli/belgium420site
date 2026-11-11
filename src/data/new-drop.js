@@ -19,6 +19,11 @@ function flower(name, price, batch, file, tone) {
   };
 }
 
+/** Add a row when another Sherb x Doja flavor is confirmed on the box. */
+const sherbDojaFlavors = [
+  { id: 'zoap-sour-x-kalimotas', label: 'Zoap Sour x Kalimotas' },
+];
+
 /** Add a row when another Muha Meds All-In-One flavor is confirmed on the box. */
 const muhaAllInOneFlavors = [
   { id: 'arctic-blueberry', label: 'Arctic Blueberry (Hybrid)' },
@@ -26,6 +31,19 @@ const muhaAllInOneFlavors = [
 ];
 
 export const newDropProducts = [
+  {
+    name: 'Sherb x Doja Live Resin Vape',
+    type: 'Quattro quad-coil dual chamber · 2.0g',
+    price: '$45.00',
+    thc: pending,
+    tone: 'black',
+    batch: 'B420-2026-SHERB-DOJA',
+    categories: ['carts'],
+    img: '/inventory/new-drop/sherb-x-doja-live-resin-vape.jpg',
+    newDrop: true,
+    note: 'Flat $45 each. Flavor printed on the box.',
+    flavors: sherbDojaFlavors,
+  },
   {
     name: 'Muha Meds All-In-One',
     type: 'All-In-One · 2000mg · 0.071 oz',
