@@ -19,7 +19,27 @@ function flower(name, price, batch, file, tone) {
   };
 }
 
+/** Add a row when another Muha Meds All-In-One flavor is confirmed on the box. */
+const muhaAllInOneFlavors = [
+  { id: 'arctic-blueberry', label: 'Arctic Blueberry (Hybrid)' },
+  { id: 'horchata', label: 'Horchata (Indica)' },
+];
+
 export const newDropProducts = [
+  {
+    name: 'Muha Meds All-In-One',
+    type: 'All-In-One · 2000mg · 0.071 oz',
+    price: '$20.00',
+    thc: pending,
+    tone: 'yellow',
+    batch: 'B420-2026-MUHA-AIO',
+    categories: ['carts'],
+    img: '/inventory/new-drop/muha-meds-all-in-one.jpg',
+    newDrop: true,
+    note: 'All-in-one device. Named flavors are the ones readable on the box. Mixed flavors share the same quantity break.',
+    flavors: muhaAllInOneFlavors,
+    tiers: HOLLOW_TIPS_TIERS,
+  },
   {
     name: 'Whole Melts Phase 6 V2',
     type: 'WM Extracts Dual Chamber Disposable Vaporizer',

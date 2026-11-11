@@ -9,12 +9,13 @@ import {
   isFlowerFamily,
   isMushroomOnly,
 } from '../src/lib/strain-types.js';
+import { newDropProducts } from '../src/data/new-drop.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const ASTRO = path.join(ROOT, 'src/pages/index.astro');
 const PHOTOS = path.join(ROOT, 'public/inventory');
-const OUT_DIR = path.join(ROOT, 'inventory');
+const OUT_DIR = path.join(ROOT, 'Inventory');
 const CACHE_PATH = path.join(OUT_DIR, 'leafly-cache.json');
 const WEB_MATCHES_PATH = path.join(OUT_DIR, 'web-matches.json');
 const XLSX_PATH = path.join(OUT_DIR, 'belgium420-inventory.xlsx');
@@ -126,10 +127,16 @@ const SLUG_ALIASES = {
 function loadProducts() {
   const src = fs.readFileSync(ASTRO, 'utf8');
   const start = src.indexOf('const products = [');
-  const end = src.indexOf('\n];\n\nconst effectDefs');
+  const endMarkers = ['\n];\n\nconst hollowTipsBatches', '\n];\n\nconst effectDefs'];
+  let end = -1;
+  for (const marker of endMarkers) {
+    end = src.indexOf(marker);
+    if (end >= 0) break;
+  }
   if (start < 0 || end < 0) throw new Error('Could not find products array in index.astro');
-  const code = src.slice(start, end + 2);
-  return Function(`${code}\nreturn products;`)();
+  const code = src.slice(start, end + 2).replace(/\.\.\.newDropProducts\s*,/, '');
+  const catalog = Function(`${code}\nreturn products;`)();
+  return [...newDropProducts, ...catalog];
 }
 
 function strainName(p) {

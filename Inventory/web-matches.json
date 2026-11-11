@@ -386,6 +386,14 @@
     "confidence": "high",
     "notes": "Muha Meds flavor line spans indica, hybrid, and sativa. Do not assign one Type."
   },
+  "Muha Meds All-In-One": {
+    "match": "brand-line",
+    "type": "branded",
+    "effects": [],
+    "url": "",
+    "confidence": "high",
+    "notes": "All-in-one flavor line. Box shows Indica, Hybrid, and Sativa. Named flavors so far: Arctic Blueberry (Hybrid), Horchata (Indica). Not one species."
+  },
   "Sherbinskis Cart": {
     "match": "brand-line",
     "type": "",

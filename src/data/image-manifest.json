@@ -927,6 +927,14 @@
     "avif": "/opt/inventory/pounds/diamond-gelato-700-pound-400.avif 400w",
     "thumb": "/opt/inventory/pounds/diamond-gelato-700-pound-400.webp"
   },
+  "/inventory/new-drop/muha-meds-all-in-one.jpg": {
+    "src": "/opt/inventory/new-drop/muha-meds-all-in-one-400.webp",
+    "width": 400,
+    "height": 533,
+    "srcset": "/opt/inventory/new-drop/muha-meds-all-in-one-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/muha-meds-all-in-one-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/muha-meds-all-in-one-400.webp"
+  },
   "/inventory/new-drop/whole-melts-phase6-v2.jpg": {
     "src": "/opt/inventory/new-drop/whole-melts-phase6-v2-800.webp",
     "width": 800,

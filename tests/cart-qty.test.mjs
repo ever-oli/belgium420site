@@ -149,6 +149,20 @@ describe('cart qty', () => {
     assert.equal(meltsLine.price, 16);
     assert.equal(itemLineTotal(meltsLine), 1600);
 
+    addToCart({
+      batch: 'B420-2026-MUHA-AIO-arctic-blueberry',
+      baseBatch: 'B420-2026-MUHA-AIO',
+      name: 'Muha Meds All-In-One · Arctic Blueberry (Hybrid)',
+      type: 'All-In-One · 2000mg · 0.071 oz',
+      price: 20,
+      tone: 'yellow',
+      img: null,
+      qty: 11,
+    });
+    const muha = getCart().find((it) => it.batch.startsWith('B420-2026-MUHA-AIO'));
+    assert.equal(muha.price, 19);
+    assert.equal(itemLineTotal(muha), 209);
+
     setQty(bodega.batch, 10);
     setQty(melts.batch, 51);
     const mid = getCart();
