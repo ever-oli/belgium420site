@@ -359,14 +359,6 @@
     "avif": "/opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-400.avif 400w, /opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-800.avif 800w",
     "thumb": "/opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-400.webp"
   },
-  "/inventory/edibles/midkidz-gummies-1.jpg": {
-    "src": "/opt/inventory/edibles/midkidz-gummies-1-800.webp",
-    "width": 800,
-    "height": 1067,
-    "srcset": "/opt/inventory/edibles/midkidz-gummies-1-400.webp 400w, /opt/inventory/edibles/midkidz-gummies-1-800.webp 800w",
-    "avif": "/opt/inventory/edibles/midkidz-gummies-1-400.avif 400w, /opt/inventory/edibles/midkidz-gummies-1-800.avif 800w",
-    "thumb": "/opt/inventory/edibles/midkidz-gummies-1-400.webp"
-  },
   "/inventory/edibles/devour-sour-mango-gummies-25.jpeg": {
     "src": "/opt/inventory/edibles/devour-sour-mango-gummies-25-400.webp",
     "width": 400,
@@ -750,14 +742,6 @@
     "srcset": "/opt/inventory/concentrates/icebox-qp-concentrates-500-400.webp 400w",
     "avif": "/opt/inventory/concentrates/icebox-qp-concentrates-500-400.avif 400w",
     "thumb": "/opt/inventory/concentrates/icebox-qp-concentrates-500-400.webp"
-  },
-  "/inventory/edibles/misc-gummies-600mg-10.jpeg": {
-    "src": "/opt/inventory/edibles/misc-gummies-600mg-10-400.webp",
-    "width": 400,
-    "height": 533,
-    "srcset": "/opt/inventory/edibles/misc-gummies-600mg-10-400.webp 400w",
-    "avif": "/opt/inventory/edibles/misc-gummies-600mg-10-400.avif 400w",
-    "thumb": "/opt/inventory/edibles/misc-gummies-600mg-10-400.webp"
   },
   "/inventory/prerolls/fusion-extract-blunt-preroll-15.jpg": {
     "src": "/opt/inventory/prerolls/fusion-extract-blunt-preroll-15-400.webp",
