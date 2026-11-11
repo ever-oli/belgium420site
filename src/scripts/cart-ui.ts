@@ -258,6 +258,25 @@ export function initCart() {
   initTierCards();
 
   document.querySelectorAll<HTMLElement>(".product-card, .drop-card").forEach((card) => {
+    if (card.hasAttribute("data-tier-product")) return;
+    const flavor = card.querySelector<HTMLSelectElement>(".flavor-select");
+    const btn = card.querySelector<HTMLButtonElement>(".add-to-cart");
+    if (!flavor || !btn) return;
+    const applyFlavor = () => {
+      const id = flavor.value;
+      const label = flavor.selectedOptions?.[0]?.text || "";
+      const baseName = btn.dataset.baseName || btn.dataset.name || "";
+      const baseBatch = btn.dataset.baseBatch || "";
+      const name = label ? `${baseName} · ${label}` : baseName;
+      btn.dataset.name = name;
+      if (baseBatch) btn.dataset.batch = id ? `${baseBatch}-${id}` : baseBatch;
+      btn.setAttribute("aria-label", `Add ${name} to cart`);
+    };
+    flavor.addEventListener("change", applyFlavor);
+    applyFlavor();
+  });
+
+  document.querySelectorAll<HTMLElement>(".product-card, .drop-card").forEach((card) => {
     const btn = card.querySelector<HTMLButtonElement>(".add-to-cart");
     const chips = card.querySelectorAll<HTMLButtonElement>(".product-variant");
     if (!btn || chips.length === 0) return;

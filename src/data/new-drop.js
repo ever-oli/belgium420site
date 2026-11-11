@@ -1,5 +1,7 @@
 /** Approved new-drop catalog. Photos live in public/inventory/new-drop/. */
 
+import { HOLLOW_TIPS_TIERS } from '../lib/tier-pricing.js';
+
 const pending = 'Lab results pending';
 
 function flower(name, price, batch, file, tone) {
@@ -17,7 +19,45 @@ function flower(name, price, batch, file, tone) {
   };
 }
 
+/** Add a row when another Sherb x Doja flavor is confirmed on the box. */
+const sherbDojaFlavors = [
+  { id: 'zoap-sour-x-kalimotas', label: 'Zoap Sour x Kalimotas' },
+];
+
+/** Add a row when another Muha Meds All-In-One flavor is confirmed on the box. */
+const muhaAllInOneFlavors = [
+  { id: 'arctic-blueberry', label: 'Arctic Blueberry (Hybrid)' },
+  { id: 'horchata', label: 'Horchata (Indica)' },
+];
+
 export const newDropProducts = [
+  {
+    name: 'Sherb x Doja Live Resin Vape',
+    type: 'Quattro quad-coil dual chamber · 2.0g',
+    price: '$45.00',
+    thc: pending,
+    tone: 'black',
+    batch: 'B420-2026-SHERB-DOJA',
+    categories: ['carts'],
+    img: '/inventory/new-drop/sherb-x-doja-live-resin-vape.jpg',
+    newDrop: true,
+    note: 'Flat $45 each. Flavor printed on the box.',
+    flavors: sherbDojaFlavors,
+  },
+  {
+    name: 'Muha Meds All-In-One',
+    type: 'All-In-One · 2000mg · 0.071 oz',
+    price: '$20.00',
+    thc: pending,
+    tone: 'yellow',
+    batch: 'B420-2026-MUHA-AIO',
+    categories: ['carts'],
+    img: '/inventory/new-drop/muha-meds-all-in-one.jpg',
+    newDrop: true,
+    note: 'All-in-one device. Named flavors are the ones readable on the box. Mixed flavors share the same quantity break.',
+    flavors: muhaAllInOneFlavors,
+    tiers: HOLLOW_TIPS_TIERS,
+  },
   {
     name: 'Whole Melts Phase 6 V2',
     type: 'WM Extracts Dual Chamber Disposable Vaporizer',
@@ -43,31 +83,7 @@ export const newDropProducts = [
       { id: 'peach-wedding', label: 'Peach Wedding' },
       { id: 'tropicana-berry', label: 'Tropicana Berry' },
     ],
-    tiers: [
-      { max: 10, price: 20 },
-      { max: 50, price: 19 },
-      { max: 99, price: 18 },
-      { max: null, price: 17 },
-    ],
-  },
-  {
-    name: 'Hollow Tips 2g Disposable',
-    type: '2g Disposable',
-    price: '$20.00',
-    thc: pending,
-    tone: 'red',
-    batch: 'B420-2026-HT-2G',
-    categories: ['carts'],
-    img: '/inventory/new-drop/hollow-tips-2g-disposable.jpg',
-    newDrop: true,
-    note: 'Flavor shown on the box: Bubble Gum Blicky. Only flavor known so far.',
-    flavors: [{ id: 'bubble-gum-blicky', label: 'Bubble Gum Blicky' }],
-    tiers: [
-      { max: 10, price: 20 },
-      { max: 50, price: 19 },
-      { max: 99, price: 18 },
-      { max: null, price: 16 },
-    ],
+    tiers: HOLLOW_TIPS_TIERS,
   },
   {
     name: 'Devour 1500mg Edible Gummies',
