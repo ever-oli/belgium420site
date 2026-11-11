@@ -1,22 +1,36 @@
-/** Quantity-tier unit prices for the new drop. Last tier is the open-ended break. */
+/** Quantity-tier unit prices. Last tier is the open-ended break. */
+
+/** Hollow Tips 2g Disposable: 1–10 $20, 11–50 $19, 51–99 $18, 100+ $16. */
+export const HOLLOW_TIPS_TIERS = [
+  { max: 10, price: 20 },
+  { max: 50, price: 19 },
+  { max: 99, price: 18 },
+  { max: null, price: 16 },
+];
+
+/** Every disposable and cart except High 90s 2g Vape (B420-2026-1409). */
+export const HOLLOW_TIPS_BATCHES = [
+  'B420-2026-WM-P6V2',
+  'B420-2026-HT-2G',
+  'B420-2026-1402',
+  'B420-2026-1404',
+  'B420-2026-1405',
+  'B420-2026-1406',
+  'B420-2026-1407',
+  'B420-2026-1408',
+  'B420-2026-2001',
+  'B420-2026-2002',
+  'B420-2026-2003',
+  'B420-2026-2004',
+  'B420-2026-2005',
+  'B420-2026-2006',
+  'B420-2026-2007',
+  'B420-2026-2008',
+  'B420-2026-2009',
+  'B420-2026-2010',
+];
 
 export const TIER_CATALOG = {
-  'B420-2026-WM-P6V2': {
-    tiers: [
-      { max: 10, price: 20 },
-      { max: 50, price: 19 },
-      { max: 99, price: 18 },
-      { max: null, price: 17 },
-    ],
-  },
-  'B420-2026-HT-2G': {
-    tiers: [
-      { max: 10, price: 20 },
-      { max: 50, price: 19 },
-      { max: 99, price: 18 },
-      { max: null, price: 16 },
-    ],
-  },
   'B420-2026-DEVOUR-1500': {
     tiers: [
       { max: 9, price: 20 },
@@ -74,6 +88,10 @@ export const TIER_CATALOG = {
     ],
   },
 };
+
+for (const batch of HOLLOW_TIPS_BATCHES) {
+  TIER_CATALOG[batch] = { tiers: HOLLOW_TIPS_TIERS };
+}
 
 export function baseBatchOf(batch) {
   const id = String(batch || '');

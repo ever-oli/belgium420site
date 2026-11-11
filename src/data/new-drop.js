@@ -1,5 +1,7 @@
 /** Approved new-drop catalog. Photos live in public/inventory/new-drop/. */
 
+import { HOLLOW_TIPS_TIERS } from '../lib/tier-pricing.js';
+
 const pending = 'Lab results pending';
 
 function flower(name, price, batch, file, tone) {
@@ -43,12 +45,7 @@ export const newDropProducts = [
       { id: 'peach-wedding', label: 'Peach Wedding' },
       { id: 'tropicana-berry', label: 'Tropicana Berry' },
     ],
-    tiers: [
-      { max: 10, price: 20 },
-      { max: 50, price: 19 },
-      { max: 99, price: 18 },
-      { max: null, price: 17 },
-    ],
+    tiers: HOLLOW_TIPS_TIERS,
   },
   {
     name: 'Hollow Tips 2g Disposable',
@@ -62,12 +59,7 @@ export const newDropProducts = [
     newDrop: true,
     note: 'Flavor shown on the box: Bubble Gum Blicky. Only flavor known so far.',
     flavors: [{ id: 'bubble-gum-blicky', label: 'Bubble Gum Blicky' }],
-    tiers: [
-      { max: 10, price: 20 },
-      { max: 50, price: 19 },
-      { max: 99, price: 18 },
-      { max: null, price: 16 },
-    ],
+    tiers: HOLLOW_TIPS_TIERS,
   },
   {
     name: 'Devour 1500mg Edible Gummies',

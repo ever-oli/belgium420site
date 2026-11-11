@@ -118,6 +118,47 @@ describe('cart qty', () => {
     assert.equal(itemLineTotal(getCart().find((it) => it.batch === high.batch)), 1500);
   });
 
+  test('disposables and carts use the Hollow Tips breaks; High 90s does not', () => {
+    const bodega = {
+      batch: 'B420-2026-1402',
+      baseBatch: 'B420-2026-1402',
+      name: 'Bodega Boyz Cart',
+      type: 'Live Resin Cart · 2g',
+      price: 25,
+      tone: 'yellow',
+      img: null,
+      qty: 11,
+    };
+    const melts = {
+      batch: 'B420-2026-WM-P6V2-wifi-og',
+      baseBatch: 'B420-2026-WM-P6V2',
+      name: 'Whole Melts Phase 6 V2 · Wifi OG',
+      type: 'WM Extracts Dual Chamber Disposable Vaporizer',
+      price: 20,
+      tone: 'yellow',
+      img: null,
+      qty: 100,
+    };
+    addToCart(bodega);
+    addToCart(melts);
+    const items = getCart();
+    const bodegaLine = items.find((it) => it.batch === bodega.batch);
+    const meltsLine = items.find((it) => it.batch === melts.batch);
+    assert.equal(bodegaLine.price, 19);
+    assert.equal(itemLineTotal(bodegaLine), 209);
+    assert.equal(meltsLine.price, 16);
+    assert.equal(itemLineTotal(meltsLine), 1600);
+
+    setQty(bodega.batch, 10);
+    setQty(melts.batch, 51);
+    const mid = getCart();
+    assert.equal(mid.find((it) => it.batch === bodega.batch).price, 20);
+    assert.equal(mid.find((it) => it.batch === melts.batch).price, 18);
+
+    const high = getCart().find((it) => it.batch === 'B420-2026-1409');
+    assert.equal(high, undefined);
+  });
+
   test('a non-tier product keeps its unit price when quantity changes', () => {
     addToCart({ ...judge, qty: 100 });
     assert.equal(getCart()[0].price, 1700);

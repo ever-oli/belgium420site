@@ -2,6 +2,7 @@
 import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
 import { FREE_SHIPPING_OVER, SHIPPING_FEE } from '../lib/rewards.js';
 import { newDropProducts } from '../data/new-drop.js';
+import { HOLLOW_TIPS_BATCHES, HOLLOW_TIPS_TIERS } from '../lib/tier-pricing.js';
 import { savePercents } from '../lib/tier-savings.js';
 import imageManifest from '../data/image-manifest.json';
 import '../styles/brand.css';
@@ -406,7 +407,7 @@ const products = [
   {
     name: 'Bodega Boyz Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'yellow',
     batch: 'B420-2026-1402',
@@ -416,7 +417,7 @@ const products = [
   {
     name: 'Raw Garden Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'red',
     batch: 'B420-2026-1404',
@@ -426,7 +427,7 @@ const products = [
   {
     name: 'Packman Cart',
     type: 'Premium Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'yellow',
     batch: 'B420-2026-1405',
@@ -436,7 +437,7 @@ const products = [
   {
     name: 'Ace Ultra Cart',
     type: 'Premium Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'black',
     batch: 'B420-2026-1406',
@@ -446,7 +447,7 @@ const products = [
   {
     name: 'Muha Meds Cart',
     type: 'Premium Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'red',
     batch: 'B420-2026-1407',
@@ -456,7 +457,7 @@ const products = [
   {
     name: 'Cizi Fuze Cart',
     type: 'Premium Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'yellow',
     batch: 'B420-2026-1408',
@@ -864,7 +865,7 @@ const products = [
   {
     name: 'Sherbinskis Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'red',
     batch: 'B420-2026-2001',
@@ -874,7 +875,7 @@ const products = [
   {
     name: 'Backpackboyz Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'yellow',
     batch: 'B420-2026-2002',
@@ -884,7 +885,7 @@ const products = [
   {
     name: 'Besos Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'black',
     batch: 'B420-2026-2003',
@@ -894,7 +895,7 @@ const products = [
   {
     name: 'Buzzbar Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'red',
     batch: 'B420-2026-2004',
@@ -904,7 +905,7 @@ const products = [
   {
     name: 'Muha Meds Live Resin Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'yellow',
     batch: 'B420-2026-2005',
@@ -914,7 +915,7 @@ const products = [
   {
     name: 'Dabwoods Liquid Diamond Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'black',
     batch: 'B420-2026-2006',
@@ -924,7 +925,7 @@ const products = [
   {
     name: 'Blinkers Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'yellow',
     batch: 'B420-2026-2007',
@@ -934,7 +935,7 @@ const products = [
   {
     name: 'Smoothie Bar Cart',
     type: 'Live Resin Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'red',
     batch: 'B420-2026-2008',
@@ -944,7 +945,7 @@ const products = [
   {
     name: 'Sherb x Doja Dual Flav 2g',
     type: 'Live Resin Cart · 2g',
-    price: '$50.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'black',
     batch: 'B420-2026-2009',
@@ -954,7 +955,7 @@ const products = [
   {
     name: 'Favorites Cart',
     type: 'Liquid Diamond Cart · 2g',
-    price: '$25.00',
+    price: '$20.00',
     thc: 'Δ9-THC: <0.3% · Lab tested',
     tone: 'yellow',
     batch: 'B420-2026-2010',
@@ -1248,6 +1249,13 @@ const products = [
     img: '/inventory/pounds/diamond-gelato-700-pound.jpg',
   },
 ];
+
+const hollowTipsBatches = new Set(HOLLOW_TIPS_BATCHES);
+for (const p of products) {
+  if (!hollowTipsBatches.has(p.batch)) continue;
+  p.tiers = HOLLOW_TIPS_TIERS;
+  p.price = '$20.00';
+}
 
 const effectDefs = [
   { id: 'chill',     label: 'Chill' },
