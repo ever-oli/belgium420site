@@ -655,14 +655,6 @@
     "avif": "/opt/inventory/carts/buzzbar-cart-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/buzzbar-cart-25-400.webp"
   },
-  "/inventory/carts/muha-meds-live-resin-cart-25.jpeg": {
-    "src": "/opt/inventory/carts/muha-meds-live-resin-cart-25-400.webp",
-    "width": 400,
-    "height": 711,
-    "srcset": "/opt/inventory/carts/muha-meds-live-resin-cart-25-400.webp 400w",
-    "avif": "/opt/inventory/carts/muha-meds-live-resin-cart-25-400.avif 400w",
-    "thumb": "/opt/inventory/carts/muha-meds-live-resin-cart-25-400.webp"
-  },
   "/inventory/carts/dabwoods-liquid-diamond-cart-25.jpeg": {
     "src": "/opt/inventory/carts/dabwoods-liquid-diamond-cart-25-400.webp",
     "width": 400,
