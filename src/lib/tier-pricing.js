@@ -1,6 +1,10 @@
 /** Quantity-tier unit prices. Last tier is the open-ended break. */
 
-/** Hollow Tips 2g Disposable: 1–10 $20, 11–50 $19, 51–99 $18, 100+ $16. */
+/**
+ * Shared cart and disposable breaks. Not tied to a product listing.
+ * 1–10 $20, 11–50 $19, 51–99 $18, 100+ $16.
+ * High 90s 2g Vape and Sherb x Doja Live Resin Vape are not in this list.
+ */
 export const HOLLOW_TIPS_TIERS = [
   { max: 10, price: 20 },
   { max: 50, price: 19 },
@@ -8,10 +12,8 @@ export const HOLLOW_TIPS_TIERS = [
   { max: null, price: 16 },
 ];
 
-/** Every disposable and cart except High 90s 2g Vape (B420-2026-1409). */
 export const HOLLOW_TIPS_BATCHES = [
   'B420-2026-WM-P6V2',
-  'B420-2026-HT-2G',
   'B420-2026-MUHA-AIO',
   'B420-2026-1402',
   'B420-2026-1404',

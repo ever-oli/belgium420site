@@ -935,14 +935,6 @@
     "avif": "/opt/inventory/new-drop/whole-melts-phase6-v2-400.avif 400w, /opt/inventory/new-drop/whole-melts-phase6-v2-800.avif 800w",
     "thumb": "/opt/inventory/new-drop/whole-melts-phase6-v2-400.webp"
   },
-  "/inventory/new-drop/hollow-tips-2g-disposable.jpg": {
-    "src": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.webp",
-    "width": 400,
-    "height": 300,
-    "srcset": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.webp 400w",
-    "avif": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.avif 400w",
-    "thumb": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.webp"
-  },
   "/inventory/new-drop/devour-1500mg-gummies.jpg": {
     "src": "/opt/inventory/new-drop/devour-1500mg-gummies-400.webp",
     "width": 400,

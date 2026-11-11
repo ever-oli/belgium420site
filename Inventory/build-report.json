@@ -1,20 +1,19 @@
 {
-  "skus": 134,
-  "withType": 130,
+  "skus": 133,
+  "withType": 129,
   "withEffects": 58,
   "typeGap": 4,
   "indica": 8,
   "hybrid": 44,
   "sativa": 3,
-  "branded": 75,
+  "branded": 74,
   "leaflyHits": 55,
   "siteMap": 9,
   "webSearch": 2,
   "brandLine": 30,
   "na": 4,
-  "unmatched": 34,
+  "unmatched": 33,
   "unmatchedNames": [
-    "Hollow Tips 2g Disposable",
     "Pink Cherry Candy",
     "Blue Zotz",
     "Blue Gobstopper",
@@ -49,7 +48,7 @@
     "White Sunset · Pound",
     "Candy Rizz · Pound"
   ],
-  "photos": 178,
+  "photos": 177,
   "orphans": 44,
   "missing": 0,
   "xlsx": "/agent/repos/belgium420site/Inventory/belgium420-inventory.xlsx"
