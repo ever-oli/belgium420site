@@ -75,6 +75,55 @@ describe('cart qty', () => {
     assert.equal(cartTotal(), 5100);
   });
 
+  test('High 90s and Devour Sour Mango charge the quantity tier', () => {
+    const high = {
+      batch: 'B420-2026-1409',
+      baseBatch: 'B420-2026-1409',
+      name: 'High 90s 2g Vape',
+      type: 'Disposable Vape · 2g',
+      price: 20,
+      tone: 'red',
+      img: null,
+      qty: 10,
+    };
+    const devour = {
+      batch: 'B420-2026-1602',
+      baseBatch: 'B420-2026-1602',
+      name: 'Devour Sour Mango Gummies',
+      type: 'Gummies · Sour Mango',
+      price: 20,
+      tone: 'yellow',
+      img: null,
+      qty: 100,
+    };
+    addToCart(high);
+    addToCart(devour);
+    const items = getCart();
+    const highLine = items.find((it) => it.batch === high.batch);
+    const devourLine = items.find((it) => it.batch === devour.batch);
+    assert.equal(highLine.price, 18);
+    assert.equal(itemLineTotal(highLine), 180);
+    assert.equal(devourLine.price, 15);
+    assert.equal(itemLineTotal(devourLine), 1500);
+    assert.equal(cartTotal(), 1680);
+
+    setQty(high.batch, 9);
+    setQty(devour.batch, 50);
+    const after = getCart();
+    assert.equal(after.find((it) => it.batch === high.batch).price, 20);
+    assert.equal(after.find((it) => it.batch === devour.batch).price, 16.5);
+
+    setQty(high.batch, 100);
+    assert.equal(getCart().find((it) => it.batch === high.batch).price, 15);
+    assert.equal(itemLineTotal(getCart().find((it) => it.batch === high.batch)), 1500);
+  });
+
+  test('a non-tier product keeps its unit price when quantity changes', () => {
+    addToCart({ ...judge, qty: 100 });
+    assert.equal(getCart()[0].price, 1700);
+    assert.equal(cartTotal(), 170000);
+  });
+
   test('breakdown totals and pounds subtotal scale with qty', () => {
     addToCart(judge); // pound
     addToCart(judge);

@@ -57,6 +57,22 @@ export const TIER_CATALOG = {
       { max: null, price: 10 },
     ],
   },
+  'B420-2026-1409': {
+    tiers: [
+      { max: 9, price: 20 },
+      { max: 49, price: 18 },
+      { max: 99, price: 16.5 },
+      { max: null, price: 15 },
+    ],
+  },
+  'B420-2026-1602': {
+    tiers: [
+      { max: 9, price: 20 },
+      { max: 49, price: 18 },
+      { max: 99, price: 16.5 },
+      { max: null, price: 15 },
+    ],
+  },
 };
 
 export function baseBatchOf(batch) {
