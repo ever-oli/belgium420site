@@ -295,14 +295,6 @@
     "avif": "/opt/inventory/edibles/magic-kingdom-chocolate-40-400.avif 400w",
     "thumb": "/opt/inventory/edibles/magic-kingdom-chocolate-40-400.webp"
   },
-  "/inventory/carts/whole-melts-cart-25.jpg": {
-    "src": "/opt/inventory/carts/whole-melts-cart-25-400.webp",
-    "width": 400,
-    "height": 413,
-    "srcset": "/opt/inventory/carts/whole-melts-cart-25-400.webp 400w",
-    "avif": "/opt/inventory/carts/whole-melts-cart-25-400.avif 400w",
-    "thumb": "/opt/inventory/carts/whole-melts-cart-25-400.webp"
-  },
   "/inventory/carts/bodega-boyz-cart-25.jpg": {
     "src": "/opt/inventory/carts/bodega-boyz-cart-25-400.webp",
     "width": 400,
@@ -310,14 +302,6 @@
     "srcset": "/opt/inventory/carts/bodega-boyz-cart-25-400.webp 400w",
     "avif": "/opt/inventory/carts/bodega-boyz-cart-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/bodega-boyz-cart-25-400.webp"
-  },
-  "/inventory/carts/boutiq-cart-25.jpg": {
-    "src": "/opt/inventory/carts/boutiq-cart-25-400.webp",
-    "width": 400,
-    "height": 224,
-    "srcset": "/opt/inventory/carts/boutiq-cart-25-400.webp 400w",
-    "avif": "/opt/inventory/carts/boutiq-cart-25-400.avif 400w",
-    "thumb": "/opt/inventory/carts/boutiq-cart-25-400.webp"
   },
   "/inventory/carts/raw-garden-cart-25.jpg": {
     "src": "/opt/inventory/carts/raw-garden-cart-25-400.webp",
