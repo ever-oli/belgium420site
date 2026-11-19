@@ -730,5 +730,371 @@
     "category": "",
     "effects": [],
     "effectsRaw": []
+  },
+  "hollow-tips": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/hollow-tips",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "pink-cherry-candy": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/pink-cherry-candy",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "blue-zotz": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/blue-zotz",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "blue-gobstopper": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/blue-gobstopper",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "jolly-rancherz": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/jolly-rancherz",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "cherry-bombz": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/cherry-bombz",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "slapz": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/slapz",
+    "category": "hybrid",
+    "effects": [
+      "creative",
+      "chill",
+      "euphoric"
+    ],
+    "effectsRaw": [
+      "aroused",
+      "creative",
+      "hungry",
+      "aroused",
+      "relaxed",
+      "euphoric",
+      "aroused",
+      "creative",
+      "hungry"
+    ]
+  },
+  "premium-sugar": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/premium-sugar",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "cat-1-2-hemp-distillate": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/cat-1-2-hemp-distillate",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "cat-2-hemp-distillate": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/cat-2-hemp-distillate",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "cat-3-hemp-distillate": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/cat-3-hemp-distillate",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "sharpies": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/sharpies",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "purple-gobstopper": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/purple-gobstopper",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "super-sauced": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/super-sauced",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "hood-candiez": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/hood-candiez",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "pressure": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/pressure",
+    "category": "hybrid",
+    "effects": [
+      "chill",
+      "euphoric",
+      "social",
+      "creative"
+    ],
+    "effectsRaw": [
+      "relaxed",
+      "happy",
+      "giggly",
+      "happy",
+      "euphoric",
+      "creative",
+      "relaxed",
+      "happy",
+      "giggly"
+    ]
+  },
+  "sweet-tarts": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/sweet-tarts",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "blue-benji": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/blue-benji",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "whole-melt-extracts": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/whole-melt-extracts",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "lip-smacker": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/lip-smacker",
+    "category": "hybrid",
+    "effects": [
+      "chill",
+      "euphoric"
+    ],
+    "effectsRaw": [
+      "relaxed",
+      "euphoric",
+      "happy",
+      "euphoric",
+      "relaxed",
+      "happy",
+      "relaxed",
+      "euphoric",
+      "happy"
+    ]
+  },
+  "candy-cane": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/candy-cane",
+    "category": "indica",
+    "effects": [
+      "euphoric",
+      "chill",
+      "sleep"
+    ],
+    "effectsRaw": [
+      "euphoric",
+      "relaxed",
+      "sleepy",
+      "hungry",
+      "euphoric"
+    ]
+  },
+  "white-thorn-x-toad": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/white-thorn-x-toad",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "purple-gumbo": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/purple-gumbo",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "red-eye": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/red-eye",
+    "category": "hybrid",
+    "effects": [
+      "focus",
+      "creative",
+      "energy"
+    ],
+    "effectsRaw": [
+      "focused",
+      "creative",
+      "energetic"
+    ]
+  },
+  "the-judge": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/the-judge",
+    "category": "hybrid",
+    "effects": [
+      "energy",
+      "euphoric",
+      "sleep"
+    ],
+    "effectsRaw": [
+      "uplifted",
+      "happy",
+      "sleepy"
+    ]
+  },
+  "snake-eyes": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/snake-eyes",
+    "category": "hybrid",
+    "effects": [
+      "creative",
+      "energy",
+      "euphoric"
+    ],
+    "effectsRaw": [
+      "creative",
+      "energetic",
+      "euphoric"
+    ]
+  },
+  "lemon-octane": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/lemon-octane",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "zlushie": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/zlushie",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "dibs": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/dibs",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "zootopia": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/zootopia",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "90u-rosin-concentrate": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/90u-rosin-concentrate",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "la-mousee-static-sift": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/la-mousee-static-sift",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "top-shelf-pre-rolls": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/top-shelf-pre-rolls",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "gummy-bears": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/gummy-bears",
+    "category": "hybrid",
+    "effects": [
+      "chill",
+      "euphoric"
+    ],
+    "effectsRaw": [
+      "tingly",
+      "relaxed",
+      "happy"
+    ]
+  },
+  "white-sunset": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/white-sunset",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "candy-rizz": {
+    "ok": false,
+    "url": "https://www.leafly.com/strains/candy-rizz",
+    "category": "",
+    "effects": [],
+    "effectsRaw": []
+  },
+  "pink-panties": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/pink-panties",
+    "category": "indica",
+    "effects": [
+      "chill",
+      "sleep"
+    ],
+    "effectsRaw": [
+      "aroused",
+      "relaxed",
+      "sleepy"
+    ]
+  },
+  "gelatti": {
+    "ok": true,
+    "url": "https://www.leafly.com/strains/gelatti",
+    "category": "hybrid",
+    "effects": [
+      "chill",
+      "creative",
+      "social"
+    ],
+    "effectsRaw": [
+      "relaxed",
+      "relaxed",
+      "creative",
+      "giggly",
+      "relaxed"
+    ]
   }
 }

@@ -1,22 +1,36 @@
-/** Quantity-tier unit prices for the new drop. Last tier is the open-ended break. */
+/** Quantity-tier unit prices. Last tier is the open-ended break. */
+
+/**
+ * Shared cart and disposable breaks. Not tied to a product listing.
+ * 1–10 $20, 11–50 $19, 51–99 $18, 100+ $16.
+ * High 90s 2g Vape and Sherb x Doja Live Resin Vape are not in this list.
+ */
+export const HOLLOW_TIPS_TIERS = [
+  { max: 10, price: 20 },
+  { max: 50, price: 19 },
+  { max: 99, price: 18 },
+  { max: null, price: 16 },
+];
+
+export const HOLLOW_TIPS_BATCHES = [
+  'B420-2026-WM-P6V2',
+  'B420-2026-MUHA-AIO',
+  'B420-2026-1402',
+  'B420-2026-1404',
+  'B420-2026-1405',
+  'B420-2026-1406',
+  'B420-2026-1408',
+  'B420-2026-2001',
+  'B420-2026-2002',
+  'B420-2026-2003',
+  'B420-2026-2004',
+  'B420-2026-2006',
+  'B420-2026-2007',
+  'B420-2026-2008',
+  'B420-2026-2010',
+];
 
 export const TIER_CATALOG = {
-  'B420-2026-WM-P6V2': {
-    tiers: [
-      { max: 10, price: 20 },
-      { max: 50, price: 19 },
-      { max: 99, price: 18 },
-      { max: null, price: 17 },
-    ],
-  },
-  'B420-2026-HT-2G': {
-    tiers: [
-      { max: 10, price: 20 },
-      { max: 50, price: 19 },
-      { max: 99, price: 18 },
-      { max: null, price: 16 },
-    ],
-  },
   'B420-2026-DEVOUR-1500': {
     tiers: [
       { max: 9, price: 20 },
@@ -57,7 +71,27 @@ export const TIER_CATALOG = {
       { max: null, price: 10 },
     ],
   },
+  'B420-2026-1409': {
+    tiers: [
+      { max: 9, price: 20 },
+      { max: 49, price: 18 },
+      { max: 99, price: 16.5 },
+      { max: null, price: 15 },
+    ],
+  },
+  'B420-2026-1602': {
+    tiers: [
+      { max: 9, price: 20 },
+      { max: 49, price: 18 },
+      { max: 99, price: 16.5 },
+      { max: null, price: 15 },
+    ],
+  },
 };
+
+for (const batch of HOLLOW_TIPS_BATCHES) {
+  TIER_CATALOG[batch] = { tiers: HOLLOW_TIPS_TIERS };
+}
 
 export function baseBatchOf(batch) {
   const id = String(batch || '');

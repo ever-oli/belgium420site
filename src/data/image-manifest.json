@@ -295,14 +295,6 @@
     "avif": "/opt/inventory/edibles/magic-kingdom-chocolate-40-400.avif 400w",
     "thumb": "/opt/inventory/edibles/magic-kingdom-chocolate-40-400.webp"
   },
-  "/inventory/carts/whole-melts-cart-25.jpg": {
-    "src": "/opt/inventory/carts/whole-melts-cart-25-400.webp",
-    "width": 400,
-    "height": 413,
-    "srcset": "/opt/inventory/carts/whole-melts-cart-25-400.webp 400w",
-    "avif": "/opt/inventory/carts/whole-melts-cart-25-400.avif 400w",
-    "thumb": "/opt/inventory/carts/whole-melts-cart-25-400.webp"
-  },
   "/inventory/carts/bodega-boyz-cart-25.jpg": {
     "src": "/opt/inventory/carts/bodega-boyz-cart-25-400.webp",
     "width": 400,
@@ -310,14 +302,6 @@
     "srcset": "/opt/inventory/carts/bodega-boyz-cart-25-400.webp 400w",
     "avif": "/opt/inventory/carts/bodega-boyz-cart-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/bodega-boyz-cart-25-400.webp"
-  },
-  "/inventory/carts/boutiq-cart-25.jpg": {
-    "src": "/opt/inventory/carts/boutiq-cart-25-400.webp",
-    "width": 400,
-    "height": 224,
-    "srcset": "/opt/inventory/carts/boutiq-cart-25-400.webp 400w",
-    "avif": "/opt/inventory/carts/boutiq-cart-25-400.avif 400w",
-    "thumb": "/opt/inventory/carts/boutiq-cart-25-400.webp"
   },
   "/inventory/carts/raw-garden-cart-25.jpg": {
     "src": "/opt/inventory/carts/raw-garden-cart-25-400.webp",
@@ -343,14 +327,6 @@
     "avif": "/opt/inventory/carts/ace-ultra-cart-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/ace-ultra-cart-25-400.webp"
   },
-  "/inventory/carts/muha-meds-cart-25.jpg": {
-    "src": "/opt/inventory/carts/muha-meds-cart-25-400.webp",
-    "width": 400,
-    "height": 274,
-    "srcset": "/opt/inventory/carts/muha-meds-cart-25-400.webp 400w",
-    "avif": "/opt/inventory/carts/muha-meds-cart-25-400.avif 400w",
-    "thumb": "/opt/inventory/carts/muha-meds-cart-25-400.webp"
-  },
   "/inventory/carts/cizi-fuze-cart-25.jpg": {
     "src": "/opt/inventory/carts/cizi-fuze-cart-25-800.webp",
     "width": 800,
@@ -374,14 +350,6 @@
     "srcset": "/opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-400.webp 400w, /opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-800.webp 800w",
     "avif": "/opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-400.avif 400w, /opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-800.avif 800w",
     "thumb": "/opt/inventory/concentrates/peach-pie-live-rosin-90u-1-325-400.webp"
-  },
-  "/inventory/edibles/midkidz-gummies-1.jpg": {
-    "src": "/opt/inventory/edibles/midkidz-gummies-1-800.webp",
-    "width": 800,
-    "height": 1067,
-    "srcset": "/opt/inventory/edibles/midkidz-gummies-1-400.webp 400w, /opt/inventory/edibles/midkidz-gummies-1-800.webp 800w",
-    "avif": "/opt/inventory/edibles/midkidz-gummies-1-400.avif 400w, /opt/inventory/edibles/midkidz-gummies-1-800.avif 800w",
-    "thumb": "/opt/inventory/edibles/midkidz-gummies-1-400.webp"
   },
   "/inventory/edibles/devour-sour-mango-gummies-25.jpeg": {
     "src": "/opt/inventory/edibles/devour-sour-mango-gummies-25-400.webp",
@@ -687,14 +655,6 @@
     "avif": "/opt/inventory/carts/buzzbar-cart-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/buzzbar-cart-25-400.webp"
   },
-  "/inventory/carts/muha-meds-live-resin-cart-25.jpeg": {
-    "src": "/opt/inventory/carts/muha-meds-live-resin-cart-25-400.webp",
-    "width": 400,
-    "height": 711,
-    "srcset": "/opt/inventory/carts/muha-meds-live-resin-cart-25-400.webp 400w",
-    "avif": "/opt/inventory/carts/muha-meds-live-resin-cart-25-400.avif 400w",
-    "thumb": "/opt/inventory/carts/muha-meds-live-resin-cart-25-400.webp"
-  },
   "/inventory/carts/dabwoods-liquid-diamond-cart-25.jpeg": {
     "src": "/opt/inventory/carts/dabwoods-liquid-diamond-cart-25-400.webp",
     "width": 400,
@@ -719,14 +679,6 @@
     "avif": "/opt/inventory/carts/smoothie-bar-carts-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/smoothie-bar-carts-25-400.webp"
   },
-  "/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50.jpeg": {
-    "src": "/opt/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50-400.webp",
-    "width": 400,
-    "height": 533,
-    "srcset": "/opt/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50-400.webp 400w",
-    "avif": "/opt/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50-400.avif 400w",
-    "thumb": "/opt/inventory/carts/sherb-x-doja-dual-flav-2g-cart-50-400.webp"
-  },
   "/inventory/carts/favorites-2g-cart-25.jpeg": {
     "src": "/opt/inventory/carts/favorites-2g-cart-25-400.webp",
     "width": 400,
@@ -734,14 +686,6 @@
     "srcset": "/opt/inventory/carts/favorites-2g-cart-25-400.webp 400w",
     "avif": "/opt/inventory/carts/favorites-2g-cart-25-400.avif 400w",
     "thumb": "/opt/inventory/carts/favorites-2g-cart-25-400.webp"
-  },
-  "/inventory/concentrates/wm-extracts-live-resin-sugar-pound-concentrates-1300.jpeg": {
-    "src": "/opt/inventory/concentrates/wm-extracts-live-resin-sugar-pound-concentrates-1300-400.webp",
-    "width": 400,
-    "height": 711,
-    "srcset": "/opt/inventory/concentrates/wm-extracts-live-resin-sugar-pound-concentrates-1300-400.webp 400w",
-    "avif": "/opt/inventory/concentrates/wm-extracts-live-resin-sugar-pound-concentrates-1300-400.avif 400w",
-    "thumb": "/opt/inventory/concentrates/wm-extracts-live-resin-sugar-pound-concentrates-1300-400.webp"
   },
   "/inventory/concentrates/wm-extracts-live-resin-sugar-pound-concentrates-1050.jpeg": {
     "src": "/opt/inventory/concentrates/wm-extracts-live-resin-sugar-pound-concentrates-1050-400.webp",
@@ -775,38 +719,6 @@
     "avif": "/opt/inventory/concentrates/icebox-qp-concentrates-500-400.avif 400w",
     "thumb": "/opt/inventory/concentrates/icebox-qp-concentrates-500-400.webp"
   },
-  "/inventory/edibles/misc-gummies-600mg-10.jpeg": {
-    "src": "/opt/inventory/edibles/misc-gummies-600mg-10-400.webp",
-    "width": 400,
-    "height": 533,
-    "srcset": "/opt/inventory/edibles/misc-gummies-600mg-10-400.webp 400w",
-    "avif": "/opt/inventory/edibles/misc-gummies-600mg-10-400.avif 400w",
-    "thumb": "/opt/inventory/edibles/misc-gummies-600mg-10-400.webp"
-  },
-  "/inventory/edibles/devour-1500mg-20.jpeg": {
-    "src": "/opt/inventory/edibles/devour-1500mg-20-400.webp",
-    "width": 400,
-    "height": 300,
-    "srcset": "/opt/inventory/edibles/devour-1500mg-20-400.webp 400w",
-    "avif": "/opt/inventory/edibles/devour-1500mg-20-400.avif 400w",
-    "thumb": "/opt/inventory/edibles/devour-1500mg-20-400.webp"
-  },
-  "/inventory/edibles/devour-1500mg-2-20.jpeg": {
-    "src": "/opt/inventory/edibles/devour-1500mg-2-20-400.webp",
-    "width": 400,
-    "height": 253,
-    "srcset": "/opt/inventory/edibles/devour-1500mg-2-20-400.webp 400w",
-    "avif": "/opt/inventory/edibles/devour-1500mg-2-20-400.avif 400w",
-    "thumb": "/opt/inventory/edibles/devour-1500mg-2-20-400.webp"
-  },
-  "/inventory/edibles/devour-500mg-nano-infused-live-rosin-20.jpeg": {
-    "src": "/opt/inventory/edibles/devour-500mg-nano-infused-live-rosin-20-400.webp",
-    "width": 400,
-    "height": 176,
-    "srcset": "/opt/inventory/edibles/devour-500mg-nano-infused-live-rosin-20-400.webp 400w",
-    "avif": "/opt/inventory/edibles/devour-500mg-nano-infused-live-rosin-20-400.avif 400w",
-    "thumb": "/opt/inventory/edibles/devour-500mg-nano-infused-live-rosin-20-400.webp"
-  },
   "/inventory/prerolls/fusion-extract-blunt-preroll-15.jpg": {
     "src": "/opt/inventory/prerolls/fusion-extract-blunt-preroll-15-400.webp",
     "width": 400,
@@ -822,14 +734,6 @@
     "srcset": "/opt/inventory/prerolls/blaze-eros-1g-preroll-10-400.webp 400w",
     "avif": "/opt/inventory/prerolls/blaze-eros-1g-preroll-10-400.avif 400w",
     "thumb": "/opt/inventory/prerolls/blaze-eros-1g-preroll-10-400.webp"
-  },
-  "/inventory/prerolls/heady-head-1g-preroll-15.jpeg": {
-    "src": "/opt/inventory/prerolls/heady-head-1g-preroll-15-400.webp",
-    "width": 400,
-    "height": 494,
-    "srcset": "/opt/inventory/prerolls/heady-head-1g-preroll-15-400.webp 400w",
-    "avif": "/opt/inventory/prerolls/heady-head-1g-preroll-15-400.avif 400w",
-    "thumb": "/opt/inventory/prerolls/heady-head-1g-preroll-15-400.webp"
   },
   "/inventory/pounds/Airheadz-100-zip.jpeg": {
     "src": "/opt/inventory/pounds/Airheadz-100-zip-400.webp",
@@ -943,30 +847,6 @@
     "avif": "/opt/inventory/prerolls/headyheads-14-5g-7g-preroll-50-400.avif 400w",
     "thumb": "/opt/inventory/prerolls/headyheads-14-5g-7g-preroll-50-400.webp"
   },
-  "/inventory/carts/hollowtips-candy-gat-30.jpg": {
-    "src": "/opt/inventory/carts/hollowtips-candy-gat-30-800.webp",
-    "width": 800,
-    "height": 600,
-    "srcset": "/opt/inventory/carts/hollowtips-candy-gat-30-400.webp 400w, /opt/inventory/carts/hollowtips-candy-gat-30-800.webp 800w",
-    "avif": "/opt/inventory/carts/hollowtips-candy-gat-30-400.avif 400w, /opt/inventory/carts/hollowtips-candy-gat-30-800.avif 800w",
-    "thumb": "/opt/inventory/carts/hollowtips-candy-gat-30-400.webp"
-  },
-  "/inventory/carts/whole-melts-phase6-30.jpg": {
-    "src": "/opt/inventory/carts/whole-melts-phase6-30-400.webp",
-    "width": 400,
-    "height": 415,
-    "srcset": "/opt/inventory/carts/whole-melts-phase6-30-400.webp 400w",
-    "avif": "/opt/inventory/carts/whole-melts-phase6-30-400.avif 400w",
-    "thumb": "/opt/inventory/carts/whole-melts-phase6-30-400.webp"
-  },
-  "/inventory/carts/bubble-gum-blicky-25.jpg": {
-    "src": "/opt/inventory/carts/bubble-gum-blicky-25-400.webp",
-    "width": 400,
-    "height": 300,
-    "srcset": "/opt/inventory/carts/bubble-gum-blicky-25-400.webp 400w",
-    "avif": "/opt/inventory/carts/bubble-gum-blicky-25-400.avif 400w",
-    "thumb": "/opt/inventory/carts/bubble-gum-blicky-25-400.webp"
-  },
   "/inventory/prerolls/top-shelf-prerolls-6.jpeg": {
     "src": "/opt/inventory/prerolls/top-shelf-prerolls-6-800.webp",
     "width": 800,
@@ -974,14 +854,6 @@
     "srcset": "/opt/inventory/prerolls/top-shelf-prerolls-6-400.webp 400w, /opt/inventory/prerolls/top-shelf-prerolls-6-800.webp 800w",
     "avif": "/opt/inventory/prerolls/top-shelf-prerolls-6-400.avif 400w, /opt/inventory/prerolls/top-shelf-prerolls-6-800.avif 800w",
     "thumb": "/opt/inventory/prerolls/top-shelf-prerolls-6-400.webp"
-  },
-  "/inventory/prerolls/juug-2g-glass-tip-preroll-25.jpg": {
-    "src": "/opt/inventory/prerolls/juug-2g-glass-tip-preroll-25-800.webp",
-    "width": 800,
-    "height": 1067,
-    "srcset": "/opt/inventory/prerolls/juug-2g-glass-tip-preroll-25-400.webp 400w, /opt/inventory/prerolls/juug-2g-glass-tip-preroll-25-800.webp 800w",
-    "avif": "/opt/inventory/prerolls/juug-2g-glass-tip-preroll-25-400.avif 400w, /opt/inventory/prerolls/juug-2g-glass-tip-preroll-25-800.avif 800w",
-    "thumb": "/opt/inventory/prerolls/juug-2g-glass-tip-preroll-25-400.webp"
   },
   "/inventory/pounds/gummy-bears-700-pound.jpg": {
     "src": "/opt/inventory/pounds/gummy-bears-700-pound-400.webp",
@@ -1031,6 +903,22 @@
     "avif": "/opt/inventory/pounds/diamond-gelato-700-pound-400.avif 400w",
     "thumb": "/opt/inventory/pounds/diamond-gelato-700-pound-400.webp"
   },
+  "/inventory/new-drop/sherb-x-doja-live-resin-vape.jpg": {
+    "src": "/opt/inventory/new-drop/sherb-x-doja-live-resin-vape-400.webp",
+    "width": 400,
+    "height": 533,
+    "srcset": "/opt/inventory/new-drop/sherb-x-doja-live-resin-vape-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/sherb-x-doja-live-resin-vape-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/sherb-x-doja-live-resin-vape-400.webp"
+  },
+  "/inventory/new-drop/muha-meds-all-in-one.jpg": {
+    "src": "/opt/inventory/new-drop/muha-meds-all-in-one-400.webp",
+    "width": 400,
+    "height": 533,
+    "srcset": "/opt/inventory/new-drop/muha-meds-all-in-one-400.webp 400w",
+    "avif": "/opt/inventory/new-drop/muha-meds-all-in-one-400.avif 400w",
+    "thumb": "/opt/inventory/new-drop/muha-meds-all-in-one-400.webp"
+  },
   "/inventory/new-drop/whole-melts-phase6-v2.jpg": {
     "src": "/opt/inventory/new-drop/whole-melts-phase6-v2-800.webp",
     "width": 800,
@@ -1038,14 +926,6 @@
     "srcset": "/opt/inventory/new-drop/whole-melts-phase6-v2-400.webp 400w, /opt/inventory/new-drop/whole-melts-phase6-v2-800.webp 800w",
     "avif": "/opt/inventory/new-drop/whole-melts-phase6-v2-400.avif 400w, /opt/inventory/new-drop/whole-melts-phase6-v2-800.avif 800w",
     "thumb": "/opt/inventory/new-drop/whole-melts-phase6-v2-400.webp"
-  },
-  "/inventory/new-drop/hollow-tips-2g-disposable.jpg": {
-    "src": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.webp",
-    "width": 400,
-    "height": 300,
-    "srcset": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.webp 400w",
-    "avif": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.avif 400w",
-    "thumb": "/opt/inventory/new-drop/hollow-tips-2g-disposable-400.webp"
   },
   "/inventory/new-drop/devour-1500mg-gummies.jpg": {
     "src": "/opt/inventory/new-drop/devour-1500mg-gummies-400.webp",
