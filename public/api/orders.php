@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/b420-store.php';
 
-const OWNER_EMAIL  = 'mstwntdpacks@gmail.com';
+const OWNER_EMAIL  = 'belgium@belgium420.com';
 const FROM_EMAIL    = 'orders@belgium420.com';
 const FROM_NAME     = 'Belgium420 Orders';
 const ADMIN_KEY     = '420Belgium';
 const ALLOWED_ORIGIN = 'https://belgium420.com';
+const ORDER_NOTIFY_EMAIL_ENV = 'BELGIUM420_ORDER_NOTIFY_EMAIL';
+const DEFAULT_ORDER_NOTIFY_EMAILS = ['belgium@belgium420.com','support@belgium420.com'];
 
 const DISCOUNT_CODES = [
     'BELGIUM10' => 0.10,
@@ -103,9 +105,101 @@ function validate_email(string $email): bool {
     return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
+function env_string(string $name): string {
+    $value = getenv($name);
+    if (!is_string($value) || $value === '') {
+        if (isset($_SERVER[$name]) && is_string($_SERVER[$name]) && $_SERVER[$name] !== '') {
+            $value = $_SERVER[$name];
+        } elseif (isset($_ENV[$name]) && is_string($_ENV[$name]) && $_ENV[$name] !== '') {
+            $value = $_ENV[$name];
+        } else {
+            $value = '';
+        }
+    }
+    return trim((string)$value);
+}
+
+function mail_header_value(string $v): string {
+    return trim(str_replace(["\r", "\n", "\0"], '', $v));
+}
+
+function order_notify_emails(): array {
+    $raw = env_string(ORDER_NOTIFY_EMAIL_ENV);
+    if ($raw === '') {
+        $candidates = DEFAULT_ORDER_NOTIFY_EMAILS;
+    } else {
+        $split = preg_split('/[,;\s]+/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        $candidates = is_array($split) ? $split : [];
+    }
+    $emails = [];
+    $seen = [];
+    foreach ($candidates as $candidate) {
+        $email = strtolower(trim((string)$candidate));
+        if ($email === '' || isset($seen[$email]) || !validate_email($email)) {
+            continue;
+        }
+        $seen[$email] = true;
+        $emails[] = $email;
+    }
+    return $emails;
+}
+
+function order_amount(array $order): float {
+    if (array_key_exists('final_total', $order) && $order['final_total'] !== null && $order['final_total'] !== '') {
+        return (float)$order['final_total'];
+    }
+    return (float)($order['total'] ?? 0) + (float)($order['shipping'] ?? 0);
+}
+
+function format_order_date(array $order): string {
+    $tz = new DateTimeZone('America/New_York');
+    try {
+        $raw = $order['created_at'] ?? null;
+        if (is_string($raw) && trim($raw) !== '') {
+            $dt = new DateTimeImmutable($raw);
+        } else {
+            $dt = new DateTimeImmutable('now');
+        }
+        return $dt->setTimezone($tz)->format('D, M j, Y g:i A T');
+    } catch (Throwable $e) {
+        return (new DateTimeImmutable('now', $tz))->format('D, M j, Y g:i A T');
+    }
+}
+
+function send_mail(string $to, string $subject, string $body, array $headers, string $context): bool {
+    $to = mail_header_value($to);
+    $subject = mail_header_value($subject);
+    $clean = [];
+    foreach ($headers as $header) {
+        $line = mail_header_value((string)$header);
+        if ($line !== '') {
+            $clean[] = $line;
+        }
+    }
+    if ($to === '' || !validate_email($to)) {
+        error_log('Belgium420 send_mail failed (' . $context . '): invalid recipient');
+        return false;
+    }
+    try {
+        $ok = @mail($to, $subject, $body, implode("\r\n", $clean));
+    } catch (Throwable $e) {
+        error_log('Belgium420 send_mail failed (' . $context . '): ' . $e->getMessage());
+        return false;
+    }
+    if (!$ok) {
+        error_log('Belgium420 send_mail failed (' . $context . '): mail() returned false');
+        return false;
+    }
+    return true;
+}
+
 function owner_notify_email(array $order): bool {
-    $to = OWNER_EMAIL;
-    $subject = 'New Belgium420 order ' . $order['id'];
+    $amount = order_amount($order);
+    $subject = sprintf(
+        'New order #%s - $%s',
+        $order['id'],
+        number_format($amount, 2, '.', '')
+    );
     $items_lines = '';
     foreach ($order['items'] as $it) {
         $qty = max(1, (int)($it['qty'] ?? 1));
@@ -160,34 +254,56 @@ function owner_notify_email(array $order): bool {
     $ship_line = $ship_amt <= 0
         ? "Shipping: FREE\n"
         : sprintf("Shipping: \$%.2f\n", $ship_amt);
+    $date_line = "Date: " . format_order_date($order) . "\n";
+    $ship_to = "Ship to:\n";
+    $ship_to .= "  " . (string)($order['address1'] ?? '') . "\n";
+    $address2 = trim((string)($order['address2'] ?? ''));
+    if ($address2 !== '') {
+        $ship_to .= "  " . $address2 . "\n";
+    }
+    $ship_to .= "  " . (string)($order['city'] ?? '') . ", " . (string)($order['state'] ?? '') . " " . (string)($order['zip'] ?? '') . "\n";
+    $total_line = "Total: $" . number_format($amount, 2, '.', '') . "\n";
     $body = sprintf(
-        "New order received: %s\n\n" .
+        "New order received: %s\n%s\n" .
         "Name:     %s\nEmail:    %s\nPhone:    %s\n\n" .
-        "Ship to:\n  %s\n  %s\n  %s, %s %s\n\n" .
+        "%s\n" .
         "Payment preferences: %s\n\n" .
         "Items:\n%s\n" .
-        "Subtotal: $%.2f\n%s%s%s\n" .
+        "Subtotal: $%.2f\n%s%s%s%s\n" .
         "Note: %s\n\n" .
-        "Manage: https://belgium420.com/admin/?key=%s\n",
+        "Manage: https://belgium420.com/admin/\n",
         $order['id'],
+        $date_line,
         $order['name'], $order['email'], $order['phone'] ?: '(none)',
-        $order['address1'], $order['address2'] ?: '',
-        $order['city'], $order['state'], $order['zip'],
+        $ship_to,
         $pays,
         $items_lines,
         (float)$order['total'],
         $ship_line,
         $discount_line,
         $rewards_line,
-        $order['note'] ?: '(none)',
-        ADMIN_KEY
+        $total_line,
+        $order['note'] ?: '(none)'
     );
-    $headers = [];
-    $headers[] = 'From: ' . FROM_NAME . ' <' . FROM_EMAIL . '>';
-    $headers[] = 'Reply-To: ' . $order['email'];
-    $headers[] = 'X-Mailer: Belgium420-Orders/1.0';
-    $headers[] = 'Content-Type: text/plain; charset=UTF-8';
-    return @mail($to, $subject, $body, implode("\r\n", $headers));
+    $headers = [
+        'From: ' . mail_header_value(FROM_NAME) . ' <' . mail_header_value(FROM_EMAIL) . '>',
+        'Reply-To: ' . mail_header_value((string)($order['email'] ?? '')),
+        'X-Mailer: Belgium420-Orders/1.0',
+        'Content-Type: text/plain; charset=UTF-8',
+    ];
+    $recipients = order_notify_emails();
+    if ($recipients === []) {
+        error_log('Belgium420 owner notify failed (' . ($order['id'] ?? '') . '): no notify recipients');
+        return false;
+    }
+    $all_ok = true;
+    foreach ($recipients as $to) {
+        $sent = send_mail($to, $subject, $body, $headers, 'owner notify ' . ($order['id'] ?? ''));
+        if (!$sent) {
+            $all_ok = false;
+        }
+    }
+    return $all_ok;
 }
 
 function customer_confirm_email(array $order): bool {
@@ -224,11 +340,13 @@ function customer_confirm_email(array $order): bool {
         (float)($order['final_total'] ?? 0),
         array_sum(array_map(fn($it) => max(1, (int)($it['qty'] ?? 1)), $order['items']))
     );
-    $headers = [];
-    $headers[] = 'From: ' . FROM_NAME . ' <' . FROM_EMAIL . '>';
-    $headers[] = 'Reply-To: ' . OWNER_EMAIL;
-    $headers[] = 'Content-Type: text/plain; charset=UTF-8';
-    return @mail($to, $subject, $body, implode("\r\n", $headers));
+    $headers = [
+        'From: ' . mail_header_value(FROM_NAME) . ' <' . mail_header_value(FROM_EMAIL) . '>',
+        'Reply-To: ' . mail_header_value(OWNER_EMAIL),
+        'X-Mailer: Belgium420-Orders/1.0',
+        'Content-Type: text/plain; charset=UTF-8',
+    ];
+    return send_mail($to, $subject, $body, $headers, 'customer confirm ' . ($order['id'] ?? ''));
 }
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -349,9 +467,17 @@ if ($method === 'POST') {
         respond(500, ['ok' => false, 'error' => 'Could not save order. Try again or email us directly.']);
     }
 
-    // Best-effort emails. Don't fail the order if mail() hiccups.
-    @owner_notify_email($order);
-    @customer_confirm_email($order);
+    // Best-effort emails. A mail failure must not fail the order response.
+    try {
+        owner_notify_email($order);
+    } catch (Throwable $e) {
+        error_log('Belgium420 owner notify failed for ' . $order['id'] . ': ' . $e->getMessage());
+    }
+    try {
+        customer_confirm_email($order);
+    } catch (Throwable $e) {
+        error_log('Belgium420 customer confirm failed for ' . $order['id'] . ': ' . $e->getMessage());
+    }
 
     $resp = ['ok' => true, 'order_id' => $order['id']];
     if ($order['discount_percent'] > 0) {
@@ -435,21 +561,26 @@ if ($method === 'PATCH') {
     if (!write_orders($orders)) respond(500, ['ok' => false, 'error' => 'Could not save.']);
 
     if (($updated['status'] ?? '') === 'shipped' && !empty($updated['tracking'])) {
-        $to = $updated['email'];
-        $subject = 'Your Belgium420 order ' . $updated['id'] . ' has shipped';
-        $body = sprintf(
-            "Hey %s,\n\nGood news — your order %s is on the way.\n\nTracking: %s\n\n" .
-            "You'll get it in 1–4 business days depending on your location. Reply to this email if anything looks off.\n\n— Belgium420\n",
-            explode(' ', (string)$updated['name'])[0],
-            $updated['id'],
-            $updated['tracking']
-        );
-        $headers = [
-            'From: ' . FROM_NAME . ' <' . FROM_EMAIL . '>',
-            'Reply-To: ' . OWNER_EMAIL,
-            'Content-Type: text/plain; charset=UTF-8',
-        ];
-        @mail($to, $subject, $body, implode("\r\n", $headers));
+        try {
+            $to = (string)($updated['email'] ?? '');
+            $subject = 'Your Belgium420 order ' . $updated['id'] . ' has shipped';
+            $body = sprintf(
+                "Hey %s,\n\nGood news — your order %s is on the way.\n\nTracking: %s\n\n" .
+                "You'll get it in 1–4 business days depending on your location. Reply to this email if anything looks off.\n\n— Belgium420\n",
+                explode(' ', (string)$updated['name'])[0],
+                $updated['id'],
+                $updated['tracking']
+            );
+            $headers = [
+                'From: ' . mail_header_value(FROM_NAME) . ' <' . mail_header_value(FROM_EMAIL) . '>',
+                'Reply-To: ' . mail_header_value(OWNER_EMAIL),
+                'X-Mailer: Belgium420-Orders/1.0',
+                'Content-Type: text/plain; charset=UTF-8',
+            ];
+            send_mail($to, $subject, $body, $headers, 'shipping notify ' . ($updated['id'] ?? ''));
+        } catch (Throwable $e) {
+            error_log('Belgium420 shipping notify failed for ' . ($updated['id'] ?? '') . ': ' . $e->getMessage());
+        }
     }
 
     respond(200, ['ok' => true, 'order' => $updated]);
