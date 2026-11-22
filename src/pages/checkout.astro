@@ -1,6 +1,7 @@
 ---
 
 import { FREE_SHIPPING_OVER, SHIPPING_FEE } from '../lib/rewards.js';
+import { SUPPORT_EMAIL, supportMailto } from '../lib/support.js';
 import '../styles/brand.css';
 import '../styles/fonts.css';
 
@@ -298,6 +299,9 @@ const year = new Date().getFullYear();
       margin: 0.75rem 0;
       line-height: 1.4;
     }
+    .checkout-help { margin: 0.35rem 0 0.85rem; }
+    .checkout-footer .checkout-help { margin: 0.85rem 0 0; }
+    .checkout-ok .support-line { margin-top: 0.5rem; }
     .checkout-edit {
       display: block;
       text-align: center;
@@ -513,6 +517,7 @@ const year = new Date().getFullYear();
         </div>
         <label class="checkout-age-confirm"><input type="checkbox" name="age_confirm" id="ageConfirm" form="checkoutForm" required /><span>I confirm I am 21+ years old. *</span></label>
         <p class="checkout-summary-note" id="checkoutSummaryNote">No order minimum. Flat ${SHIPPING_FEE} shipping. Free when the subtotal after discounts is over ${FREE_SHIPPING_OVER}. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend — you get $25 off your next order after theirs is marked paid. Tax confirmed by email.</p>
+        <p class="support-line checkout-help">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a></p>
         <a href="/" class="checkout-edit">Edit cart</a>
       </aside>
     </div>
@@ -521,6 +526,7 @@ const year = new Date().getFullYear();
   <footer class="checkout-footer">
     <div>&copy; {year} Belgium420. All rights reserved.</div>
     <div class="checkout-fineprint" style="margin-top:0.5rem">Refer a friend — they shop, you get $25 credit when their order clears. Share belgium420.com/?ref=YOURCODE. Loyalty: 1% off per $100 spent (cap 25%). Ops reject self-referrals.</div>
+    <p class="support-line checkout-help">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a></p>
   </footer>
 
   <script>
@@ -552,6 +558,7 @@ const year = new Date().getFullYear();
       setLifetimeSpend,
       setLoyaltyPlacedCount,
     } from "../lib/rewards.js";
+    import { SUPPORT_EMAIL, supportHelpHtml, supportMailto } from "../lib/support.js";
 
     captureReferralFromUrl();
     const loyaltyId = ensureLoyaltyId();
@@ -742,9 +749,13 @@ const year = new Date().getFullYear();
     const errorEl = document.getElementById("checkoutError");
     const submitBtn = document.getElementById("checkoutSubmit") as HTMLButtonElement | null;
 
-    function showError(msg: string) {
+    function showError(msg: string, withHelp = false) {
       if (!errorEl) return;
-      errorEl.textContent = msg;
+      if (withHelp) {
+        errorEl.innerHTML = `${escapeHtml(msg)} Need help? Email <a href="${supportMailto()}">${SUPPORT_EMAIL}</a>`;
+      } else {
+        errorEl.textContent = msg;
+      }
       errorEl.hidden = false;
     }
     function clearError() {
@@ -839,7 +850,7 @@ const year = new Date().getFullYear();
         });
         const data = await r.json().catch(() => ({}));
         if (!r.ok || !data.ok) {
-          showError(data.error || "Could not submit your order. Please try again or email us directly.");
+          showError(data.error || "Could not submit your order. Please try again.", true);
           if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.textContent = "Place order";
@@ -865,12 +876,13 @@ const year = new Date().getFullYear();
             ${payload.loyalty_percent > 0
               ? `<p>${escapeHtml(`Loyalty: ${Math.round(payload.loyalty_percent * 100)}% off${quote.poundsSubtotal > 0 ? ` (pounds max ${LOYALTY_POUNDS_PERCENT_CAP}%)` : ""}.`)}</p>`
               : ""}
+            ${supportHelpHtml("support-line checkout-help")}
             <a href="/" class="checkout-back">Back to shop</a>
           `;
           main.appendChild(ok);
         }
       } catch (err) {
-        showError("Network error. Please try again.");
+        showError("Network error. Please try again.", true);
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.textContent = "Place order";

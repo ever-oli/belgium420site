@@ -1,5 +1,6 @@
 ---
 import PlainPage from '../layouts/PlainPage.astro';
+import { SUPPORT_EMAIL, supportMailto } from '../lib/support.js';
 ---
 <PlainPage title="Privacy Policy" description="How Belgium420 handles the information you send when you shop.">
   <h1>Privacy <span>Policy</span></h1>
@@ -11,5 +12,5 @@ import PlainPage from '../layouts/PlainPage.astro';
   <h2>Who can see an order</h2>
   <p>Order records are available to the shop operator through the admin desk. Payment details are confirmed by email. Do not send card numbers through the order form.</p>
   <h2>Questions</h2>
-  <p>Email <a href="mailto:mstwntdpacks@gmail.com">mstwntdpacks@gmail.com</a>.</p>
+  <p class="support-line">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a>.</p>
 </PlainPage>

@@ -1,6 +1,7 @@
 ---
 import '../styles/brand.css';
 import '../styles/fonts.css';
+import { SUPPORT_EMAIL, supportMailto } from '../lib/support.js';
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -59,6 +60,8 @@ a{color:var(--cyan)}
 .login-kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime)}
 .login-box h1{margin:0 0 .6rem;font:400 clamp(2.1rem,8vw,2.8rem)/.95 var(--font-display);text-transform:uppercase;letter-spacing:.01em}
 .login-box p{margin:0 0 1.25rem;color:var(--muted);line-height:1.5;font-size:.95rem}
+.login-box .support-line{margin:.15rem 0 0;font-size:.82rem}
+.login-box .support-line a{color:var(--belgian-yellow)}
 .login-box input{width:100%;min-height:50px;padding:.75rem .9rem;border-radius:12px;border:1px solid var(--border);background:#101116;color:var(--text);font:400 16px var(--font-mono);margin:0 0 .75rem}
 .login-box input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #3de7ff1f;outline:none}
 .login-box button[type="submit"]{width:100%;min-height:50px;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:800 1rem var(--font-sans);letter-spacing:.02em;cursor:pointer;box-shadow:0 0 28px #38bdf866}
@@ -235,6 +238,7 @@ a{color:var(--cyan)}
       <div class="login-error" id="loginError"></div>
       <input type="password" id="loginKey" placeholder="Admin key" autocomplete="current-password" />
       <button type="submit">Sign in</button>
+      <p class="support-line">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a></p>
     </form>
   </div>
 

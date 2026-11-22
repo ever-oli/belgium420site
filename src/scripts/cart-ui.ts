@@ -24,6 +24,7 @@ import {
   setLoyaltyPlacedCount,
   shareUrlForCode,
 } from "../lib/rewards.js";
+import { supportHelpHtml } from "../lib/support.js";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -119,6 +120,7 @@ function render(refs: ReturnType<typeof buildDrawer>) {
         <div class="cart-empty-mark">✦</div>
         <p>Your cart is empty.</p>
         <a href="/#shop" data-cart-close class="cart-empty-link">Browse the shop</a>
+        ${supportHelpHtml()}
       </div>
     `;
     refs.footer.innerHTML = "";
@@ -192,6 +194,7 @@ function render(refs: ReturnType<typeof buildDrawer>) {
     </div>
     <p class="cart-foot-note">No order minimum. Flat $${SHIPPING_FEE} shipping. Free when the subtotal after discounts is over $${FREE_SHIPPING_OVER}. Tax confirmed by email. Loyalty: 1% off per $100 merchandise spent (lifetime, cap ${LOYALTY_PERCENT_CAP}%${poundsPolicy}).</p>
     ${refNote}
+    ${supportHelpHtml()}
     <a href="/checkout/" class="cart-checkout-btn">Checkout</a>
     <button type="button" class="cart-clear-btn" data-cart-clear>Clear cart</button>
   `;

@@ -1,6 +1,7 @@
 ---
 import { typeDefs, inferType, inferEffects } from '../lib/strain-types.js';
 import { FREE_SHIPPING_OVER, SHIPPING_FEE } from '../lib/rewards.js';
+import { SUPPORT_EMAIL, supportContactPoint, supportMailto } from '../lib/support.js';
 import { newDropProducts } from '../data/new-drop.js';
 import { HOLLOW_TIPS_BATCHES, HOLLOW_TIPS_TIERS } from '../lib/tier-pricing.js';
 import { savePercents } from '../lib/tier-savings.js';
@@ -1299,6 +1300,8 @@ const typeCounts = [
         name: 'Belgium420',
         url: 'https://belgium420.com/',
         logo: 'https://belgium420.com/apple-touch-icon.png',
+        email: SUPPORT_EMAIL,
+        contactPoint: supportContactPoint(),
       },
       {
         '@type': 'WebSite',
@@ -2737,6 +2740,15 @@ const typeCounts = [
       margin: 0.5rem 0 1rem;
       line-height: 1.4;
     }
+    :global(.cart-drawer-foot .support-line),
+    :global(.cart-empty .support-line) {
+      margin: 0.15rem 0 0.9rem;
+      font-size: 0.78rem;
+    }
+    :global(.cart-empty .support-line) {
+      margin-top: 1.15rem;
+      text-align: center;
+    }
     :global(.cart-checkout-btn) {
       display: block;
       width: 100%;
@@ -3228,7 +3240,7 @@ const typeCounts = [
       background: var(--belgian-black);
       border-top: 3px solid transparent;
       border-image: linear-gradient(90deg, var(--ink) 0%, var(--belgian-yellow) 50%, var(--belgian-red) 100%) 1;
-      padding: 3rem 2rem;
+      padding: 3rem 2rem 5.5rem;
     }
     .footer-inner {
       max-width: 1200px;
@@ -3256,6 +3268,9 @@ const typeCounts = [
       font-size: 0.8rem;
       color: var(--concrete);
     }
+    .footer-help { margin: 0 0 0.35rem; }
+    .section-help { margin-top: 1.5rem; }
+    .auth-help { margin-top: 0.75rem; text-align: center; font-size: 0.8rem; }
     .footer-links {
       display: flex;
       gap: 1.5rem;
@@ -3765,7 +3780,7 @@ const typeCounts = [
       .lab-molecules .m1,
       .lab-molecules .m2,
       .lab-molecules .m3 { width: 90px; opacity: 0.5; }
-      footer { padding: 2.25rem 1rem; }
+      footer { padding: 2.25rem 1rem 5.5rem; }
     }
 
     @media (min-width: 561px) and (max-width: 900px) {
@@ -4141,6 +4156,7 @@ const typeCounts = [
             <p class="auth-toggle" id="authToggle"></p>
           </div>
           <p class="auth-legal">Invite-only F&amp;F access via SuperTokens (Argon2id sessions).</p>
+          <p class="support-line auth-help">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a></p>
         </div>
       </div>
     </>
@@ -4547,7 +4563,10 @@ const typeCounts = [
               </div>
               {p.inquiryOnly ? (
                 <a
-                  href={`mailto:mstwntdpacks@gmail.com?subject=${encodeURIComponent('Inquiry: ' + p.name)}&body=${encodeURIComponent(`Hi,\n\nI'm interested in pricing for:\n${p.name} (${p.type}) — Batch ${p.batch}\n\nPlease let me know availability and details.\n\nThanks!`)}`}
+                  href={supportMailto(
+                    'Inquiry: ' + p.name,
+                    `Hi,\n\nI'm interested in pricing for:\n${p.name} (${p.type}) — Batch ${p.batch}\n\nPlease let me know availability and details.\n\nThanks!`,
+                  )}
                   class="inquire-btn"
                   aria-label={`Inquire for pricing on ${p.name}`}
                 >Inquire for pricing</a>
@@ -4734,6 +4753,7 @@ const typeCounts = [
         <p>No order minimum. Flat ${SHIPPING_FEE} shipping. Free when the subtotal after discounts is over ${FREE_SHIPPING_OVER}. Loyalty: 1% off per $100 merchandise spent (lifetime, cap 25%). Refer a friend for $25 off your next order after theirs clears. Ships within 24-48 hours via USPS Ground Advantage. Hawaii and Iowa are included. All packages include a QR code linking to the batch COA. Discrete packaging — no product names or logos on the exterior.</p>
       </div>
     </div>
+    <p class="support-line section-help">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a></p>
   </section>
 
   <section class="rewards" id="rewards">
@@ -4769,6 +4789,7 @@ const typeCounts = [
         <p>Cart and checkout show <em>Loyalty: 2% off ($250 spent, cap 25%)</em> when it applies.</p>
       </div>
     </div>
+    <p class="support-line section-help">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a></p>
   </section>
 
   <section class="about" id="about">
@@ -4794,7 +4815,10 @@ const typeCounts = [
         <p><strong>Rewards:</strong> Refer a friend — they shop, you get $25 off your next order after theirs is marked paid. Share belgium420.com/?ref=YOURCODE. Loyalty: 1% off per $100 spent (cap 25%). Ops reject self-referrals.</p>
       </div>
       <div class="footer-bottom">
-        <div class="footer-copy">&copy; {year} Belgium420. All rights reserved.</div>
+        <div>
+          <p class="support-line footer-help">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a></p>
+          <div class="footer-copy">&copy; {year} Belgium420. All rights reserved.</div>
+        </div>
         <ul class="footer-links">
           <li><a href="/privacy">Privacy Policy</a></li>
           <li><a href="/terms">Terms of Service</a></li>
