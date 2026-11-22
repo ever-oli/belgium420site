@@ -1,10 +1,27 @@
 ---
 import PlainPage from '../layouts/PlainPage.astro';
+import { SUPPORT_EMAIL, supportContactPoint, supportMailto } from '../lib/support.js';
 ---
-<PlainPage title="Contact" description="Contact Belgium420 about an order or a product.">
+<PlainPage
+  title="Contact"
+  description={`Email ${SUPPORT_EMAIL} about an order, a product, or shipping.`}
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contact Belgium420',
+    url: 'https://belgium420.com/contact',
+    mainEntity: {
+      '@type': 'Organization',
+      name: 'Belgium420',
+      url: 'https://belgium420.com/',
+      email: SUPPORT_EMAIL,
+      contactPoint: supportContactPoint(),
+    },
+  }}
+>
   <h1>Contact</h1>
   <p class="lead">Lab-Backed Hemp. Belgian Roots.</p>
-  <p>Email <a href="mailto:mstwntdpacks@gmail.com">mstwntdpacks@gmail.com</a> for order questions, product inquiries, and shipping issues. Include your order id if you already checked out.</p>
+  <p class="support-line">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a> for order questions, product inquiries, and shipping issues. Include your order id if you already checked out.</p>
   <p>We reply by email with payment instructions after an order is placed. We do not take orders over social media.</p>
   <p><a href="/#shop">Back to the shop</a></p>
 </PlainPage>

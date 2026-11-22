@@ -1,5 +1,6 @@
 ---
 import PlainPage from '../layouts/PlainPage.astro';
+import { SUPPORT_EMAIL, supportMailto } from '../lib/support.js';
 ---
 <PlainPage title="Terms of Service" description="The terms for shopping at Belgium420.">
   <h1>Terms of <span>Service</span></h1>
@@ -14,4 +15,6 @@ import PlainPage from '../layouts/PlainPage.astro';
   <p>Shipping is a flat $25. It is free when the merchandise subtotal after discounts is over $150. We ship to 48 states, including Hawaii and Iowa. We do not ship to Idaho or Oregon.</p>
   <h2>Rewards</h2>
   <p>Referral credit and loyalty discounts follow the rules on the shop page. Self-referrals are rejected.</p>
+  <h2>Help</h2>
+  <p class="support-line">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a>.</p>
 </PlainPage>

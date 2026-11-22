@@ -1,8 +1,9 @@
 ---
 import '../styles/brand.css';
 import '../styles/fonts.css';
+import { SUPPORT_EMAIL, supportMailto } from '../lib/support.js';
 
-const { title, description } = Astro.props;
+const { title, description, jsonLd = null } = Astro.props;
 const year = new Date().getFullYear();
 ---
 <!DOCTYPE html>
@@ -13,6 +14,7 @@ const year = new Date().getFullYear();
   <meta name="color-scheme" content="dark" />
   <title>{title} — Belgium420</title>
   <meta name="description" content={description} />
+  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
   <style>
@@ -45,6 +47,8 @@ const year = new Date().getFullYear();
     .lead { color: #8b8e99; }
     h2 { margin: 1.6rem 0 .4rem; font-size: 1.05rem; }
     footer { border-top: 1px solid #2a2c33; color: #8b8e99; font-size: .85rem; }
+    .support-line a { color: var(--belgian-yellow); }
+    footer .support-line { margin: 0 0 .65rem; }
   </style>
 </head>
 <body>
@@ -63,6 +67,7 @@ const year = new Date().getFullYear();
     <slot />
   </main>
   <footer>
+    <p class="support-line">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a></p>
     <div>© {year} Belgium420. Lab-Backed Hemp. Belgian Roots.</div>
   </footer>
 </body>

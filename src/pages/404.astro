@@ -1,0 +1,13 @@
+---
+import PlainPage from '../layouts/PlainPage.astro';
+import { SUPPORT_EMAIL, supportMailto } from '../lib/support.js';
+---
+<PlainPage
+  title="Page not found"
+  description={`That page is not on Belgium420. Email ${SUPPORT_EMAIL} if you need help.`}
+>
+  <h1>Page not <span>found</span></h1>
+  <p class="lead">That link does not go anywhere on the shop.</p>
+  <p class="support-line">Need help? Email <a href={supportMailto()}>{SUPPORT_EMAIL}</a>.</p>
+  <p><a href="/">Back to the shop</a></p>
+</PlainPage>
